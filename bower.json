@@ -1,0 +1,26 @@
+{
+  "name": "panwriter",
+  "description": "Yet another markdown editor",
+  "main": "main.js",
+  "authors": [
+    "Mauro Bieg"
+  ],
+  "license": "n",
+  "keywords": [
+    "markdown",
+    "editor"
+  ],
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "purescript-effect": "^2.0.0",
+    "purescript-console": "^4.1.0"
+  }
+}
