@@ -1,0 +1,29 @@
+html, body {
+  margin: 0;
+}
+
+#container {
+  display: flex;
+  height: 100vh;
+}
+
+textarea {
+  font-family: Monaco, monospace;
+  font-size: 18px;
+  flex-basis: 0;
+  flex-grow: 1;
+  border: none;
+  border-right: 1px solid grey;
+  resize: none;
+  padding: 30px;
+}
+textarea:focus {
+  outline: 0;
+}
+
+.preview {
+  flex-basis: 0;
+  flex-grow: 1;
+  padding: 30px;
+  font-family: Helvetica, sans-serif;
+}
