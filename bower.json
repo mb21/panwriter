@@ -24,5 +24,8 @@
     "purescript-console": "^4.1.0",
     "purescript-react-basic": "^2.0.1",
     "purescript-web-html": "^1.0.0"
+  },
+  "devDependencies": {
+    "purescript-psci-support": "^4.0.0"
   }
 }
