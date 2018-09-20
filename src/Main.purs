@@ -22,5 +22,5 @@ main = do
   case mc of
     Nothing -> throw "Container element not found."
     Just c  ->
-      let app = element Editor.component { label: "Increment" }
+      let app = element Editor.component {}
       in render app c

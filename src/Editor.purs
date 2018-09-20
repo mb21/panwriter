@@ -1,32 +1,32 @@
 module Editor where
 
-import Prelude
+import Prelude (pure, unit)
+import Data.Maybe (maybe)
+import Data.Array
 
 import React.Basic as React
+import React.Basic.CommonmarkRenderer (renderMd)
 import React.Basic.DOM as R
+import React.Basic.DOM.Events (targetValue)
 import React.Basic.Events as Events
 
--- The props for the component
-type Props =
-  { label :: String
-  }
+type Props = {}
 
--- Create a component by passing a record to the `react` function.
--- The `render` function takes the props and current state, as well as a
--- state update callback, and produces a document.
 component :: React.Component Props
 component = React.component { displayName: "Editor", initialState, receiveProps, render }
   where
     initialState =
-      { counter: 0
+      { htmlEls: [] -- :: Array React.JSX
       }
 
     receiveProps _ =
       pure unit
 
-    render { props, state, setState } =
-      R.button
-        { onClick: Events.handler_ do
-            setState \s -> s { counter = s.counter + 1 }
-        , children: [ R.text (props.label <> ": " <> show state.counter) ]
-        }
+    render { props, state, setState } = R.div
+      { children:
+          R.textarea
+            { onChange: Events.handler targetValue \val ->
+                          setState \_ -> {htmlEls: maybe [] renderMd val}
+            }
+          : state.htmlEls
+      }
