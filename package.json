@@ -17,7 +17,8 @@
     "commonmark": "^0.28.1",
     "commonmark-react-renderer": "^4.3.4",
     "react": "^16.4.2",
-    "react-dom": "^16.4.2"
+    "react-dom": "^16.4.2",
+    "yaml-front-matter": "^4.0.0"
   },
   "devDependencies": {
     "electron": "^2.0.0"
