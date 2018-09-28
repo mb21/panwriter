@@ -10,20 +10,32 @@ html, body {
 textarea {
   font-family: Monaco, monospace;
   font-size: 18px;
-  flex-basis: 0;
-  flex-grow: 1;
+  width: 50vw;
   border: none;
   border-right: 1px solid grey;
   resize: none;
   padding: 30px;
+  box-sizing: border-box;
 }
 textarea:focus {
   outline: 0;
 }
 
 .preview {
-  flex-basis: 0;
-  flex-grow: 1;
-  padding: 30px;
-  font-family: Helvetica, sans-serif;
+  width: 50vw;
+  overflow: scroll;
+}
+.pagedjs_pages {
+  overflow: scroll;
+  background-color: grey;
+  padding: 50px;
+}
+.pagedjs_page {
+  background-color: white;
+  margin: 0 auto;
+  margin-bottom: 50px;
+}
+
+.htmlEls {
+  display: none;
 }

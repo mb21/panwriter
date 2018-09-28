@@ -29,7 +29,10 @@ component = React.component { displayName: "Editor", initialState, receiveProps,
           , defaultValue: """# hi how are we today?"""
           }
       , R.div
+          { className: "preview"
+          }
+      , R.div
           { children: state.htmlEls
-          , className: "preview"
+          , className: "htmlEls"
           }
       ]
