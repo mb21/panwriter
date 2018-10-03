@@ -17,22 +17,39 @@ textarea {
   padding: 30px;
   box-sizing: border-box;
 }
-textarea:focus {
+textarea:focus, button:focus, input:focus {
   outline: 0;
 }
 
 .preview {
   width: 50vw;
-  overflow: scroll;
+  overflow: hidden;
   background-color: grey;
   position: relative;
 }
 .previewFrame {
   border: 0;
-  width: 100%;
-  height: 100%;
+  transform-origin: 0 0;
 }
 
 .htmlEls {
   display: none;
+}
+
+.zoomBtn {
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-size: 30px;
+  font-weight: bold;
+  background: white;
+  border: 0;
+  cursor: pointer;
+  width: 35px;
+  height: 35px;
+  line-height: 1;
+  display: block;
+}
+.zoomOut {
+  top: 40px;
 }
