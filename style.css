@@ -24,16 +24,13 @@ textarea:focus {
 .preview {
   width: 50vw;
   overflow: scroll;
-}
-.pagedjs_pages {
-  overflow: scroll;
   background-color: grey;
-  padding: 50px;
+  position: relative;
 }
-.pagedjs_page {
-  background-color: white;
-  margin: 0 auto;
-  margin-bottom: 50px;
+.previewFrame {
+  border: 0;
+  width: 100%;
+  height: 100%;
 }
 
 .htmlEls {

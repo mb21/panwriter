@@ -9,6 +9,10 @@
     # Compile PureScript
     pulp --watch build
 
+    # build packaged pagedjs (when necessary)
+    npm install -g browserify
+    browserify ./previewFrame/previewFrame.js -o ./previewFrame/previewFrame.bundle.js
+
     # Run the app
     npm start
 

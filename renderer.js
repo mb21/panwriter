@@ -5,14 +5,13 @@
 // following https://kritzcreek.github.io/posts/2016-07-05-purescript-electron.html
 require('./output/Main').main()
 
-const Previewer = require('pagedjs/lib').Previewer;
-let renderTo = document.querySelector('.preview');
+
+
+let iframe   = document.querySelector('.previewFrame');
 let content  = document.querySelector('.htmlEls');
 
-document.querySelector('textarea').addEventListener('input', e => {
-  let paged = new Previewer();
-  renderTo.innerHTML = '';
-  paged.preview(content, [], renderTo).then(flow => {
-    console.log("Rendered", flow.total, "pages.");
-  })
+iframe.addEventListener("load", () => {
+  document.querySelector('textarea').addEventListener('input', e => {
+    iframe.contentWindow.render(content);
+  });
 });

@@ -1,10 +1,10 @@
 module Editor where
 
-import Prelude (pure, unit)
 import Data.Maybe (maybe)
-
+import Prelude (pure, unit)
 import React.Basic as React
 import React.Basic.CommonmarkRenderer (renderMd)
+import React.Basic.DOM (link)
 import React.Basic.DOM as R
 import React.Basic.DOM.Events (targetValue)
 import React.Basic.Events as Events
@@ -30,6 +30,12 @@ component = React.component { displayName: "Editor", initialState, receiveProps,
           }
       , R.div
           { className: "preview"
+          , children: [
+              R.iframe {
+                className: "previewFrame"
+              , src: "previewFrame/previewFrame.html"
+              }
+            ]
           }
       , R.div
           { children: state.htmlEls

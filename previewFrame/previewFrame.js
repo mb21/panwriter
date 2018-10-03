@@ -1,0 +1,1 @@
+window.Previewer = require('pagedjs/lib').Previewer;

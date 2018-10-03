@@ -1,0 +1,34 @@
+<html>
+<head>
+<style>
+  body {
+    margin: 0;
+  }
+
+  .pagedjs_pages {
+    overflow: scroll;
+    /* background-color: grey; */
+    padding: 50px;
+  }
+
+  .pagedjs_page {
+    background-color: white;
+    margin: 0 auto;
+    margin-bottom: 50px;
+  }
+</style>
+</head>
+<body>
+  <script src="previewFrame.bundle.js"></script>
+  <script>
+  function render(content) {
+    let renderTo = document.body;
+    let paged = new Previewer();
+    renderTo.innerHTML = '';
+    paged.preview(content, [], renderTo).then(flow => {
+      console.log("Rendered", flow.total, "pages.");
+    })
+  }
+  </script>
+</body>
+</html>
