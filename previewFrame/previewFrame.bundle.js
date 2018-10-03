@@ -21584,5 +21584,7 @@ exports.SourceMapConsumer = require('./lib/source-map-consumer').SourceMapConsum
 exports.SourceNode = require('./lib/source-node').SourceNode;
 
 },{"./lib/source-map-consumer":307,"./lib/source-map-generator":308,"./lib/source-node":309}],312:[function(require,module,exports){
-window.Previewer = require('pagedjs/lib').Previewer;
+var pagedjs = require('pagedjs/lib');
+window.Previewer = pagedjs.Previewer;
+window.Chunker   = pagedjs.Chunker;
 },{"pagedjs/lib":278}]},{},[312]);
