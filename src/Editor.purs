@@ -26,6 +26,7 @@ component = React.component { displayName: "Editor", initialState, receiveProps,
           { onChange: Events.handler targetValue \val ->
                         setState \_ -> {htmlEls: maybe [] renderMd val}
           , autoFocus: "autofocus"
+          , defaultValue: """# hi how are we today?"""
           }
       , R.div
           { children: state.htmlEls
