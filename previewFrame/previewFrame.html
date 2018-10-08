@@ -21,13 +21,22 @@
 <body>
   <script src="previewFrame.bundle.js"></script>
   <script>
+  let cssStr = "h1{color: red;}";
+  let renderTo = document.body;
+  let previewer = new Previewer();
+
+  previewer.polisher.setup();
+	let style = previewer.polisher.insert("");
+
+  let chunker = new Chunker();
+  previewer.chunker = chunker;
+  chunker.setup(renderTo);
+
   function render(content) {
-    let renderTo = document.body;
-    let paged = new Previewer();
-    renderTo.innerHTML = '';
-    paged.preview(content, [], renderTo).then(flow => {
-      console.log("Rendered", flow.total, "pages.");
-    })
+    previewer.polisher.convertViaSheet(cssStr, "").then(text => {
+      style.innerHTML = text;
+      chunker.reflow(content);
+    });
   }
   </script>
 </body>

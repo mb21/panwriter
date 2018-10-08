@@ -11,7 +11,8 @@
 
     # build packaged pagedjs (when necessary)
     npm install -g browserify
-    browserify ./previewFrame/previewFrame.js -o ./previewFrame/previewFrame.bundle.js
+    cd previewFrame
+    clear; cd pagedjs && npm run-script compile && cd .. && browserify previewFrame.js -o previewFrame.bundle.js
 
     # Run the app
     npm start

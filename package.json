@@ -17,7 +17,6 @@
     "babel-runtime": "^6.26.0",
     "commonmark": "^0.28.1",
     "commonmark-react-renderer": "^4.3.4",
-    "pagedjs": "^0.1.15",
     "react": "^16.4.2",
     "react-dom": "^16.4.2",
     "yaml-front-matter": "^4.0.0"

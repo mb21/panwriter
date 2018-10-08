@@ -1,3 +1,3 @@
-var pagedjs = require('pagedjs/lib');
+var pagedjs = require('./pagedjs/lib');
 window.Previewer = pagedjs.Previewer;
 window.Chunker   = pagedjs.Chunker;
