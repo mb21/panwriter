@@ -4,16 +4,3 @@
 
 // following https://kritzcreek.github.io/posts/2016-07-05-purescript-electron.html
 require('./output/Main').main()
-
-
-
-let iframe   = document.querySelector('.previewFrame');
-let content  = document.querySelector('.htmlEls');
-
-iframe.addEventListener("load", () => {
-  let render = iframe.contentWindow.render
-  render(content);
-  document.querySelector('textarea').addEventListener('input', e => {
-    render(content);
-  });
-});

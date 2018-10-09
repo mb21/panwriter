@@ -11,7 +11,23 @@ import React.Basic.Events as Events
 type Props = {}
 
 initialText :: String
-initialText = """# hi how are we today?"""
+initialText = """---
+css: |
+  @page {
+    margin: 5cm;
+  }
+  body {
+    font-family: Helvetica;
+  }
+  h1 {
+    color: blue;
+  }
+---
+
+# hi how are we today?
+
+good? great!
+"""
 
 component :: React.Component Props
 component = React.component { displayName: "Editor", initialState, receiveProps, render }
