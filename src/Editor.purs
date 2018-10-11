@@ -1,9 +1,10 @@
 module Editor where
 
-import Data.Maybe (maybe)
 import Prelude
+
+import Data.Maybe (maybe)
 import React.Basic as React
-import React.Basic.CommonmarkRenderer (renderMd)
+import React.Basic.CommonmarkRenderer (renderMd, printPreview)
 import React.Basic.DOM as R
 import React.Basic.DOM.Events (targetValue)
 import React.Basic.Events as Events
@@ -70,6 +71,11 @@ component = React.component { displayName: "Editor", initialState, receiveProps,
                   { className: "zoomBtn zoomOut"
                   , onClick: zoom (-)
                   , children: [R.text "-"]
+                  }
+                , R.button
+                  { className: "exportBtn"
+                  , onClick: Events.handler_ printPreview
+                  , children: [R.text "🖨"]
                   }
                 ]
               }

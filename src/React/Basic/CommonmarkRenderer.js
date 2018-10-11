@@ -4,7 +4,9 @@ var parser   = new require("commonmark").Parser();
 var renderer = new require("commonmark-react-renderer")();
 var yamlFront = require('yaml-front-matter');
 
-var css = "";
+var css = ""
+  , previewWindow
+  ;
 
 exports.renderMd = function(md) {
   var meta;
@@ -25,12 +27,19 @@ exports.renderMd = function(md) {
   return els;
 };
 
+exports.printPreview = function() {
+  if (previewWindow) {
+    previewWindow.print();
+  }
+};
+
 document.addEventListener("DOMContentLoaded", function() {
   var iframe   = document.querySelector('.previewFrame');
   var content  = document.querySelector('.htmlEls');
 
   iframe.addEventListener("load", function() {
-    var render = iframe.contentWindow.render;
+    previewWindow = iframe.contentWindow;
+    var render = previewWindow.render;
     render(content, css);
     document.querySelector('textarea').addEventListener('input', function(e) {
       setTimeout(function(){
