@@ -32,10 +32,6 @@ textarea:focus, button:focus, input:focus {
   transform-origin: 0 0;
 }
 
-.htmlEls {
-  display: none;
-}
-
 .zoomBtn, .exportBtn {
   position: absolute;
   top: 0;

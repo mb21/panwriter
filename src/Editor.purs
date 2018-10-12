@@ -79,8 +79,4 @@ component = React.component { displayName: "Editor", initialState, receiveProps,
                   }
                 ]
               }
-          , R.div
-              { className: "htmlEls"
-              , children: state.htmlEls
-              }
           ]

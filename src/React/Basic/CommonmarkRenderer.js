@@ -1,30 +1,38 @@
 "use strict";
 
-var parser   = new require("commonmark").Parser();
-var renderer = new require("commonmark-react-renderer")();
-var yamlFront = require('yaml-front-matter');
+var md = require('markdown-it')()
+           .use(require('markdown-it-container'), 'dynamic', {
+                // see https://github.com/markdown-it/markdown-it-container/issues/23
+                validate: function() { return true; },
+                render: function(tokens, idx) {
+                  var token = tokens[idx];
+                  if (token.nesting === 1) {
+                    return '<div class="' + token.info.trim() + '">';
+                  } else {
+                    return '</div>';
+                  }
+                }
+              })
+  , yamlFront = require('yaml-front-matter')
+  ;
 
 var css = ""
+  , content = ""
   , previewWindow
   ;
 
-exports.renderMd = function(md) {
+exports.renderMd = function(str) {
   var meta;
   try {
-    meta = yamlFront.safeLoadFront(md)
+    meta = yamlFront.safeLoadFront(str)
   } catch (e) {
-    meta = {__content: md};
+    meta = {__content: str};
   }
   css = typeof meta.css === "string" ? meta.css : ""
 
-  // body
-  var ast = parser.parse(meta.__content)
-    , els = renderer.render(ast)
-    ;
+  content = md.render(meta.__content);
   
   // delete meta.__content;
-
-  return els;
 };
 
 exports.printPreview = function() {
@@ -35,7 +43,6 @@ exports.printPreview = function() {
 
 document.addEventListener("DOMContentLoaded", function() {
   var iframe   = document.querySelector('.previewFrame');
-  var content  = document.querySelector('.htmlEls');
 
   iframe.addEventListener("load", function() {
     previewWindow = iframe.contentWindow;
