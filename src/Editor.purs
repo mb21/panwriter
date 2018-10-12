@@ -1,7 +1,6 @@
 module Editor where
 
 import Prelude
-
 import Data.Maybe (maybe)
 import React.Basic as React
 import React.Basic.CommonmarkRenderer (renderMd, printPreview)
@@ -34,19 +33,17 @@ component :: React.Component Props
 component = React.component { displayName: "Editor", initialState, receiveProps, render }
   where
     initialState =
-      { htmlEls: renderMd initialText -- :: Array React.JSX
-      , previewScale: 0.75
+      { previewScale: 0.75
       }
 
-    receiveProps _ =
-      pure unit
+    receiveProps { isFirstMount: true } = renderMd initialText
+    receiveProps _ = pure unit
 
     render { props, state, setState } =
       let zoom op = Events.handler_ $ setState \s -> s {previewScale = op s.previewScale 0.125}
       in  React.fragment
           [ R.textarea
-              { onChange: Events.handler targetValue \val ->
-                            setState \s -> s {htmlEls = maybe [] renderMd val}
+              { onChange: Events.handler targetValue $ maybe (pure unit) renderMd
               , autoFocus: "autofocus"
               , defaultValue: initialText
               }

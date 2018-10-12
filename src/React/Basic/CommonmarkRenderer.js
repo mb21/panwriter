@@ -22,17 +22,22 @@ var css = ""
   ;
 
 exports.renderMd = function(str) {
-  var meta;
-  try {
-    meta = yamlFront.safeLoadFront(str)
-  } catch (e) {
-    meta = {__content: str};
-  }
-  css = typeof meta.css === "string" ? meta.css : ""
+  return function() {
+    var meta;
+    try {
+      meta = yamlFront.safeLoadFront(str)
+    } catch (e) {
+      meta = {__content: str};
+    }
+    css = typeof meta.css === "string" ? meta.css : ""
 
-  content = md.render(meta.__content);
-  
-  // delete meta.__content;
+    content = md.render(meta.__content);
+
+    // call paged.js
+    if (previewWindow) {
+      previewWindow.render(content, css);
+    }
+  }
 };
 
 exports.printPreview = function() {
@@ -46,12 +51,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
   iframe.addEventListener("load", function() {
     previewWindow = iframe.contentWindow;
-    var render = previewWindow.render;
-    render(content, css);
-    document.querySelector('textarea').addEventListener('input', function(e) {
-      setTimeout(function(){
-        render(content, css);
-      }, 0);
-    });
+    previewWindow.render(content, css);
   });
 });
