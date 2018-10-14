@@ -4,15 +4,13 @@
     <meta charset="UTF-8">
     <title>Hello World!</title>
     <link rel="stylesheet" type="text/css" href="style.css">
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self'">
   </head>
   <body>
-    <!-- All of the Node.js APIs are available in this renderer process. -->
-
     <div id="container">
     </div>
-    <script>
-      // You can also require other files to run in this process
-      require('./renderer.js')
+
+    <script src="renderer.js">
     </script>
   </body>
 </html>

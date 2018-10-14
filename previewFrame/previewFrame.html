@@ -1,5 +1,16 @@
 <html>
 <head>
+<!--
+Unfortunately, this breaks paged.js,
+which uses https://github.com/facebook/regenerator/,
+which uses `Function("return this")`,
+which is a form of `eval()`.
+Probably fixed in https://github.com/facebook/regenerator/commit/4efc6899803c087af25021fae1d557004b192e24
+
+It's not so bad, since markdown-it has raw HTML disabled.
+
+<meta http-equiv="Content-Security-Policy" content="script-src 'self'">
+-->
 <style>
 @media screen {
   body {

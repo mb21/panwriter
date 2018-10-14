@@ -7,7 +7,15 @@ let mainWindow
 
 function createWindow () {
   // Create the browser window.
-  mainWindow = new BrowserWindow({width: 1000, height: 1000})
+  mainWindow = new BrowserWindow({
+      width: 1000
+    , height: 1000
+    , webPreferences: {
+        nodeIntegration: false
+      //, contextIsolation: true
+      , preload: __dirname+'/preload.js'
+      }
+    });
 
   // and load the index.html of the app.
   mainWindow.loadFile('index.html')
