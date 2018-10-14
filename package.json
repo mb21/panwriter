@@ -4,7 +4,8 @@
   "description": "Yet another markdown editor",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "debug": "electron --inspect-brk=5858 ."
   },
   "repository": "https://github.com/mb21/panwriter",
   "keywords": [

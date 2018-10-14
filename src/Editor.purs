@@ -1,51 +1,50 @@
 module Editor where
 
-import Prelude
 import Data.Maybe (maybe)
+import Effect (Effect)
+import Prelude
+
 import React.Basic as React
 import React.Basic.CommonmarkRenderer (renderMd, printPreview)
 import React.Basic.DOM as R
 import React.Basic.DOM.Events (targetValue)
 import React.Basic.Events as Events
 
+import Panwriter.File (initFile, setDocumentEdited)
+
 type Props = {}
 
-initialText :: String
-initialText = """---
-css: |
-  @page {
-    margin: 5cm;
-  }
-  body {
-    font-family: Helvetica;
-  }
-  h1 {
-    color: blue;
-  }
----
-
-# hi how are we today?
-
-good? great!
-"""
+updateText :: forall st. ( ({text :: String | st} -> {text :: String | st}) -> Effect Unit )
+           -> String
+           -> Effect Unit
+updateText setState txt = do
+  void $ setState \s -> s {text = txt}
+  renderMd txt
 
 component :: React.Component Props
 component = React.component { displayName: "Editor", initialState, receiveProps, render }
   where
     initialState =
-      { previewScale: 0.75
+      { text: ""
+      , previewScale: 0.5
       }
 
-    receiveProps { isFirstMount: true } = renderMd initialText
+    receiveProps { isFirstMount: true, setState, instance_ } = do
+      initFile
+        { onFileLoad: updateText setState
+        , compInstance: instance_
+        }
     receiveProps _ = pure unit
 
     render { props, state, setState } =
       let zoom op = Events.handler_ $ setState \s -> s {previewScale = op s.previewScale 0.125}
       in  React.fragment
           [ R.textarea
-              { onChange: Events.handler targetValue $ maybe (pure unit) renderMd
+              { onChange: Events.handler targetValue $ maybe (pure unit) \txt -> do
+                            setDocumentEdited
+                            updateText setState txt
               , autoFocus: "autofocus"
-              , defaultValue: initialText
+              , value: state.text
               }
           , R.div
               { className: "preview"
