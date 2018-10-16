@@ -20,6 +20,10 @@ function createWindow(filePath) {
   const win = new BrowserWindow({
       width: 1000
     , height: 800
+    , frame: false
+    // macOS-only see https://stackoverflow.com/questions/35876939
+    // and https://github.com/electron/electron/blob/master/docs/api/frameless-window.md
+    , titleBarStyle: 'customButtonsOnHover'
     , webPreferences: {
         nodeIntegration: false
       //, contextIsolation: true

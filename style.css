@@ -6,6 +6,15 @@ html, body {
   display: flex;
   height: 100vh;
 }
+#container:before {
+  -webkit-app-region: drag;
+  content: '';
+  position: fixed;
+  z-index: 9999;
+  top: 0;
+  height: 20px;
+  width: 100vw;
+}
 
 textarea {
   font-family: Monaco, monospace;
