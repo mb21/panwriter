@@ -16,18 +16,9 @@ html, body {
   width: 100vw;
 }
 
-textarea {
-  font-family: Monaco, monospace;
-  font-size: 18px;
+.react-codemirror2 {
   width: 50vw;
-  border: none;
-  border-right: 1px solid grey;
-  resize: none;
-  padding: 30px;
-  box-sizing: border-box;
-}
-textarea:focus, button:focus, input:focus {
-  outline: 0;
+  background-color: #f7f7f7;
 }
 
 .preview {

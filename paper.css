@@ -1,0 +1,65 @@
+/* Paper theme CSS
+ * i.e. overrides for
+ * https://github.com/codemirror/CodeMirror/blob/master/lib/codemirror.css
+ */
+
+.CodeMirror {
+  font-family: Menlo, Monaco, monospace;
+  font-size: 17px;
+  line-height: 1.8em;
+  color: #1a1a1a;
+}
+div.CodeMirror {
+  height: 100vh;
+  background-color: #f7f7f7;
+}
+
+/* Make editor resize to fit its content
+ * see also https://codemirror.net/doc/manual.html#styling
+ */
+.CodeMirror-scroll {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+.CodeMirror-lines { /* div holding all the text lines */
+  padding: 50px;
+  max-width: 40em;
+  margin: 0 auto;
+}
+
+.CodeMirror div.CodeMirror-cursor {
+  border-left: 1px solid black;
+}
+
+.cm-s-paper .cm-keyword      { color: #888; }
+.cm-s-paper .cm-atom         { color: #888; }
+.cm-s-paper .cm-variable     { color: #1a1a1a; }
+.cm-s-paper .cm-variable-2   { color: #1a1a1a; }
+.cm-s-paper .cm-variable-3   { color: #1a1a1a; }
+.cm-s-paper .cm-property     { color: #1a1a1a; }
+.cm-s-paper .cm-operator     { color: #1a1a1a; }
+.cm-s-paper .cm-comment      { color: #888; }
+.cm-s-paper .cm-meta         { color: #888; }
+.cm-s-paper .cm-qualifier    { color: #888; }
+.cm-s-paper .cm-builtin      { color: #888; }
+.cm-s-paper .cm-quote        { color: #888; }
+.cm-s-paper .cm-hr           { color: #888; }
+.cm-s-paper .cm-def          { color: #888; }
+.cm-s-paper .cm-image-marker { color: #888; }
+
+/* HTML stuff
+.cm-s-paper .cm-bracket    { color: #888; }
+.cm-s-paper .cm-tag        { color: #888; }
+.cm-s-paper .cm-attribute  { color: #888; }
+.cm-s-paper .cm-string     { color: #888; }
+.cm-s-paper .cm-string-2   { color: #888; }
+*/
+
+.cm-s-paper .cm-link {
+  color: #888;
+  text-decoration: none;
+}
+.cm-s-paper .cm-url {
+  color: #888;
+  text-decoration: underline;
+}

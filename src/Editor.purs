@@ -1,13 +1,12 @@
 module Editor where
 
-import Data.Maybe (maybe)
 import Effect (Effect)
 import Prelude
 
 import React.Basic as React
+import React.Basic.CodeMirror as CodeMirror
 import React.Basic.CommonmarkRenderer (renderMd, printPreview)
 import React.Basic.DOM as R
-import React.Basic.DOM.Events (targetValue)
 import React.Basic.Events as Events
 
 import Panwriter.File (initFile, setDocumentEdited)
@@ -39,12 +38,29 @@ component = React.component { displayName: "Editor", initialState, receiveProps,
     render { props, state, setState } =
       let zoom op = Events.handler_ $ setState \s -> s {previewScale = op s.previewScale 0.125}
       in  React.fragment
-          [ R.textarea
-              { onChange: Events.handler targetValue $ maybe (pure unit) \txt -> do
-                            setDocumentEdited
-                            updateText setState txt
-              , autoFocus: "autofocus"
+          [ CodeMirror.uncontrolled
+              { onChange: \txt -> do
+                  setDocumentEdited
+                  updateText setState txt
               , value: state.text
+              , autoCursor: false
+              , options:
+                  { mode:
+                    { name: "yaml-frontmatter"
+                    , base: "markdown"
+                    }
+                  , theme: "paper"
+                  , indentUnit: 4
+                  , tabSize: 4
+                  , lineNumbers: false
+                  , lineWrapping: true
+                  , autofocus: true
+                  , extraKeys:
+                      { "Enter": "newlineAndIndentContinueMarkdownList"
+                      , "Tab": "indentMore"
+                      , "Shift-Tab": "indentLess"
+                      }
+                }
               }
           , R.div
               { className: "preview"
