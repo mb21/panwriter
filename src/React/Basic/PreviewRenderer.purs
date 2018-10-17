@@ -1,4 +1,4 @@
-module React.Basic.CommonmarkRenderer where
+module React.Basic.PreviewRenderer where
 
 import Prelude
 

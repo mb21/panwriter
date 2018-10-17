@@ -5,7 +5,7 @@ import Prelude
 
 import React.Basic as React
 import React.Basic.CodeMirror as CodeMirror
-import React.Basic.CommonmarkRenderer (renderMd, printPreview)
+import React.Basic.PreviewRenderer (renderMd, printPreview)
 import React.Basic.DOM as R
 import React.Basic.Events as Events
 
