@@ -113,9 +113,9 @@ function openDialog() {
   }
 }
 
-function saveDialog() {
+function windowSend(name) {
   const win = BrowserWindow.getFocusedWindow();
-  win.webContents.send('file-save');
+  win.webContents.send(name);
 }
 
 function initMenu() {
@@ -136,7 +136,12 @@ function initMenu() {
       , {
           label: 'Save'
         , accelerator: 'CmdOrCtrl+S'
-        , click: saveDialog
+        , click: windowSend.bind(this, 'fileSave')
+        }
+      , {
+          label: 'Export'
+        , accelerator: 'CmdOrCtrl+E'
+        , click: windowSend.bind(this, 'fileExport')
         }
       ]
     },
