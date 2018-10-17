@@ -43,6 +43,9 @@ function createWindow(filePath) {
   windows.push(win);
 
   win.on('close', function(e) {
+    // this does not intercept a reload
+    // see https://github.com/electron/electron/blob/master/docs/api/browser-window.md#event-close
+    // and https://github.com/electron/electron/issues/9966
     if (win.fileIsDirty) {
       const selected = dialog.showMessageBox(win, {
           type: "question"
@@ -154,7 +157,7 @@ function initMenu() {
     {
       label: 'View',
       submenu: [
-        {role: 'reload'},
+        {role: 'reload', accelerator: ''}, //prevent accidental Cmd-R
         {role: 'forcereload'},
         {role: 'toggledevtools'},
         {type: 'separator'},
