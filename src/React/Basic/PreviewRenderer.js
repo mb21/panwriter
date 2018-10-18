@@ -29,7 +29,7 @@ exports.renderMd = function(str) {
     } catch (e) {
       meta = {__content: str};
     }
-    css = typeof meta.css === "string" ? meta.css : ""
+    css = typeof meta.style === "string" ? meta.style : ""
 
     content = md.render(meta.__content);
 
