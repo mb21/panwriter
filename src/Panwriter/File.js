@@ -3,18 +3,13 @@ var remote      = require('electron').remote
   , fs          = require('fs')
   , path        = require('path')
   , spawn       = require('child_process').spawn
+  , Document    = require('../../Document')
   ;
 
 var filePath = remote.getCurrentWindow().filePathToLoad
-  , documentTextArea
-  ;
 
 exports.initFile = function(conf) {
   return function() {
-    // somewhat hacky, but better for perfomance than to use a controlled-component
-    // could also do https://github.com/scniro/react-codemirror2/issues/41#issuecomment-352029346
-    documentTextArea = document.querySelector('.CodeMirror textarea');
-
     if (filePath) {
       fs.readFile(filePath, "utf8", function(err, text) {
         if (err) {
@@ -30,11 +25,7 @@ exports.initFile = function(conf) {
 exports.setDocumentEdited = function() {
   var win = remote.getCurrentWindow();
   win.fileIsDirty = true;
-  win.setDocumentEdited(true);
-}
-
-function documentText() {
-  return documentTextArea.value;
+  win.setDocumentEdited(true); //macOS-only
 }
 
 ipcRenderer.on('fileSave', function() {
@@ -45,14 +36,14 @@ ipcRenderer.on('fileSave', function() {
       return;
     }
   }
-  fs.writeFile(filePath, documentText(), function(err){
+  fs.writeFile(filePath, Document.getMd(), function(err){
     if (err) {
       alert("Could not save file.\n" + err.message);
     } else {
       var win = remote.getCurrentWindow();
       remote.getGlobal("setWindowTitle")(win, filePath);
       win.fileIsDirty = false;
-      win.setDocumentEdited(false);
+      win.setDocumentEdited(false); //macOS-only
     }
   });
 });
@@ -82,7 +73,7 @@ ipcRenderer.on('fileExport', function() {
     , args = ['-s', '-o', exportPath]
     ;
   var pandoc = spawn(cmd, args, opts);
-  pandoc.stdin.write( documentText() );
+  pandoc.stdin.write( Document.getMd() );
   pandoc.stdin.end();
 
   pandoc.on('error', function(err) {

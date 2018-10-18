@@ -1,6 +1,8 @@
 "use strict";
 
-var ipcRenderer = require('electron').ipcRenderer;
+var ipcRenderer = require('electron').ipcRenderer
+  , Document    = require('../../Document')
+  ;
 var md = require('markdown-it')()
            .use(require('markdown-it-container'), 'dynamic', {
                 // see https://github.com/markdown-it/markdown-it-container/issues/23
@@ -17,9 +19,7 @@ var md = require('markdown-it')()
   , yamlFront = require('yaml-front-matter')
   ;
 
-var css = ""
-  , htmlText = ""
-  , renderInProgress = false
+var renderInProgress = false
   , textToRenderNext = null
   , previewWindow
   ;
@@ -51,7 +51,7 @@ function renderNext() {
   }
 }
 
-// takes a markdown str and renders it to preview
+// takes a markdown str, renders it to preview and sets Document
 function render(str) {
   var meta;
   try {
@@ -59,12 +59,13 @@ function render(str) {
   } catch (e) {
     meta = {__content: str};
   }
-  css = typeof meta.style === "string" ? meta.style : ""
 
-  htmlText = md.render(meta.__content);
+  var htmlText = md.render(meta.__content);
+
+  Document.setDoc(str, htmlText, meta);
 
   // call paged.js
-  return previewWindow ? previewWindow.render(htmlText, css)
+  return previewWindow ? previewWindow.render(Document)
                        : Promise.resolve();
 }
 
@@ -73,6 +74,6 @@ document.addEventListener("DOMContentLoaded", function() {
   var iframe = document.querySelector('.previewFrame');
   iframe.addEventListener("load", function() {
     previewWindow = iframe.contentWindow;
-    previewWindow.render(htmlText, css);
+    previewWindow.render(Document);
   });
 });
