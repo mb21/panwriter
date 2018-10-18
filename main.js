@@ -41,6 +41,7 @@ function createWindow(filePath) {
   // win.webContents.openDevTools()
 
   windows.push(win);
+  setMenu();
 
   win.on('close', function(e) {
     // this does not intercept a reload
@@ -85,7 +86,6 @@ app.on('open-file', function(e, filePath) {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', function() {
-  initMenu();
   createWindow(undefined);
 })
 
@@ -93,7 +93,9 @@ app.on('ready', function() {
 app.on('window-all-closed', function () {
   // On OS X it is common for applications and their menu bar
   // to stay active until the user quits explicitly with Cmd + Q
-  if (process.platform !== 'darwin') {
+  if (process.platform === 'darwin') {
+    setMenu(false);
+  } else {
     app.quit()
   }
 })
@@ -118,7 +120,7 @@ function windowSend(name) {
   win.webContents.send(name);
 }
 
-function initMenu() {
+function setMenu(aWindowIsOpen=true) {
   var template = [
     {
       label: 'File',
@@ -137,16 +139,19 @@ function initMenu() {
           label: 'Save'
         , accelerator: 'CmdOrCtrl+S'
         , click: windowSend.bind(this, 'fileSave')
+        , enabled: aWindowIsOpen
         }
       , {
           label: 'Export'
         , accelerator: 'CmdOrCtrl+E'
         , click: windowSend.bind(this, 'fileExport')
+        , enabled: aWindowIsOpen
         }
       , {
           label: 'Print / PDF'
         , accelerator: 'CmdOrCtrl+P'
         , click: windowSend.bind(this, 'filePrint')
+        , enabled: aWindowIsOpen
         }
       ]
     },
