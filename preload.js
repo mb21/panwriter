@@ -2,4 +2,5 @@
 
 process.once('loaded', () => {
   global.appMain = require('./output/Main');
+  require('./Exporter');
 });
