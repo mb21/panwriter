@@ -6,12 +6,15 @@ var remote      = require('electron').remote
   ;
 
 var filePath = remote.getCurrentWindow().filePathToLoad
-  , provideTextCb
+  , documentTextArea
   ;
 
 exports.initFile = function(conf) {
-  var compInstance = conf.compInstance;
   return function() {
+    // somewhat hacky, but better for perfomance than to use a controlled-component
+    // could also do https://github.com/scniro/react-codemirror2/issues/41#issuecomment-352029346
+    documentTextArea = document.querySelector('.CodeMirror textarea');
+
     if (filePath) {
       fs.readFile(filePath, "utf8", function(err, text) {
         if (err) {
@@ -21,7 +24,6 @@ exports.initFile = function(conf) {
         }
       });
     }
-    provideTextCb = function(){ return compInstance.state.text };
   };
 };
 
@@ -29,6 +31,10 @@ exports.setDocumentEdited = function() {
   var win = remote.getCurrentWindow();
   win.fileIsDirty = true;
   win.setDocumentEdited(true);
+}
+
+function documentText() {
+  return documentTextArea.value;
 }
 
 ipcRenderer.on('fileSave', function() {
@@ -39,8 +45,7 @@ ipcRenderer.on('fileSave', function() {
       return;
     }
   }
-  var content = provideTextCb();
-  fs.writeFile(filePath, content, function(err){
+  fs.writeFile(filePath, documentText(), function(err){
     if (err) {
       alert("Could not save file.\n" + err.message);
     } else {
@@ -73,12 +78,11 @@ ipcRenderer.on('fileExport', function() {
     exportPath = path.basename(filePath, path.extname(filePath)) + '.' + to;
   }
 
-  var content = provideTextCb()
-    , cmd  = 'pandoc'
+  var cmd  = 'pandoc'
     , args = ['-s', '-o', exportPath]
     ;
   var pandoc = spawn(cmd, args, opts);
-  pandoc.stdin.write(content);
+  pandoc.stdin.write( documentText() );
   pandoc.stdin.end();
 
   pandoc.on('error', function(err) {

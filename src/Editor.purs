@@ -1,6 +1,5 @@
 module Editor where
 
-import Effect (Effect)
 import Prelude
 
 import React.Basic as React
@@ -13,25 +12,19 @@ import Panwriter.File (initFile, setDocumentEdited)
 
 type Props = {}
 
-updateText :: forall st. ( ({text :: String | st} -> {text :: String | st}) -> Effect Unit )
-           -> String
-           -> Effect Unit
-updateText setState txt = do
-  void $ setState \s -> s {text = txt}
-  renderMd txt
-
 component :: React.Component Props
 component = React.component { displayName: "Editor", initialState, receiveProps, render }
   where
     initialState =
-      { text: ""
+      { initialText: ""
       , previewScale: 0.5
       }
 
-    receiveProps { isFirstMount: true, setState, instance_ } = do
+    receiveProps {isFirstMount: true, setState} =
       initFile
-        { onFileLoad: updateText setState
-        , compInstance: instance_
+        { onFileLoad: \txt -> do
+            void $ setState \s -> s {initialText = txt}
+            renderMd txt
         }
     receiveProps _ = pure unit
 
@@ -41,8 +34,8 @@ component = React.component { displayName: "Editor", initialState, receiveProps,
           [ CodeMirror.uncontrolled
               { onChange: \txt -> do
                   setDocumentEdited
-                  updateText setState txt
-              , value: state.text
+                  renderMd txt
+              , value: state.initialText
               , autoCursor: false
               , options:
                   { mode:
