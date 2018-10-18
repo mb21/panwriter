@@ -1,5 +1,6 @@
 "use strict";
 
+var ipcRenderer = require('electron').ipcRenderer;
 var md = require('markdown-it')()
            .use(require('markdown-it-container'), 'dynamic', {
                 // see https://github.com/markdown-it/markdown-it-container/issues/23
@@ -28,6 +29,8 @@ exports.printPreview = function() {
     previewWindow.print();
   }
 };
+
+ipcRenderer.on('filePrint', exports.printPreview);
 
 exports.renderMd = function(str) {
   return function() {

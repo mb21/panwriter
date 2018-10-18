@@ -143,6 +143,11 @@ function initMenu() {
         , accelerator: 'CmdOrCtrl+E'
         , click: windowSend.bind(this, 'fileExport')
         }
+      , {
+          label: 'Print / PDF'
+        , accelerator: 'CmdOrCtrl+P'
+        , click: windowSend.bind(this, 'filePrint')
+        }
       ]
     },
     {
