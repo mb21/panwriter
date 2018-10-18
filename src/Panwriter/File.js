@@ -31,7 +31,12 @@ ipcRenderer.on('fileSave', function() {
   var filePath = Document.getPath();
   if (filePath === undefined) {
     var win  = remote.getCurrentWindow();
-    filePath = remote.dialog.showSaveDialog(win);
+    filePath = remote.dialog.showSaveDialog(win, {
+        defaultPath: 'Untitled.md'
+      , filters: [
+          { name: 'Markdown', extensions: ['md', 'txt', 'markdown'] }
+        ]
+      });
     if (filePath === undefined) {
       return;
     } else {

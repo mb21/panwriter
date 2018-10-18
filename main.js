@@ -1,3 +1,5 @@
+"use strict";
+
 // Modules to control application life and create native browser window
 const {app, dialog, BrowserWindow, Menu} = require('electron')
     , path = require('path')
@@ -142,15 +144,21 @@ function setMenu(aWindowIsOpen=true) {
         , enabled: aWindowIsOpen
         }
       , {
+          label: 'Print / PDF'
+        , accelerator: 'CmdOrCtrl+P'
+        , click: windowSend.bind(this, 'filePrint')
+        , enabled: aWindowIsOpen
+        }
+      , {
           label: 'Export'
-        , accelerator: 'CmdOrCtrl+E'
+        , accelerator: 'CmdOrCtrl+Shift+E'
         , click: windowSend.bind(this, 'fileExport')
         , enabled: aWindowIsOpen
         }
       , {
-          label: 'Print / PDF'
-        , accelerator: 'CmdOrCtrl+P'
-        , click: windowSend.bind(this, 'filePrint')
+          label: 'Export like previous'
+        , accelerator: 'CmdOrCtrl+E'
+        , click: windowSend.bind(this, 'fileExportLikePrevious')
         , enabled: aWindowIsOpen
         }
       ]
