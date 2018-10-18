@@ -57,9 +57,9 @@ It's not so bad, since markdown-it has raw HTML disabled.
 
     previewer.initializeHandlers();
 
-    previewer.polisher.convertViaSheet(cssStr, "").then(text => {
+    return previewer.polisher.convertViaSheet(cssStr, "").then(text => {
       style.innerHTML = text;
-      chunker.reflow(content);
+      return chunker.reflow(content);
     });
   }
   //function render(content, cssStr) {

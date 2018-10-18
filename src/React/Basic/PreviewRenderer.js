@@ -17,28 +17,11 @@ var md = require('markdown-it')()
   ;
 
 var css = ""
-  , content = ""
+  , htmlText = ""
+  , renderInProgress = false
+  , textToRenderNext = null
   , previewWindow
   ;
-
-exports.renderMd = function(str) {
-  return function() {
-    var meta;
-    try {
-      meta = yamlFront.safeLoadFront(str)
-    } catch (e) {
-      meta = {__content: str};
-    }
-    css = typeof meta.style === "string" ? meta.style : ""
-
-    content = md.render(meta.__content);
-
-    // call paged.js
-    if (previewWindow) {
-      previewWindow.render(content, css);
-    }
-  }
-};
 
 exports.printPreview = function() {
   if (previewWindow) {
@@ -46,11 +29,47 @@ exports.printPreview = function() {
   }
 };
 
-document.addEventListener("DOMContentLoaded", function() {
-  var iframe   = document.querySelector('.previewFrame');
+exports.renderMd = function(str) {
+  return function() {
+    textToRenderNext = str;
+    renderNext();
+  }
+};
 
+// buffers the latest text change and renders when previous rendering is done
+function renderNext() {
+  if (textToRenderNext !== null && !renderInProgress) {
+    renderInProgress = true;
+    render(textToRenderNext).then( function() {
+      renderInProgress = false;
+      renderNext();
+    });
+    textToRenderNext = null;
+  }
+}
+
+// takes a markdown str and renders it to preview
+function render(str) {
+  var meta;
+  try {
+    meta = yamlFront.safeLoadFront(str)
+  } catch (e) {
+    meta = {__content: str};
+  }
+  css = typeof meta.style === "string" ? meta.style : ""
+
+  htmlText = md.render(meta.__content);
+
+  // call paged.js
+  return previewWindow ? previewWindow.render(htmlText, css)
+                       : Promise.resolve();
+}
+
+// do initial render when iframe is ready
+document.addEventListener("DOMContentLoaded", function() {
+  var iframe = document.querySelector('.previewFrame');
   iframe.addEventListener("load", function() {
     previewWindow = iframe.contentWindow;
-    previewWindow.render(content, css);
+    previewWindow.render(htmlText, css);
   });
 });
