@@ -43,7 +43,7 @@ component = React.component { displayName: "Editor", initialState, receiveProps,
                     , base: "markdown"
                     }
                   , theme: "paper"
-                  , indentUnit: 4
+                  , indentUnit: 4 -- because of how numbered lists behave in CommonMark
                   , tabSize: 4
                   , lineNumbers: false
                   , lineWrapping: true
