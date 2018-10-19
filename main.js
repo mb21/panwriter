@@ -18,7 +18,7 @@ global.setWindowTitle = function(win, filePath) {
   }
 }
 
-function createWindow(filePath) {
+function createWindow(filePath, toImport=false) {
   const win = new BrowserWindow({
       width: 1000
     , height: 800
@@ -35,6 +35,7 @@ function createWindow(filePath) {
   
   win.fileIsDirty = false;
   win.filePathToLoad = filePath;
+  win.isFileToImport = toImport;
   setWindowTitle(win, filePath);
 
   win.loadFile('index.html')
@@ -110,10 +111,17 @@ app.on('activate', function () {
   }
 })
 
-function openDialog() {
-  const fileNames = dialog.showOpenDialog();
+function openDialog(toImport=false) {
+  const formats = toImport ? [] : [
+            { name: 'Markdown', extensions: ['md', 'txt', 'markdown'] }
+          ]
+      , fileNames = dialog.showOpenDialog({
+          filters: formats
+        , buttonLabel: toImport ? 'Import' : undefined
+        })
+      ;
   if (fileNames !== undefined && fileNames.length > 0) {
-    createWindow( fileNames[0] );
+    createWindow( fileNames[0], toImport);
   }
 }
 
@@ -130,12 +138,12 @@ function setMenu(aWindowIsOpen=true) {
         {
           label: 'New'
         , accelerator: 'CmdOrCtrl+N'
-        , click: createWindow.bind(this, undefined)
+        , click: () => createWindow()
         }
       , {
           label: 'Open'
         , accelerator: 'CmdOrCtrl+O'
-        , click: openDialog
+        , click: () => openDialog()
         }
       , {
           label: 'Save'
@@ -160,6 +168,11 @@ function setMenu(aWindowIsOpen=true) {
         , accelerator: 'CmdOrCtrl+E'
         , click: windowSend.bind(this, 'fileExportLikePrevious')
         , enabled: aWindowIsOpen
+        }
+      , {
+          label: 'Import'
+        , accelerator: 'CmdOrCtrl+I'
+        , click: () => openDialog(true)
         }
       ]
     },

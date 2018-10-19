@@ -4,19 +4,28 @@ var ipcRenderer = require('electron').ipcRenderer
   , remote      = require('electron').remote
   , fs          = require('fs')
   , Document    = require('../../Document')
+  , Importer    = require('../../Importer')
   ;
 
 exports.initFile = function(conf) {
   return function() {
+    var win = remote.getCurrentWindow();
     var filePath = Document.getPath();
     if (filePath) {
-      fs.readFile(filePath, "utf8", function(err, text) {
-        if (err) {
-          alert("Could not open file.\n" + err.message);
-        } else {
+      if (win.isFileToImport) {
+        Importer.importFile(filePath, function(text) {
           conf.onFileLoad(text)();
-        }
-      });
+        });
+      } else {
+        // open file
+        fs.readFile(filePath, "utf8", function(err, text) {
+          if (err) {
+            alert("Could not open file.\n" + err.message);
+          } else {
+            conf.onFileLoad(text)();
+          }
+        });
+      }
     }
   };
 };
