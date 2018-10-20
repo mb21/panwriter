@@ -25,6 +25,7 @@ var md = require('markdown-it')()
                   }
                 }
               })
+           .use( require('markdown-it-implicit-figures'), {figcaption: true} )
            .use( require('markdown-it-texmath').use(katex) )
   , yamlFront = require('yaml-front-matter')
   ;
