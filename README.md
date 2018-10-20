@@ -45,6 +45,22 @@ There are two exceptions to the rule that the key in the `output` YAML is the fi
 1. When exporting to a `.tex` file, the key should be named `latex`.
 2. When exporting to a `.pdf` file, the key for Panwriter to look up in the `output` YAML can be specified with the `pdf-format` key (see example above). Default is also `latex`, but you can also use `context`, `html`, `ms`, `beamer`, `revealjs`, etc.  In fact, you could set it to anything, as long as you have a corresponding key in the `output` YAML, which has a `to:` field. See also [Creating a PDF with pandoc](http://pandoc.org/MANUAL.html#creating-a-pdf).
 
+## Markdown syntax
+
+We use `markdown-it` for the preview pane, which is fully [CommonMark](https://commonmark.org/)-compliant. We also added a bunch of plugins, to make the preview behave as much as pandoc as possible (including attributes, [`fenced_divs`](http://pandoc.org/MANUAL.html#extension-fenced_divs), `definition_lists`, `footnotes`, `implicit-figures`, `subscript`, `superscript`, `yaml_metadata_block` and `tex_math_dollars`.
+
+We explicitly don't support `raw_html` or `raw_tex`, since everything should be doable with the `fenced_divs`, `bracketed_spans` and `raw_attribute` extensions.
+
+Things we should emulate in the preview, but for which there are [no markdown-it plugins yet](https://github.com/atom-community/markdown-preview-plus/wiki/markdown-it-vs.-pandoc):
+
+- `bracketed_spans` [markdown-it-span/issue](https://github.com/pnewell/markdown-it-span/issues/2)
+- `grid_tables`: grid tables are the only ones in pandoc, that can have e.g. a list in a cell
+- [`raw_attribute`](http://pandoc.org/MANUAL.html#extension-raw_attribute): we should probably just strip them from preview
+- backslash at end of paragraph, e.g. `![](foo.png) \` An ugly workaround that already works is `![](foo.png) &nbsp;`
+
+Pandoc markdown supports a few more things which will not render correctly in the preview, but which are not so commonly used. However, you can still use them in your markdown file, and export via pandoc will work.
+
+
 ## Develop
 
     # Install JavaScript dependencies
@@ -63,6 +79,31 @@ There are two exceptions to the rule that the key in the `output` YAML is the fi
 
     # Run the app
     npm start
+
+
+### TODOs before first release
+
+- polish
+    - show filename (but hide chrome on typing)
+    - “show/hide preview” button
+    - toggle paged on/off in preview
+    - sync scroll, or at least scroll on click
+- build package
+- some kind of styles/templates (only CSS or merge options in YAML metadata as well?)
+- decide whether to do CSS-in-YAML with later YAML-metadata-slider/[color-picker]-like-GUI
+
+[color-picker]: https://easylogic.github.io/codemirror-colorpicker/
+
+### Possible TODOs
+
+- GUI popup on file import: at least allow to set `-f`, `-t`, `--track-changes` and `--extract-media`
+- Windows, Linux versions
+- [Variable substitution in body](https://github.com/jgm/pandoc/issues/1950#issuecomment-427671251)
+- Editor:
+  - adjust font-size on editor window resize
+  - spell check
+  - find/replace
+
 
 ## Powered by
 
