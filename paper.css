@@ -27,6 +27,10 @@ div.CodeMirror {
   margin: 0 auto;
 }
 
+.CodeMirror-vscrollbar:focus {
+  outline: 0;
+}
+
 .CodeMirror div.CodeMirror-cursor {
   border-left: 1px solid black;
 }
