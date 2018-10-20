@@ -2,6 +2,7 @@
 
 var ipcRenderer = require('electron').ipcRenderer
   , Document    = require('../../Document')
+  , katex       = require('katex')
   ;
 var md = require('markdown-it')()
            // TODO: sanitize attrs (at least keys with `on*` and vals with `javascript:*`, see https://github.com/arve0/markdown-it-attrs#security
@@ -24,6 +25,7 @@ var md = require('markdown-it')()
                   }
                 }
               })
+           .use( require('markdown-it-texmath').use(katex) )
   , yamlFront = require('yaml-front-matter')
   ;
 

@@ -19,7 +19,7 @@ If you have a YAML metadata block, like in the following example, Panwriter will
     pdf-format: latex  # optional
     output:
       html:
-        toc: true
+        katex: true  # for math output
         include-in-header:
           - foo.css
           - bar.js
@@ -64,10 +64,12 @@ There are two exceptions to the rule that the key in the `output` YAML is the fi
     # Run the app
     npm start
 
-
 ## Powered by
 
 - [pandoc](http://pandoc.org/MANUAL.html) (import/export)
 - [Electron](https://electronjs.org/docs/tutorial/application-architecture) (app framework)
-- [CodeMirror](https://codemirror.net) (editor pane)
-- [pagedjs](https://gitlab.pagedmedia.org/tools/pagedjs) (preview pane)
+- [CodeMirror](https://codemirror.net) (editor)
+- For the preview pane:
+  - [pagedjs](https://gitlab.pagedmedia.org/tools/pagedjs)
+  - [markdown-it](https://github.com/markdown-it/markdown-it#markdown-it)
+  - [KaTeX](https://katex.org)
