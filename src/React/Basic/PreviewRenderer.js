@@ -4,13 +4,21 @@ var ipcRenderer = require('electron').ipcRenderer
   , Document    = require('../../Document')
   ;
 var md = require('markdown-it')()
-           .use(require('markdown-it-container'), 'dynamic', {
-                // see https://github.com/markdown-it/markdown-it-container/issues/23
+           // TODO: sanitize attrs (at least keys with `on*` and vals with `javascript:*`, see https://github.com/arve0/markdown-it-attrs#security
+           .use( require('markdown-it-attrs') )
+           .use( require('markdown-it-container'), 'dynamic', {
+                // adapted from https://github.com/markdown-it/markdown-it-container/issues/23
                 validate: function() { return true; },
-                render: function(tokens, idx) {
-                  var token = tokens[idx];
+                render: function(tokens, idx, options, env, slf) {
+                  var token     = tokens[idx]
+                    , className = token.info.trim()
+                    , renderedAttrs = slf.renderAttrs(token)
+                    ;
                   if (token.nesting === 1) {
-                    return '<div class="' + token.info.trim() + '">';
+                    return (className && className !== '{}')
+                             ? '<div class="' + className + '">'
+                             : '<div' + renderedAttrs + '>'
+                             ;
                   } else {
                     return '</div>';
                   }

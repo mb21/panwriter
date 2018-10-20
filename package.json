@@ -18,6 +18,7 @@
     "babel-runtime": "^6.26.0",
     "codemirror": "^5.40.2",
     "markdown-it": "^8.4.2",
+    "markdown-it-attrs": "^2.3.2",
     "markdown-it-container": "^2.0.0",
     "react": "^16.4.2",
     "react-codemirror2": "^5.1.0",
