@@ -25,7 +25,11 @@ var md = require('markdown-it')()
                   }
                 }
               })
+           .use( require('markdown-it-deflist') )
+           .use( require('markdown-it-footnote') )
            .use( require('markdown-it-implicit-figures'), {figcaption: true} )
+           .use( require('markdown-it-sub') )
+           .use( require('markdown-it-sup') )
            .use( require('markdown-it-texmath').use(katex) )
   , yamlFront = require('yaml-front-matter')
   ;
