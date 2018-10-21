@@ -3,8 +3,8 @@
 var ipcRenderer = require('electron').ipcRenderer
   , remote      = require('electron').remote
   , fs          = require('fs')
-  , Document    = require('../../Document')
-  , Importer    = require('../../Importer')
+  , Document    = require('../../src/js/Document')
+  , Importer    = require('../../src/js/Importer')
   ;
 
 exports.initFile = function(conf) {

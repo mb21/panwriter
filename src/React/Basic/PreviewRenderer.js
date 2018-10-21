@@ -1,7 +1,7 @@
 "use strict";
 
 var ipcRenderer = require('electron').ipcRenderer
-  , Document    = require('../../Document')
+  , Document    = require('../../src/js/Document')
   , katex       = require('katex')
   ;
 var md = require('markdown-it')()
