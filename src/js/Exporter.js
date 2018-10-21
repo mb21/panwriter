@@ -2,8 +2,11 @@
 
 const ipcRenderer = require('electron').ipcRenderer
     , remote      = require('electron').remote
-    , path        = require('path')
     , spawn       = require('child_process').spawn
+    , fs          = require('fs')
+    , path        = require('path')
+    , promisify   = require('util').promisify
+    , jsYaml      = require('js-yaml')
     , Document    = require('./Document')
     ;
 
@@ -30,8 +33,9 @@ ipcRenderer.on('fileExport', function() {
       outputPath: outputPath
     , spawnOpts: spawnOpts
     };
-    fileExport(exp);
-    previousExportConfig = exp;
+    fileExport(exp).then( () => {
+      previousExportConfig = exp;
+    });
   }
 });
 
@@ -39,16 +43,22 @@ ipcRenderer.on('fileExportLikePrevious', function() {
   if (previousExportConfig) {
     fileExport(previousExportConfig);
   } else {
-    alert('This document has not been exported yet, since it was opened.');
+    alert( "This document has not been exported yet, since it was opened.\n\n" +
+           "Use 'File → Export' first." );
   }
 });
 
 
-// takes export settings object
-function fileExport(exp) {
+// Calls pandoc, takes export settings object
+async function fileExport(exp) {
+  // simplified version of what I did in https://github.com/mb21/panrun
+  const docMeta = Document.getMeta()
+      , [extMeta, fileArg] = await defaultMeta(docMeta.type)
+      , out = mergeAndValidate(docMeta, extMeta, exp.outputPath)
+      ;
   const win  = remote.getCurrentWindow()
       , cmd  = 'pandoc'
-      , args = getArgs(exp.outputPath)
+      , args = fileArg.concat( toArgs(out) )
       , cmdDebug = cmd + ' ' + args.join(' ')
       ;
   const pandoc = spawn(cmd, args, exp.spawnOpts);
@@ -77,66 +87,83 @@ function fileExport(exp) {
   });
 };
 
-
-// constructs commandline arguments from YAML metadata
-// simplified version of what I did in https://github.com/mb21/panrun
-function getArgs(outputPath) {
-  const meta = Document.getMeta()
-      , output = meta.output
-      , args = []
-      ;
+// merges both metas, sets proper defaults and returns output[toFormat] part
+function mergeAndValidate(docMeta, extMeta, outputPath) {
   let toFormat = path.extname(outputPath)
   if (toFormat && toFormat[0] === '.') {
     toFormat = toFormat.substr(1);
   }
-
   if (toFormat === 'pdf') {
-    toFormat = meta['pdf-format'] || 'latex'
+    toFormat = docMeta['pdf-format'] || extMeta['pdf-format'] || 'latex'
   } else if (toFormat === 'tex') {
     toFormat = 'latex'
   }
 
-  if (output && typeof output[toFormat] === 'object') {
-    const out = output[toFormat];
+  const extractOut = meta => (meta.output && typeof meta.output === 'object')
+                               ? meta.output[toFormat]
+                               : {}
+                               ;
+  const out = Object.assign( extractOut(extMeta), extractOut(docMeta) );
 
-    //make sure output goes to file user selected in GUI
-    out.output = outputPath;
+  //make sure output goes to file user selected in GUI
+  out.output = outputPath;
 
-    // allow user to set `to: epub2`, `to: gfm`, `to: revealjs` etc.
-    if (out.to === undefined) {
-      out.to = toFormat;
-    }
-
-    if (out.standalone !== false) {
-      // unless explicitly disabled, use `-s`
-      out.standalone = true;
-    }
-
-    Object.keys(out).forEach(opt => {
-      const val = out[opt];
-      if ( Array.isArray(val) ) {
-        val.forEach(v => {
-          args.push('--' + opt);
-          args.push(v);
-        });
-      } else if (typeof val === 'object') {
-        Object.keys(val).forEach(k => {
-          args.push('--' + opt);
-          args.push(k + '=' + val[k]);
-        });
-      } else if (val !== false) {
-        args.push('--' + opt);
-        if (val && val !== true) {
-          // pandoc boolean options don't take a value
-          args.push( val.toString() );
-        }
-      }
-    });
-
-    return args;
-  } else {
-    return ['-s', '-o', outputPath];
+  // allow user to set `to: epub2`, `to: gfm`, `to: revealjs` etc.
+  if (out.to === undefined) {
+    out.to = toFormat;
   }
+
+  // unless explicitly disabled, use `-s`
+  if (out.standalone !== false) {
+    out.standalone = true;
+  }
+
+  return out;
+}
+
+// reads the right default yaml file
+async function defaultMeta(type) {
+  if (typeof type !== 'string') {
+    type = 'default'
+  }
+  const dataDir  = process.env.HOME + '/.panwriter/' //TODO: Windows
+      , fileName = dataDir + type + '.yaml'
+      ;
+  try {
+    const str = await promisify(fs.readFile)(fileName, 'utf8');
+    return [ jsYaml.safeLoad(str), ['--metadata-file', fileName] ]
+  } catch(e) {
+    console.warn("Error loading or parsing " + fileName, e.message);
+    return [ {}, [] ];
+  }
+}
+
+// constructs commandline arguments from object
+function toArgs(out) {
+  const args = [];
+
+  Object.keys(out).forEach(opt => {
+    const val = out[opt];
+    if ( Array.isArray(val) ) {
+      val.forEach(v => {
+        args.push('--' + opt);
+        args.push(v);
+      });
+    } else if (typeof val === 'object') {
+      Object.keys(val).forEach(k => {
+        args.push('--' + opt);
+        args.push(k + '=' + val[k]);
+      });
+    } else if (val !== false) {
+      args.push('--' + opt);
+      if (val && val !== true) {
+        // pandoc boolean options don't take a value
+        args.push( val.toString() );
+      }
+    }
+  });
+
+  return args;
 }
 
 // we rely on the extension to detect target format

@@ -45,6 +45,10 @@ There are two exceptions to the rule that the key in the `output` YAML is the fi
 1. When exporting to a `.tex` file, the key should be named `latex`.
 2. When exporting to a `.pdf` file, the key for Panwriter to look up in the `output` YAML can be specified with the `pdf-format` key (see example above). Default is also `latex`, but you can also use `context`, `html`, `ms`, `beamer`, `revealjs`, etc.  In fact, you could set it to anything, as long as you have a corresponding key in the `output` YAML, which has a `to:` field. See also [Creating a PDF with pandoc](http://pandoc.org/MANUAL.html#creating-a-pdf).
 
+#### Defaults and document types
+
+If you put some YAML in ~/.panwriter/default.yaml, Panwriter will merge this with the YAML in your input file and add the `--metadata-file` option when calling pandoc. The YAML should be in the same format as above. Finally, you can e.g. put `type: letter` in the YAML of your input document. In that case, Panwriter will look for `~/.panwriter/letter.yaml` instead of `default.yaml`.
+
 ## Markdown syntax
 
 We use `markdown-it` for the preview pane, which is fully [CommonMark](https://commonmark.org/)-compliant. We also added a bunch of plugins, to make the preview behave as much as pandoc as possible (including attributes, [`fenced_divs`](http://pandoc.org/MANUAL.html#extension-fenced_divs), `definition_lists`, `footnotes`, `implicit-figures`, `subscript`, `superscript`, `yaml_metadata_block` and `tex_math_dollars`.
