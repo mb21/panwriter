@@ -65,7 +65,7 @@ component = React.component { displayName: "Editor", initialState, receiveProps,
                     , width:  show (100.0 / state.previewScale) <> "%"
                     , height: show (100.0 / state.previewScale) <> "%"
                     }
-                  , src: "previewFrame/previewFrame.html"
+                  , src: "../previewFrame/previewFrame.html"
                   }
                 , R.button
                   { className: "zoomBtn zoomIn"

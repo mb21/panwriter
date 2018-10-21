@@ -38,7 +38,7 @@ function createWindow(filePath, toImport=false) {
   win.isFileToImport = toImport;
   setWindowTitle(win, filePath);
 
-  win.loadFile('index.html')
+  win.loadFile('static/index.html')
 
   // Open the DevTools.
   // win.webContents.openDevTools()
