@@ -2,7 +2,7 @@
   "name": "panwriter",
   "version": "1.0.0",
   "description": "Yet another markdown editor",
-  "main": "main.js",
+  "main": "src/main.js",
   "scripts": {
     "start": "electron .",
     "debug": "electron --inspect-brk=5858 ."

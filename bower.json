@@ -1,7 +1,6 @@
 {
   "name": "panwriter",
   "description": "Yet another markdown editor",
-  "main": "main.js",
   "authors": [
     "Mauro Bieg"
   ],

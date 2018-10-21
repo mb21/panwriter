@@ -1,5 +1,9 @@
 "use strict";
 
+// This file is currently the only one that runs in the main process
+// see https://electronjs.org/docs/tutorial/application-architecture
+
+
 // Modules to control application life and create native browser window
 const {app, dialog, BrowserWindow, Menu} = require('electron')
     , path = require('path')
@@ -29,7 +33,7 @@ function createWindow(filePath, toImport=false) {
     , webPreferences: {
         nodeIntegration: false
       //, contextIsolation: true
-      , preload: __dirname + '/preload.js'
+      , preload: __dirname + '/js/rendererPreload.js'
       }
     });
   
