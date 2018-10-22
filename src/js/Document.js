@@ -3,7 +3,10 @@
 // Singleton Document,
 // exists exactly once in each window renderer process.
 
-var remote = require('electron').remote
+var remote          = require('electron').remote
+  , fs              = require('fs')
+  , readDataDirFile = require('./Exporter').readDataDirFile
+  ;
 
 var md   = ""
   , html = ""
@@ -29,8 +32,35 @@ module.exports.getMeta = function() {
   return meta;
 }
 
-module.exports.getCss = function() {
-  return (typeof meta.style === "string") ? meta.style : "";
+var defaultStaticCss = ''
+  , defaultCss = ''
+  , docType = undefined
+  ;
+fs.readFile(remote.app.getAppPath() + '/static/default.css', 'utf8', (err, css) => {
+  if (err) {
+    console.warn(err.message)
+  } else {
+    defaultStaticCss = css;
+  }
+});
+module.exports.getCss = async function() {
+  if (meta.type === undefined) {
+    defaultCss = defaultStaticCss
+  } else if (meta.type !== docType) {
+    docType = meta.type;
+    try {
+      // cache css
+      defaultCss = await readDataDirFile(docType, '.css');
+    } catch(e) {
+      defaultCss = defaultStaticCss;
+    }
+  } else {
+    // use cached css
+  }
+  return ( typeof meta.style === "string" )
+           ? (defaultCss + meta.style)
+           : defaultCss
+           ;
 }
 
 module.exports.getPath = function() {

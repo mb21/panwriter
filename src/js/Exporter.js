@@ -12,6 +12,8 @@ const ipcRenderer = require('electron').ipcRenderer
 
 var previousExportConfig;
 
+module.exports.readDataDirFile = readDataDirFile;
+
 ipcRenderer.on('fileExport', function() {
   const win = remote.getCurrentWindow()
       , spawnOpts = {}
@@ -123,19 +125,24 @@ function mergeAndValidate(docMeta, extMeta, outputPath) {
 
 // reads the right default yaml file
 async function defaultMeta(type) {
+  try {
+    const str = await readDataDirFile(type, '.yaml');
+    return [ jsYaml.safeLoad(str), ['--metadata-file', fileName] ]
+  } catch(e) {
+    console.warn("Error loading or parsing YAML file." + e.message);
+    return [ {}, [] ];
+  }
+}
+
+// reads file from data directory, throws exception when not found
+async function readDataDirFile(type, suffix) {
   if (typeof type !== 'string') {
     type = 'default'
   }
   const dataDir  = process.env.HOME + '/.panwriter/' //TODO: Windows
-      , fileName = dataDir + type + '.yaml'
+      , fileName = dataDir + type + suffix
       ;
-  try {
-    const str = await promisify(fs.readFile)(fileName, 'utf8');
-    return [ jsYaml.safeLoad(str), ['--metadata-file', fileName] ]
-  } catch(e) {
-    console.warn("Error loading or parsing " + fileName, e.message);
-    return [ {}, [] ];
-  }
+  return await promisify(fs.readFile)(fileName, 'utf8');
 }
 
 // constructs commandline arguments from object

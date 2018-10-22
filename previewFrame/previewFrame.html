@@ -38,9 +38,9 @@ It's not so bad, since markdown-it has raw HTML disabled.
   "use strict"
   
   let style, previewer;
-  function render(doc) {
+  async function render(doc) {
     const content = doc.getHtml()
-        , cssStr  = doc.getCss()
+        , cssStr  = await doc.getCss()
         ;
     if (style) {
       style.remove();
