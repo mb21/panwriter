@@ -27,7 +27,9 @@ function createWindow(filePath, toImport=false) {
       width: 1000
     , height: 800
     , frame: false
-    // macOS-only see https://stackoverflow.com/questions/35876939
+    // TODO: remove `titleBarStyle` line below and code up own buttons
+    // this will also give us rounded corners back
+    // see https://stackoverflow.com/questions/35876939
     // and https://github.com/electron/electron/blob/master/docs/api/frameless-window.md
     , titleBarStyle: 'customButtonsOnHover'
     , webPreferences: {
