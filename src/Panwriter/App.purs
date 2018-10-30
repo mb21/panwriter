@@ -1,4 +1,4 @@
-module Editor where
+module Panwriter.App where
 
 import Prelude
 
@@ -13,7 +13,7 @@ import Panwriter.File (initFile, setDocumentEdited)
 type Props = {}
 
 component :: React.Component Props
-component = React.component { displayName: "Editor", initialState, receiveProps, render }
+component = React.component { displayName: "App", initialState, receiveProps, render }
   where
     initialState =
       { initialText: ""

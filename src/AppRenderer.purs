@@ -1,7 +1,7 @@
 module AppRenderer where
 
 import Prelude
-import Editor as Editor
+import Panwriter.App as App
 
 import Data.Maybe (Maybe(..))
 import Effect (Effect)
@@ -19,5 +19,5 @@ main = do
   case mc of
     Nothing -> throw "Container element not found."
     Just c  ->
-      let app = element Editor.component {}
+      let app = element App.component {}
       in render app c
