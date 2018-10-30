@@ -1,6 +1,12 @@
 html, body {
   margin: 0;
 }
+button {
+  -webkit-user-select: none;
+}
+button:active, button:focus {
+  outline: none;
+}
 
 #container {
   display: flex;
@@ -21,6 +27,7 @@ html, body {
   background-color: #f7f7f7;
 }
 
+/* Preview */
 .preview {
   width: 50vw;
   overflow: hidden;
@@ -31,26 +38,37 @@ html, body {
   border: 0;
   transform-origin: 0 0;
 }
-
+.preview > button {
+  width:  36px;
+  height: 36px;
+  border-radius: 18px;
+  box-shadow: 0 1px rgba(0, 0, 0, .039);
+  transition: opacity 0.2s ease-out;
+  opacity: 0;
+}
+.preview > button:active {
+  background: lightgrey;
+}
+.preview:hover > button {
+  transition: opacity 0.12s ease-in;
+  opacity: 1;
+}
 .zoomBtn, .exportBtn {
   position: absolute;
-  top: 0;
-  left: 0;
-  font-size: 30px;
-  font-weight: bold;
-  background: white;
+  bottom: 10px;
+  right:  10px;
+  font-size: 27px;
+  background: #f7f7f7;
   border: 0;
   cursor: pointer;
-  width: 35px;
-  height: 35px;
   line-height: 1;
   display: block;
 }
-.zoomOut {
-  top: 40px;
+.zoomIn {
+  bottom: 55px;
 }
 .exportBtn {
-  top: 80px;
+  bottom: 100px;
   font-family: sans-serif;
-  font-size: 23px;
+  font-size: 20px;
 }
