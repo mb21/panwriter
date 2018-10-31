@@ -190,7 +190,23 @@ function setMenu(aWindowIsOpen=true) {
     }
   , { label: 'View'
     , submenu: [
-        {role: 'forcereload'}
+        { label: 'Show Only Editor'
+        , accelerator: 'CmdOrCtrl+1'
+        , click: windowSend.bind(this, 'splitViewOnlyEditor')
+        , enabled: aWindowIsOpen
+        }
+      , { label: 'Show Split View'
+        , accelerator: 'CmdOrCtrl+2'
+        , click: windowSend.bind(this, 'splitViewSplit')
+        , enabled: aWindowIsOpen
+        }
+      , { label: 'Show Only Preview'
+        , accelerator: 'CmdOrCtrl+3'
+        , click: windowSend.bind(this, 'splitViewOnlyPreview')
+        , enabled: aWindowIsOpen
+        }
+      , {type: 'separator'}
+      , {role: 'forcereload'}
       , {role: 'toggledevtools'}
       , {type: 'separator'}
       , {role: 'resetzoom'}

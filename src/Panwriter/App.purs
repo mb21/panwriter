@@ -2,6 +2,7 @@ module Panwriter.App where
 
 import Prelude
 
+import Electron.IpcRenderer as Ipc
 import Panwriter.File (initFile, setWindowDirty)
 import Panwriter.Toolbar (ViewSplit(..))
 import Panwriter.Toolbar as Toolbar
@@ -24,7 +25,11 @@ component = React.component { displayName: "App", initialState, receiveProps, re
       , previewScale: 0.5
       }
 
-    receiveProps {isFirstMount: true, setState} =
+    receiveProps {isFirstMount: true, setState} = do
+      let setSplit split = const $ void $ setState \s -> s {split = split}
+      Ipc.on "splitViewOnlyEditor"  $ setSplit OnlyEditor
+      Ipc.on "splitViewSplit"       $ setSplit Split
+      Ipc.on "splitViewOnlyPreview" $ setSplit OnlyPreview
       initFile
         { onFileLoad: \name txt -> do
             void $ setState \s -> s { initialText = txt
