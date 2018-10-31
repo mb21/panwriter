@@ -1,0 +1,78 @@
+.toolbar {
+  position: fixed;
+  z-index: 99999;
+  height: 40px;
+  width: 100vw;
+}
+
+.toolbar > .toolbararea {
+  /* see https://www.smashingmagazine.com/2015/11/using-system-ui-fonts-practical-guide/
+     and https://bugs.chromium.org/p/chromium/issues/detail?id=578799 */
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  font-size: 13px;
+  height: 38px;
+  -webkit-app-region: drag;
+  background: -webkit-linear-gradient(top, #ebebeb, #d5d5d5);
+  border-bottom: 1px solid #a6a6a6;
+  transition: opacity 0.2s ease-out;
+  opacity: 0;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  grid-column-gap: 5px;
+  align-items: center;
+}
+.toolbar:hover > .toolbararea {
+  transition: opacity 0.12s ease-in;
+  opacity: 1;
+}
+
+.toolbar .filename {
+  color: #676767;
+  grid-column-start: 2;
+  cursor: default;
+}
+
+.toolbar .edited {
+  color: #8e8e8e 
+}
+
+.toolbar .btns {
+  margin-left: auto;
+}
+
+.toolbar button {
+  -webkit-app-region: no-drag;
+  cursor: default;
+  height: 25px;
+  background: -webkit-linear-gradient(top, #fefefe, #f2f2f2);
+  color: #565656;
+  border: 1px solid;
+  border-radius: 5px;
+  border-top-color:    #c8c8c8;
+  border-bottom-color: #acacac;
+  border-left-color:   #c2c2c2;
+  border-right-color:  #c2c2c2;
+  box-shadow: 0 1px rgba(0, 0, 0, .039);
+  font-size: 13px;
+  line-height: 19px;
+  margin-right: 5px;
+}
+.toolbar button:active,
+.toolbar button.active {
+  background: -webkit-linear-gradient(top, #e4e4e4, #dcdcdc);
+}
+
+.toolbar button img {
+  height: 20px;
+}
+
+.toolbar .btngroup button:not(:first-child) {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-left: 0;
+}
+.toolbar .btngroup button:not(:last-child) {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  margin-right: 0;
+}

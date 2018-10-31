@@ -13,15 +13,6 @@ const {app, dialog, BrowserWindow, Menu} = require('electron')
 // be closed automatically when the JavaScript object is garbage collected.
 let windows = []
 
-global.setWindowTitle = function(win, filePath) {
-  if (filePath) {
-    win.setRepresentedFilename(filePath);
-    win.setTitle( path.basename(filePath) );
-  } else {
-    win.setTitle("Untitled");
-  }
-}
-
 function createWindow(filePath, toImport=false) {
   const win = new BrowserWindow({
       width: 1000
@@ -42,7 +33,7 @@ function createWindow(filePath, toImport=false) {
   win.fileIsDirty = false;
   win.filePathToLoad = filePath;
   win.isFileToImport = toImport;
-  setWindowTitle(win, filePath);
+  win.setTitle("Untitled");
 
   win.loadFile('static/index.html')
 

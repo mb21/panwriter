@@ -1,6 +1,7 @@
 html, body {
   margin: 0;
 }
+
 button {
   -webkit-user-select: none;
 }
@@ -8,28 +9,24 @@ button:active, button:focus {
   outline: none;
 }
 
+._hidden {
+  display: none;
+}
+
 #container {
   display: flex;
   height: 100vh;
 }
-#container:before {
-  -webkit-app-region: drag;
-  content: '';
-  position: fixed;
-  z-index: 9999;
-  top: 0;
-  height: 20px;
-  width: 100vw;
-}
 
 .react-codemirror2 {
-  width: 50vw;
+  flex-grow: 1;
+  flex-basis: 0;
   background-color: #f7f7f7;
 }
 
-/* Preview */
 .preview {
-  width: 50vw;
+  flex-grow: 1;
+  flex-basis: 0;
   overflow: hidden;
   background-color: grey;
   position: relative;

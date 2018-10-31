@@ -3,9 +3,12 @@ module Panwriter.File where
 import Prelude
 import Effect (Effect)
 
+type Filename = String
+
 foreign import initFile ::
-  { onFileLoad   :: String -> Effect Unit   -- called with new file contents
+  { onFileLoad :: Filename -> String -> Effect Unit
+  , onFileSave :: Filename -> Effect Unit
   }
   -> Effect Unit
 
-foreign import setDocumentEdited :: Effect Unit
+foreign import setWindowDirty :: Effect Unit

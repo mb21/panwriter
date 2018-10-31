@@ -3,18 +3,24 @@
 var ipcRenderer = require('electron').ipcRenderer
   , remote      = require('electron').remote
   , fs          = require('fs')
+  , path        = require('path')
   , Document    = require('../../src/js/Document')
   , Importer    = require('../../src/js/Importer')
   ;
 
+var onFileSaveCb;
+
 exports.initFile = function(conf) {
   return function() {
+    onFileSaveCb = conf.onFileSave;
     var win = remote.getCurrentWindow();
     var filePath = Document.getPath();
     if (filePath) {
+      var name = filename(filePath);
       if (win.isFileToImport) {
         Importer.importFile(filePath, function(text) {
-          conf.onFileLoad(text)();
+          win.fileIsDirty = false;
+          conf.onFileLoad(name)(text)();
         });
       } else {
         // open file
@@ -22,7 +28,10 @@ exports.initFile = function(conf) {
           if (err) {
             alert("Could not open file.\n" + err.message);
           } else {
-            conf.onFileLoad(text)();
+            win.setTitle(name);
+            win.setRepresentedFilename(filePath);
+            win.fileIsDirty = false;
+            conf.onFileLoad(name)(text)();
           }
         });
       }
@@ -30,10 +39,9 @@ exports.initFile = function(conf) {
   };
 };
 
-exports.setDocumentEdited = function() {
+exports.setWindowDirty = function() {
   var win = remote.getCurrentWindow();
   win.fileIsDirty = true;
-  win.setDocumentEdited(true); //macOS-only
 }
 
 ipcRenderer.on('fileSave', function() {
@@ -48,18 +56,24 @@ ipcRenderer.on('fileSave', function() {
       });
     if (filePath === undefined) {
       return;
-    } else {
-      Document.setPath(filePath);
     }
   }
   fs.writeFile(filePath, Document.getMd(), function(err){
     if (err) {
       alert("Could not save file.\n" + err.message);
     } else {
-      var win = remote.getCurrentWindow();
-      remote.getGlobal("setWindowTitle")(win, filePath);
+      var win = remote.getCurrentWindow()
+        , name = filename(filePath)
+        ;
+      Document.setPath(filePath);
+      win.setTitle(name);
+      win.setRepresentedFilename(filePath);
       win.fileIsDirty = false;
-      win.setDocumentEdited(false); //macOS-only
+      onFileSaveCb(name)();
     }
   });
 });
+
+function filename(filePath) {
+  return path.basename(filePath, path.extname(filePath));
+}

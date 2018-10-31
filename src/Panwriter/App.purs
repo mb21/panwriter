@@ -2,13 +2,14 @@ module Panwriter.App where
 
 import Prelude
 
+import Panwriter.File (initFile, setWindowDirty)
+import Panwriter.Toolbar (ViewSplit(..))
+import Panwriter.Toolbar as Toolbar
 import React.Basic as React
 import React.Basic.CodeMirror as CodeMirror
-import React.Basic.PreviewRenderer (renderMd, printPreview)
 import React.Basic.DOM as R
 import React.Basic.Events as Events
-
-import Panwriter.File (initFile, setDocumentEdited)
+import React.Basic.PreviewRenderer (renderMd, printPreview)
 
 type Props = {}
 
@@ -17,23 +18,41 @@ component = React.component { displayName: "App", initialState, receiveProps, re
   where
     initialState =
       { initialText: ""
+      , fileName: "Untitled"
+      , fileDirty: false
+      , split: Split
       , previewScale: 0.5
       }
 
     receiveProps {isFirstMount: true, setState} =
       initFile
-        { onFileLoad: \txt -> do
-            void $ setState \s -> s {initialText = txt}
+        { onFileLoad: \name txt -> do
+            void $ setState \s -> s { initialText = txt
+                                    , fileName    = name
+                                    , fileDirty   = false
+                                    }
             renderMd txt
+        , onFileSave: \name -> setState \s -> s {fileName = name, fileDirty = false}
         }
     receiveProps _ = pure unit
 
     render { props, state, setState } =
       let zoom op = Events.handler_ $ setState \s -> s {previewScale = op s.previewScale 0.125}
       in  React.fragment
-          [ CodeMirror.uncontrolled
-              { onChange: \txt -> do
-                  setDocumentEdited
+          [ React.element
+              Toolbar.component
+                { fileName:  state.fileName
+                , fileDirty: state.fileDirty
+                , split:     state.split
+                , onSplitChange: \sp -> setState \s -> s {split = sp}
+                }
+          , CodeMirror.uncontrolled
+              { className: if state.split == OnlyPreview
+                           then "_hidden"
+                           else ""
+              , onChange: \txt -> do
+                  setState \s -> s {fileDirty = true}
+                  setWindowDirty
                   renderMd txt
               , value: state.initialText
               , autoCursor: false
@@ -56,7 +75,9 @@ component = React.component { displayName: "App", initialState, receiveProps, re
                 }
               }
           , R.div
-              { className: "preview"
+              { className: if state.split == OnlyEditor
+                           then "_hidden"
+                           else "preview"
               , children: [
                   R.iframe
                   { className: "previewFrame"
