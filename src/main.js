@@ -140,110 +140,97 @@ function windowSend(name) {
 
 function setMenu(aWindowIsOpen=true) {
   var template = [
-    {
-      label: 'File',
-      submenu: [
-        {
-          label: 'New'
+    { label: 'File'
+    , submenu: [
+        { label: 'New'
         , accelerator: 'CmdOrCtrl+N'
         , click: () => createWindow()
         }
-      , {
-          label: 'Open'
+      , { label: 'Open'
         , accelerator: 'CmdOrCtrl+O'
         , click: () => openDialog()
         }
-      , {
-          label: 'Save'
+      , { label: 'Save'
         , accelerator: 'CmdOrCtrl+S'
         , click: windowSend.bind(this, 'fileSave')
         , enabled: aWindowIsOpen
         }
-      , {
-          label: 'Print / PDF'
+      , { label: 'Print / PDF'
         , accelerator: 'CmdOrCtrl+P'
         , click: windowSend.bind(this, 'filePrint')
         , enabled: aWindowIsOpen
         }
-      , {
-          label: 'Export'
+      , { label: 'Export'
         , accelerator: 'CmdOrCtrl+Shift+E'
         , click: windowSend.bind(this, 'fileExport')
         , enabled: aWindowIsOpen
         }
-      , {
-          label: 'Export like previous'
+      , { label: 'Export like previous'
         , accelerator: 'CmdOrCtrl+E'
         , click: windowSend.bind(this, 'fileExportLikePrevious')
         , enabled: aWindowIsOpen
         }
-      , {
-          label: 'Import'
+      , { label: 'Import'
         , accelerator: 'CmdOrCtrl+I'
         , click: () => openDialog(true)
         }
       ]
-    },
-    {
-      label: 'Edit',
-      submenu: [
-        {role: 'undo'},
-        {role: 'redo'},
-        {type: 'separator'},
-        {role: 'cut'},
-        {role: 'copy'},
-        {role: 'paste'},
-        {role: 'pasteandmatchstyle'},
-        {role: 'delete'},
-        {role: 'selectall'}
+    }
+  , { label: 'Edit'
+    , submenu: [
+        {role: 'undo'}
+      , {role: 'redo'}
+      , {type: 'separator'}
+      , {role: 'cut'}
+      , {role: 'copy'}
+      , {role: 'paste'}
+      , {role: 'delete'}
+      , {role: 'selectall'}
       ]
-    },
-    {
-      label: 'View',
-      submenu: [
-        {role: 'reload', accelerator: ''}, //prevent accidental Cmd-R
-        {role: 'forcereload'},
-        {role: 'toggledevtools'},
-        {type: 'separator'},
-        {role: 'resetzoom'},
-        {role: 'zoomin'},
-        {role: 'zoomout'},
-        {type: 'separator'},
-        {role: 'togglefullscreen'}
+    }
+  , { label: 'View'
+    , submenu: [
+        {role: 'forcereload'}
+      , {role: 'toggledevtools'}
+      , {type: 'separator'}
+      , {role: 'resetzoom'}
+      , {role: 'zoomin'}
+      , {role: 'zoomout'}
+      , {type: 'separator'}
+      , {role: 'togglefullscreen'}
       ]
-    },
-    {
-      role: 'window',
-      submenu: [
-        {role: 'minimize'},
-        {role: 'close'}
+    }
+  , { role: 'window'
+    , submenu: [
+        {role: 'minimize'}
+      , {role: 'close'}
       ]
     }
   ]
 
   if (process.platform === 'darwin') {
     template.unshift({
-      label: app.getName(),
-      submenu: [
-        {role: 'about'},
-        {type: 'separator'},
-        {role: 'services', submenu: []},
-        {type: 'separator'},
-        {role: 'hide'},
-        {role: 'hideothers'},
-        {role: 'unhide'},
-        {type: 'separator'},
-        {role: 'quit'}
+      label: app.getName()
+    , submenu: [
+        {role: 'about'}
+      , {type: 'separator'}
+      , {role: 'services', submenu: []}
+      , {type: 'separator'}
+      , {role: 'hide'}
+      , {role: 'hideothers'}
+      , {role: 'unhide'}
+      , {type: 'separator'}
+      , {role: 'quit'}
       ]
     })
 
     // Window menu
     template[4].submenu = [
-      {role: 'close'},
-      {role: 'minimize'},
-      {role: 'zoom'},
-      {type: 'separator'},
-      {role: 'front'}
+      {role: 'close'}
+    , {role: 'minimize'}
+    , {role: 'zoom'}
+    , {type: 'separator'}
+    , {role: 'front'}
     ]
   }
   var menu = Menu.buildFromTemplate(template);
