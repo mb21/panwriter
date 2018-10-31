@@ -35,6 +35,8 @@ By adding a `style` field to your YAML metadata, you can change the styling of t
 
 ### Export via pandoc
 
+First, install the [latest pandoc version](https://github.com/jgm/pandoc/releases), then:
+
 Select `File -> Export` and choose a format.
 
 If you have a YAML metadata block, like in the following example, Panwriter will look at the extension of the filename you chose in the dialog, and look up the corresponding key in the `output` YAML metadata, for example when exporting the following markdown to `test.html`:
@@ -125,15 +127,16 @@ Unfortunately, still no browser fully implements the CSS specs for paged media (
     # Run the app
     npm start
 
+    # To distribute (goes to ./dist):
+    npm run dist
+
 
 ### TODOs before first release
 
 - polish
-    - show filename (but hide chrome on typing)
-    - “show/hide preview” button
     - toggle paged on/off in preview
     - sync scroll, or at least scroll on click
-- build package
+- build package: icon
 - decide whether to do CSS-in-YAML with later YAML-metadata-slider/[color-picker]-like-GUI
 
 [color-picker]: https://easylogic.github.io/codemirror-colorpicker/

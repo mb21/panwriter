@@ -1,11 +1,14 @@
 {
   "name": "panwriter",
-  "version": "1.0.0",
-  "description": "Yet another markdown editor",
+  "productName": "PanWriter",
+  "version": "0.5.0",
+  "description": "Distraction-free markdown editor with pandoc integration and paged preview pane.",
   "main": "src/main.js",
   "scripts": {
     "start": "electron .",
-    "debug": "electron --inspect-brk=5858 ."
+    "debug": "electron --inspect-brk=5858 .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
   },
   "repository": "https://github.com/mb21/panwriter",
   "keywords": [
@@ -13,7 +16,8 @@
     "editor"
   ],
   "author": "Mauro Bieg",
-  "license": "",
+  "license": "GPLv3 (or later)",
+  "postinstall": "electron-builder install-app-deps",
   "dependencies": {
     "babel-runtime": "^6.26.0",
     "codemirror": "^5.40.2",
@@ -33,6 +37,7 @@
     "yaml-front-matter": "^4.0.0"
   },
   "devDependencies": {
-    "electron": "^2.0.11"
+    "electron": "^2.0.11",
+    "electron-builder": "^20.29.0"
   }
 }

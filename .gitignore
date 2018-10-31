@@ -3,3 +3,4 @@ bower_components
 output
 .psci_modules
 .psc-ide-port
+dist
