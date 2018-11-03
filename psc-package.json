@@ -1,0 +1,12 @@
+{
+  "name": "panwriter",
+  "set": "react-basic-patch",
+  "source": "https://github.com/KSF-Media/package-sets.git",
+  "depends": [
+    "console",
+    "effect",
+    "psci-support",
+    "react-basic",
+    "web-html"
+  ]
+}

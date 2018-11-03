@@ -2,13 +2,15 @@
   "name": "panwriter",
   "productName": "PanWriter",
   "version": "0.5.0",
-  "description": "Distraction-free markdown editor with pandoc integration and paged preview pane.",
+  "description": "Markdown editor with pandoc integration and paginated preview",
   "main": "src/main.js",
   "scripts": {
     "start": "electron .",
+    "install": "psc-package install",
+    "build": "psc-package build",
+    "clean": "rm -rf .cache .psc-package .psci_modules node_modules output dist",
     "debug": "electron --inspect-brk=5858 .",
-    "pack": "electron-builder --dir",
-    "dist": "electron-builder"
+    "dist": "electron-builder -m"
   },
   "repository": "https://github.com/mb21/panwriter",
   "keywords": [
@@ -16,14 +18,23 @@
     "editor"
   ],
   "author": "Mauro Bieg",
-  "license": "GPL-3.0-or-later",
+  "License": "GPL-3.0-or-later",
   "build": {
     "appId": "com.panwriter.app",
-    "fileAssociations": [{
-      "ext": ["md", "markdown", "txt", "html", "docx", "odt", "tex"]
-    }]
+    "fileAssociations": [
+      {
+        "ext": [
+          "md",
+          "markdown",
+          "txt",
+          "html",
+          "docx",
+          "odt",
+          "tex"
+        ]
+      }
+    ]
   },
-  "postinstall": "electron-builder install-app-deps",
   "dependencies": {
     "babel-runtime": "^6.26.0",
     "codemirror": "^5.40.2",
@@ -38,13 +49,15 @@
     "markdown-it-sub": "^1.0.0",
     "markdown-it-sup": "^1.0.0",
     "markdown-it-texmath": "^0.5.2",
-    "react": "^16.4.2",
+    "react": "^16.6.0",
     "react-codemirror2": "^5.1.0",
     "react-dom": "^16.4.2",
     "yaml-front-matter": "^4.0.0"
   },
   "devDependencies": {
-    "electron": "^2.0.11",
-    "electron-builder": "^20.29.0"
+    "electron": "2.0.13",
+    "electron-builder": "^20.31.2",
+    "psc-package-bin-simple": "^1.0.4",
+    "purescript": "^0.12.0"
   }
 }

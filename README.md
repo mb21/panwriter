@@ -110,25 +110,26 @@ Unfortunately, still no browser fully implements the CSS specs for paged media (
 
 ## Develop
 
-    # Install JavaScript dependencies
-    npm install
+Install [yarn](https://yarnpkg.com/)
 
-    # Install PureScript dependencies
-    bower install
+    ## Install npm dependencies, PureScript compiler, etc
+    yarn install
 
-    # Compile PureScript
-    pulp --watch build
+    ## Build the PureScript project
+    yarn build
 
-    # rebuild packaged pagedjs (usually not necessary)
+    # Run the app
+    yarn start
+
+    # To build distributable app package (goes to ./dist):
+    yarn dist
+
+
+Currently, we use a custom version of `paged.js`, to rebuild that (usually not necessary):
+
     npm install -g browserify
     cd previewFrame
     clear; cd pagedjs && npm run-script compile && cd .. && browserify previewFrame.js -o previewFrame.bundle.js
-
-    # Run the app
-    npm start
-
-    # To distribute (goes to ./dist):
-    npm run dist
 
 ### Possible TODOs
 
