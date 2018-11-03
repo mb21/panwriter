@@ -130,26 +130,20 @@ Unfortunately, still no browser fully implements the CSS specs for paged media (
     # To distribute (goes to ./dist):
     npm run dist
 
-
-### TODOs before first release
-
-- polish
-    - toggle paged on/off in preview
-    - sync scroll, or at least scroll on click
-- build package: icon
-- decide whether to do CSS-in-YAML with later YAML-metadata-slider/[color-picker]-like-GUI
-
-[color-picker]: https://easylogic.github.io/codemirror-colorpicker/
-
 ### Possible TODOs
 
-- GUI popup on file import: at least allow to set `-f`, `-t`, `--track-changes` and `--extract-media`
 - Windows, Linux versions
-- [Variable substitution in body](https://github.com/jgm/pandoc/issues/1950#issuecomment-427671251)
+- Preview:
+    - add button to toggle paged.js on/off
+    - sync scroll, or at least scroll on click
 - Editor:
     - adjust font-size on editor window resize
     - spell check
     - find/replace
+- [Code signing](https://www.electron.build/code-signing)
+- [Variable substitution in body](https://github.com/jgm/pandoc/issues/1950#issuecomment-427671251)
+- GUI popup on file import: at least allow to set `-f`, `-t`, `--track-changes` and `--extract-media`
+- maybe use nested YAML instead of a YAML string for the CSS in the `style` key, like [CSSinJS](http://cssinjs.org). Possibly later YAML-metadata-slider GUI, similar to e.g. [color-picker](https://easylogic.github.io/codemirror-colorpicker/).
 
 
 ## Powered by
