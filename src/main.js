@@ -96,9 +96,14 @@ app.on('open-file', function(e, filePath) {
   e.preventDefault();
   const toImport = mdExtensions.indexOf( path.extname(filePath).substr(1) ) > -1
                      ? false : true;
-  app.whenReady().then(function() {
+  // on electon 3.0, replace with app.whenReady()
+  if (app.isReady()) {
     createWindow(filePath, toImport);
-  });
+  } else {
+    app.on('ready', function() {
+      createWindow(filePath, toImport);
+    });
+  }
 });
 
 // This method will be called when Electron has finished
