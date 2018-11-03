@@ -1,10 +1,18 @@
-# Panwriter
+# PanWriter
 
-Panwriter is a distraction-free markdown editor with two unique features:
+PanWriter is a distraction-free markdown editor with two unique features:
 
 1. Tight integration with pandoc for import/export to/from plenty of file formats (including HTML, docx, LaTeX and EPUB).
 2. Preview pane that can show pages – including page breaks etc. Layout adjustments are done in-file using CSS, and are immediately reflected in the preview.
 
+![](screenshot.png)
+
+PanWriter is completely usable, but also still very much a work in progress, as there are numerous improvements and features that will hopefully be added soon.
+
+
+**[Download PanWriter 0.5 for macOS](https://github.com/mb21/panwriter/releases)**
+
+After copying the file to your `Applications` folder, the first time you have to right-click on the app, select `Open` and agree to a scary warning about us not being registered developers.
 
 ## Usage
 
@@ -31,6 +39,8 @@ By adding a `style` field to your YAML metadata, you can change the styling of t
       }
     ---
 
+    # my document
+
 (To include that CSS when exporting to HTML/EPUB with pandoc, you would have to use a custom pandoc template with the snippet `<style>$style$</style>`. We’ll try to make this more straight-forward in the future.)
 
 ### Export via pandoc
@@ -39,7 +49,7 @@ First, install the [latest pandoc version](https://github.com/jgm/pandoc/release
 
 Select `File -> Export` and choose a format.
 
-If you have a YAML metadata block, like in the following example, Panwriter will look at the extension of the filename you chose in the dialog, and look up the corresponding key in the `output` YAML metadata, for example when exporting the following markdown to `test.html`:
+If you have a YAML metadata block, like in the following example, PanWriter will look at the extension of the filename you chose in the dialog, and look up the corresponding key in the `output` YAML metadata, for example when exporting the following markdown to `test.html`:
 
     ---
     title: my document
@@ -70,17 +80,17 @@ this command will be executed:
 There are two exceptions to the rule that the key in the `output` YAML is the file extension:
 
 1. When exporting to a `.tex` file, the key should be named `latex`.
-2. When exporting to a `.pdf` file, the key for Panwriter to look up in the `output` YAML can be specified with the `pdf-format` key (see example above). Default is also `latex`, but you can also use `context`, `html`, `ms`, `beamer`, `revealjs`, etc.  In fact, you could set it to anything, if you had a corresponding key in the `output` YAML with a `to:` field. See also [Creating a PDF with pandoc](http://pandoc.org/MANUAL.html#creating-a-pdf).
+2. When exporting to a `.pdf` file, the key for PanWriter to look up in the `output` YAML can be specified with the `pdf-format` key (see example above). Default is also `latex`, but you can also use `context`, `html`, `ms`, `beamer`, `revealjs`, etc.  In fact, you could set it to anything, if you had a corresponding key in the `output` YAML with a `to:` field. See also [Creating a PDF with pandoc](http://pandoc.org/MANUAL.html#creating-a-pdf).
 
 ### Default CSS and YAML
 
-Panwriter will look for `~/.panwriter/default.css` to load CSS for the preview. If that file is not found, it will use sensible defaults.
+PanWriter will look for `~/.panwriter/default.css` to load CSS for the preview. If that file is not found, it will use sensible defaults.
 
-If you put some YAML in `~/.panwriter/default.yaml`, Panwriter will merge this with the YAML in your input file (to determine the commandline arguments to call pandoc with) and add the `--metadata-file` option. The YAML should be in the same format as above.
+If you put some YAML in `~/.panwriter/default.yaml`, PanWriter will merge this with the YAML in your input file (to determine the commandline arguments to call pandoc with) and add the `--metadata-file` option. The YAML should be in the same format as above.
 
 ### Document types / themes
 
-You can e.g. put `type: letter` in the YAML of your input document. In that case, Panwriter will look for `~/.panwriter/letter.yaml` and `~/.panwriter/letter.css` instead of `default.yaml` and `default.css`.
+You can e.g. put `type: letter` in the YAML of your input document. In that case, PanWriter will look for `~/.panwriter/letter.yaml` and `~/.panwriter/letter.css` instead of `default.yaml` and `default.css`.
 
 ### Markdown syntax
 
@@ -100,7 +110,7 @@ Pandoc markdown supports a few more things which will not render correctly in th
 
 ## About CSS for print
 
-Unfortunately, still no browser fully implements the CSS specs for paged media (paged media are print or PDF). Therefore, Panwriter's preview is powered by [pagedjs](https://gitlab.pagedmedia.org/tools/pagedjs) – a collection of paged media polyfills by [pagedmedia.org](https://pagedmedia.org). Some background on using CSS for print:
+Unfortunately, still no browser fully implements the CSS specs for paged media (paged media are print or PDF). Therefore, PanWriter's preview is powered by [pagedjs](https://gitlab.pagedmedia.org/tools/pagedjs) – a collection of paged media polyfills by [pagedmedia.org](https://pagedmedia.org). Some background on using CSS for print:
 
 - [Motivating article on A List Apart](https://alistapart.com/article/building-books-with-css3)
 - [Print-CSS resources, tools](https://print-css.rocks)
@@ -125,7 +135,7 @@ Install [yarn](https://yarnpkg.com/)
     yarn dist
 
 
-Currently, we use a custom version of `paged.js`, to rebuild that (usually not necessary):
+Currently, we use a custom version of `paged.js` ([pull pending](https://gitlab.pagedmedia.org/tools/pagedjs/merge_requests/28)). If you would make changes to that, you would have to:
 
     npm install -g browserify
     cd previewFrame
@@ -134,13 +144,16 @@ Currently, we use a custom version of `paged.js`, to rebuild that (usually not n
 ### Possible TODOs
 
 - Windows, Linux versions
+- Integrate CSS also into pandoc export
 - Preview:
     - add button to toggle paged.js on/off
     - sync scroll, or at least scroll on click
 - Editor:
     - adjust font-size on editor window resize
+    - add `Insert` menu with YAML and markdown snippets to insert at cursor position
     - spell check
     - find/replace
+- make PanWriter more hackable (like Atom): e.g. make it possible to load an editor theme etc.
 - [Code signing](https://www.electron.build/code-signing)
 - [Variable substitution in body](https://github.com/jgm/pandoc/issues/1950#issuecomment-427671251)
 - GUI popup on file import: at least allow to set `-f`, `-t`, `--track-changes` and `--extract-media`
@@ -149,7 +162,7 @@ Currently, we use a custom version of `paged.js`, to rebuild that (usually not n
 
 ## Powered by
 
-Panwriter is powered by (amongst other open source libraries):
+PanWriter is powered by (amongst other open source libraries):
 
 - [pandoc](http://pandoc.org/MANUAL.html) (import/export)
 - [Electron](https://electronjs.org/docs/tutorial/application-architecture) (app framework)
