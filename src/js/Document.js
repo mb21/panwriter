@@ -34,7 +34,7 @@ module.exports.getMeta = function() {
 
 var defaultStaticCss = ''
   , defaultCss = ''
-  , docType = undefined
+  , docType = null
   ;
 fs.readFile(remote.app.getAppPath() + '/static/default.css', 'utf8', (err, css) => {
   if (err) {
@@ -44,18 +44,14 @@ fs.readFile(remote.app.getAppPath() + '/static/default.css', 'utf8', (err, css) 
   }
 });
 module.exports.getCss = async function() {
-  if (meta.type === undefined) {
-    defaultCss = defaultStaticCss
-  } else if (meta.type !== docType) {
+  if (meta.type !== docType) {
+    // cache css
     docType = meta.type;
     try {
-      // cache css
       defaultCss = await readDataDirFile(docType, '.css');
     } catch(e) {
       defaultCss = defaultStaticCss;
     }
-  } else {
-    // use cached css
   }
   return ( typeof meta.style === "string" )
            ? (defaultCss + meta.style)
