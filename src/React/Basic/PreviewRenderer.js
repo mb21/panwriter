@@ -61,6 +61,10 @@ function renderNext() {
     render(textToRenderNext).then( function() {
       renderInProgress = false;
       renderNext();
+    }).catch(function(e){
+      console.warn("paged.js crashed", e.message);
+      renderInProgress = false;
+      renderNext();
     });
     textToRenderNext = null;
   }
