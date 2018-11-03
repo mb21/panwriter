@@ -68,7 +68,8 @@ async function fileExport(exp) {
   pandoc.stdin.end();
 
   pandoc.on('error', function(err) {
-    alert("Failed to execute command:\n" + cmdDebug + '\n\n' + err.message);
+    alert("Failed to execute command:\n" + cmdDebug + '\n\n' + err.message
+      + '\n\nHave you installed pandoc?');
   });
 
   const errout = [];

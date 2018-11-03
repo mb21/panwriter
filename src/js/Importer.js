@@ -20,7 +20,8 @@ module.exports.importFile = function(inputPath, cb) {
   const pandoc = spawn(cmd, args, {cwd: cwd});
 
   pandoc.on('error', function(err) {
-    alert("Failed to execute command:\n" + cmdDebug + '\n\n' + err.message);
+    alert("Failed to execute command:\n" + cmdDebug + '\n\n' + err.message
+      + '\n\nHave you installed pandoc?');
   });
 
   const stdout = [];
