@@ -21,6 +21,7 @@
   "dependencies": {
     "babel-runtime": "^6.26.0",
     "codemirror": "^5.40.2",
+    "fix-path": "^2.1.0",
     "katex": "^0.10.0-rc.1",
     "markdown-it": "^8.4.2",
     "markdown-it-attrs": "^2.3.2",
