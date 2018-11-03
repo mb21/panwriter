@@ -55,6 +55,8 @@ component = React.component { displayName: "App", initialState, receiveProps, re
               { className: if state.split == OnlyPreview
                            then "_hidden"
                            else ""
+                -- unfortunately, onChange is called on first text load
+                -- see https://github.com/scniro/react-codemirror2/issues/119
               , onChange: \txt -> do
                   setState \s -> s {fileDirty = true}
                   setWindowDirty
