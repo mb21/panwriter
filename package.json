@@ -17,6 +17,12 @@
   ],
   "author": "Mauro Bieg",
   "license": "GPLv3 (or later)",
+  "build": {
+    "appId": "com.panwriter.app",
+    "fileAssociations": [{
+      "ext": ["md", "markdown", "txt", "html", "docx", "odt", "tex"]
+    }]
+  },
   "postinstall": "electron-builder install-app-deps",
   "dependencies": {
     "babel-runtime": "^6.26.0",

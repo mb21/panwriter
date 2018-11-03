@@ -11,7 +11,9 @@ const {app, dialog, BrowserWindow, Menu} = require('electron')
 
 // Keep a global reference of the windows, if you don't, the windows will
 // be closed automatically when the JavaScript object is garbage collected.
-let windows = []
+const windows = []
+    , mdExtensions = ['md', 'txt', 'markdown']
+    ;
 
 function createWindow(filePath, toImport=false) {
   const win = new BrowserWindow({
@@ -88,16 +90,24 @@ function createWindow(filePath, toImport=false) {
 }
 
 // macOS only, on file-drag etc.
+// see https://electronjs.org/docs/all#event-open-file-macos
+// and https://www.electron.build/configuration/configuration#PlatformSpecificBuildOptions-fileAssociations
 app.on('open-file', function(e, filePath) {
   e.preventDefault();
-  createWindow(filePath);
+  const toImport = mdExtensions.indexOf( path.extname(filePath).substr(1) ) > -1
+                     ? false : true;
+  app.whenReady().then(function() {
+    createWindow(filePath, toImport);
+  });
 });
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', function() {
-  createWindow(undefined);
+  if (windows.length === 0) {
+    createWindow(undefined);
+  }
 })
 
 // Quit when all windows are closed.
@@ -121,7 +131,7 @@ app.on('activate', function() {
 
 function openDialog(toImport=false) {
   const formats = toImport ? [] : [
-            { name: 'Markdown', extensions: ['md', 'txt', 'markdown'] }
+            { name: 'Markdown', extensions: mdExtensions }
           ]
       , fileNames = dialog.showOpenDialog({
           filters: formats
