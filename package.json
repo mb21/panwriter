@@ -16,7 +16,7 @@
     "editor"
   ],
   "author": "Mauro Bieg",
-  "license": "GPLv3 (or later)",
+  "license": "GPL-3.0-or-later",
   "build": {
     "appId": "com.panwriter.app",
     "fileAssociations": [{
