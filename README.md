@@ -1,3 +1,5 @@
+<img src="build/icon.png" align="right" width="128">
+
 # PanWriter
 
 PanWriter is a distraction-free markdown editor with two unique features:
