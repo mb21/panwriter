@@ -43,8 +43,13 @@ component = React.component { displayName: "App", initialState, receiveProps, re
 
     render { props, state, setState } =
       let zoom op = Events.handler_ $ setState \s -> s {previewScale = op s.previewScale 0.125}
-      in  React.fragment
-          [ React.element
+      in  R.div {
+          className: case state.split of
+                       OnlyEditor  -> "app onlyeditor"
+                       Split       -> "app split"
+                       OnlyPreview -> "app onlypreview"
+        , children: [
+            React.element
               Toolbar.component
                 { fileName:  state.fileName
                 , fileDirty: state.fileDirty
@@ -52,12 +57,9 @@ component = React.component { displayName: "App", initialState, receiveProps, re
                 , onSplitChange: \sp -> setState \s -> s {split = sp}
                 }
           , CodeMirror.uncontrolled
-              { className: if state.split == OnlyPreview
-                           then "_hidden"
-                           else ""
-                -- unfortunately, onChange is called on first text load
+              { -- unfortunately, onChange is called on first text load
                 -- see https://github.com/scniro/react-codemirror2/issues/119
-              , onChange: \txt -> do
+                onChange: \txt -> do
                   setState \s -> s {fileDirty = true}
                   setWindowDirty
                   renderMd txt
@@ -82,9 +84,7 @@ component = React.component { displayName: "App", initialState, receiveProps, re
                 }
               }
           , R.div
-              { className: if state.split == OnlyEditor
-                           then "_hidden"
-                           else "preview"
+              { className: "preview"
               , children: [
                   R.iframe
                   { className: "previewFrame"
@@ -113,3 +113,4 @@ component = React.component { displayName: "App", initialState, receiveProps, re
                 ]
               }
           ]
+      }

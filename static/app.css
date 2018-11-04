@@ -9,24 +9,29 @@ button:active, button:focus {
   outline: none;
 }
 
-._hidden {
-  display: none;
-}
-
-#container {
+.app {
   display: flex;
   height: 100vh;
 }
+.app > * {
+  width: 100vw;
+}
+.app.split > .react-codemirror2,
+.app.split > .preview {
+  width: 50vw;
+}
+.app.onlypreview > .react-codemirror2 {
+  display: none;
+}
+.app.onlyeditor > .preview {
+  display: none;
+}
 
 .react-codemirror2 {
-  flex-grow: 1;
-  flex-basis: 0;
   background-color: #f7f7f7;
 }
 
 .preview {
-  flex-grow: 1;
-  flex-basis: 0;
   overflow: hidden;
   background-color: grey;
   position: relative;
