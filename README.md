@@ -51,6 +51,8 @@ First, install the [latest pandoc version](https://github.com/jgm/pandoc/release
 
 Select `File -> Export` and choose a format.
 
+![](screenshot-export.png)
+
 If you have a YAML metadata block, like in the following example, PanWriter will look at the extension of the filename you chose in the dialog, and look up the corresponding key in the `output` YAML metadata, for example when exporting the following markdown to `test.html`:
 
     ---
