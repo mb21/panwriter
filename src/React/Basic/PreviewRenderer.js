@@ -58,14 +58,14 @@ exports.renderMd = function(str) {
 function renderNext() {
   if (textToRenderNext !== null && !renderInProgress) {
     renderInProgress = true;
-    render(textToRenderNext).then( function() {
-      renderInProgress = false;
-      renderNext();
-    }).catch(function(e){
-      console.warn("paged.js crashed", e.message);
-      renderInProgress = false;
-      renderNext();
-    });
+    render(textToRenderNext)
+      .catch( function(e) {
+        console.warn("paged.js crashed", e.message);
+      })
+      .then(function(){
+        renderInProgress = false;
+        renderNext();
+      });
     textToRenderNext = null;
   }
 }
