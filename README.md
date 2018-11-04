@@ -146,6 +146,8 @@ Currently, we use a custom version of `paged.js` ([pull pending](https://gitlab.
 - Windows, Linux versions
 - Integrate CSS also into pandoc export
 - Preview:
+    - fix relative paths for images: either with `<base>` tag ([breaks internal links](https://stackoverflow.com/questions/1889076/what-are-the-recommendations-for-html-base-tag) like `[go](#there)`) or by [rewriting the images' `src`](https://github.com/markdown-it/markdown-it/blob/master/docs/architecture.md#renderer).
+    - respect `css`, `header-includes`, `toc` metadata fields
     - add button to toggle paged.js on/off
     - sync scroll, or at least scroll on click
 - Editor:
@@ -153,8 +155,10 @@ Currently, we use a custom version of `paged.js` ([pull pending](https://gitlab.
     - add `Insert` menu with YAML and markdown snippets to insert at cursor position
     - spell check
     - find/replace
+- make the app launchable from terminal with `panwriter file.md`
 - make PanWriter more hackable (like Atom): e.g. make it possible to load an editor theme etc.
 - [Code signing](https://www.electron.build/code-signing)
+- add [page-break syntax](https://github.com/jgm/pandoc/issues/1934#issuecomment-274327751)
 - [Variable substitution in body](https://github.com/jgm/pandoc/issues/1950#issuecomment-427671251)
 - GUI popup on file import: at least allow to set `-f`, `-t`, `--track-changes` and `--extract-media`
 - maybe use nested YAML instead of a YAML string for the CSS in the `style` key, like [CSSinJS](http://cssinjs.org). Possibly later YAML-metadata-slider GUI, similar to e.g. [color-picker](https://easylogic.github.io/codemirror-colorpicker/).
