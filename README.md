@@ -9,12 +9,11 @@ PanWriter is a distraction-free markdown editor with two unique features:
 
 ![](screenshot.png)
 
-PanWriter is completely usable, but also still very much a work in progress, as there are numerous improvements and features that will hopefully be added soon.
-
-
 **[Download PanWriter 0.5 for macOS](https://github.com/mb21/panwriter/releases)**
 
 After copying the file to your `Applications` folder, the first time you have to right-click on the app, select `Open` and agree to a scary warning about us not being registered developers.
+
+PanWriter is very usable, but also very much a work in progress, as there are still a few rough edges (see [TODOs below](#todos)). Feedback, suggestions and contributions very much welcome! Please open an issue to start a conversation.
 
 ## Usage
 
@@ -81,6 +80,8 @@ this command will be executed:
 
     pandoc --toc --include-in-header foo.css --include-in-header bar.js --output test.html --to html --standalone
 
+See the [pandoc user's guide](http://pandoc.org/MANUAL.html) for available options.
+
 There are two exceptions to the rule that the key in the `output` YAML is the file extension:
 
 1. When exporting to a `.tex` file, the key should be named `latex`.
@@ -90,7 +91,7 @@ There are two exceptions to the rule that the key in the `output` YAML is the fi
 
 PanWriter will look for `~/.panwriter/default.css` to load CSS for the preview. If that file is not found, it will use sensible defaults.
 
-If you put some YAML in `~/.panwriter/default.yaml`, PanWriter will merge this with the YAML in your input file (to determine the commandline arguments to call pandoc with) and add the `--metadata-file` option. The YAML should be in the same format as above.
+If you put some YAML in `~/.panwriter/default.yaml`, PanWriter will merge this with the YAML in your input file (to determine the command-line arguments to call pandoc with) and add the `--metadata-file` option. The YAML should be in the same format as above.
 
 ### Document types / themes
 
@@ -114,7 +115,7 @@ Pandoc markdown supports a few more things which will not render correctly in th
 
 ## About CSS for print
 
-Unfortunately, still no browser fully implements the CSS specs for paged media (paged media are print or PDF). Therefore, PanWriter's preview is powered by [pagedjs](https://gitlab.pagedmedia.org/tools/pagedjs) – a collection of paged media polyfills by [pagedmedia.org](https://pagedmedia.org). Some background on using CSS for print:
+Unfortunately, still no browser fully implements the CSS specs for paged media (paged media are e.g. print or PDF). Therefore, PanWriter's preview is powered by [pagedjs](https://gitlab.pagedmedia.org/tools/pagedjs) – a collection of paged media polyfills by [pagedmedia.org](https://pagedmedia.org). Some background on using CSS for print:
 
 - [Motivating article on A List Apart](https://alistapart.com/article/building-books-with-css3)
 - [Print-CSS resources, tools](https://print-css.rocks)
@@ -124,7 +125,7 @@ Unfortunately, still no browser fully implements the CSS specs for paged media (
 
 ## Develop
 
-Install [yarn](https://yarnpkg.com/)
+Install [yarn](https://yarnpkg.com/), then:
 
     ## Install npm dependencies, PureScript compiler, etc
     yarn install
@@ -143,9 +144,10 @@ Currently, we use a custom version of `paged.js` ([pull pending](https://gitlab.
 
     npm install -g browserify
     cd previewFrame
+    git clone -b reflow git@gitlab.pagedmedia.org:mb21/pagedjs.git
     clear; cd pagedjs && npm run-script compile && cd .. && browserify previewFrame.js -o previewFrame.bundle.js
 
-### Possible TODOs
+### TODOs
 
 - Windows, Linux versions
 - Integrate CSS also into pandoc export
@@ -160,20 +162,23 @@ Currently, we use a custom version of `paged.js` ([pull pending](https://gitlab.
     - spell check
     - find/replace
 - make the app launchable from terminal with `panwriter file.md`
-- make PanWriter more hackable (like Atom): e.g. make it possible to load an editor theme etc.
-- [Code signing](https://www.electron.build/code-signing)
+- remember which split-view was used last
+- add a Settings/Preferences window where you can:
+    - set an editor theme css
+    - choose `pandoc` executable (probably with file-open dialog, which we can use for app sandboxing with security-scoped bookmarks)
+- [Code signing](https://www.electron.build/code-signing) and [Auto Update](https://www.electron.build/auto-update)
 - add [page-break syntax](https://github.com/jgm/pandoc/issues/1934#issuecomment-274327751)
 - [Variable substitution in body](https://github.com/jgm/pandoc/issues/1950#issuecomment-427671251)
-- GUI popup on file import: at least allow to set `-f`, `-t`, `--track-changes` and `--extract-media`
-- maybe use nested YAML instead of a YAML string for the CSS in the `style` key, like [CSSinJS](http://cssinjs.org). Possibly later YAML-metadata-slider GUI, similar to e.g. [color-picker](https://easylogic.github.io/codemirror-colorpicker/).
+- GUI popup on file import: at least allow to set `-f`, `-t`, `--track-changes` and `--extract-media` pandoc options.
+- maybe use nested YAML instead of a YAML string for the CSS in the `style` key, like [CSSinJS](http://cssinjs.org). Possibly later YAML-metadata-slider GUI, similar to e.g. [color-picker](https://easylogic.github.io/codemirror-colorpicker/#codemirror-colorpicker-addon).
 
 
 ## Powered by
 
 PanWriter is powered by (amongst other open source libraries):
 
-- [pandoc](http://pandoc.org/MANUAL.html) (import/export)
-- [Electron](https://electronjs.org/docs/tutorial/application-architecture) (app framework)
+- [pandoc](http://pandoc.org) (import/export)
+- [Electron](https://electronjs.org) (app framework)
 - [CodeMirror](https://codemirror.net) (editor)
 - For the preview pane:
     - [pagedjs](https://gitlab.pagedmedia.org/tools/pagedjs)
