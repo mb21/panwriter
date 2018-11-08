@@ -42,6 +42,8 @@ By adding a `style` field to your YAML metadata, you can change the styling of t
 
     # my document
 
+![](screenshot-css.png)
+
 (To include that CSS when exporting to HTML/EPUB with pandoc, you would have to use a custom pandoc template with the snippet `<style>$style$</style>`. We’ll try to make this more straight-forward in the future.)
 
 ### Export via pandoc
