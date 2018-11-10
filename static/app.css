@@ -33,8 +33,11 @@ button:active, button:focus {
 
 .preview {
   overflow: hidden;
-  background-color: grey;
   position: relative;
+  border-left: 1px solid lightgrey;
+}
+.preview.paginated {
+  background-color: grey;
 }
 .previewFrame {
   border: 0;

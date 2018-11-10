@@ -38,7 +38,7 @@ It's not so bad, since markdown-it has raw HTML disabled.
   "use strict"
   
   let style, previewer;
-  async function render(doc) {
+  async function render(doc, paginated) {
     const content = doc.getHtml()
         , cssStr  = await doc.getCss()
         ;
@@ -51,25 +51,33 @@ It's not so bad, since markdown-it has raw HTML disabled.
     }
 
     let renderTo = document.body;
-    previewer = new Previewer();
+    if (paginated) {
+      // render using paged.js
 
-    previewer.polisher.setup();
-    style = previewer.polisher.insert("");
+      // override body/margin user set on body, as it would mess up the preview
+      renderTo.style = "margin: 0; padding: 0;"
 
-    let chunker = new Chunker();
-    previewer.chunker = chunker;
-    chunker.setup(renderTo);
+      previewer = new Previewer();
 
-    previewer.initializeHandlers();
+      previewer.polisher.setup();
+      style = previewer.polisher.insert("");
 
-    return previewer.polisher.convertViaSheet(cssStr, "").then(text => {
-      style.innerHTML = text;
-      return chunker.reflow(content);
-    });
+      let chunker = new Chunker();
+      previewer.chunker = chunker;
+      chunker.setup(renderTo);
+
+      previewer.initializeHandlers();
+
+      return previewer.polisher.convertViaSheet(cssStr, "").then(text => {
+        style.innerHTML = text;
+        return chunker.reflow(content);
+      });
+    } else {
+      renderTo.style = ""
+      // render without paded.js
+      renderTo.innerHTML = ["<style>", cssStr, "</style>", content].join('');
+    }
   }
-  //function render(content, cssStr) {
-  //  previewer.preview(content, ["foo.css"], renderTo);
-  //}
   </script>
 </body>
 </html>

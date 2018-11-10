@@ -18,25 +18,26 @@ component :: React.Component Props
 component = React.component { displayName: "App", initialState, receiveProps, render }
   where
     initialState =
-      { initialText: ""
+      { text: ""
       , fileName: "Untitled"
       , fileDirty: false
       , split: Split
+      , paginated: true
       , previewScale: 0.5
       }
 
-    receiveProps {isFirstMount: true, setState} = do
+    receiveProps {isFirstMount: true, setState, state} = do
       let setSplit split = const $ void $ setState \s -> s {split = split}
       Ipc.on "splitViewOnlyEditor"  $ setSplit OnlyEditor
       Ipc.on "splitViewSplit"       $ setSplit Split
       Ipc.on "splitViewOnlyPreview" $ setSplit OnlyPreview
       initFile
         { onFileLoad: \name txt -> do
-            void $ setState \s -> s { initialText = txt
+            void $ setState \s -> s { text        = txt
                                     , fileName    = name
                                     , fileDirty   = false
                                     }
-            renderMd txt
+            renderMd txt state.paginated
         , onFileSave: \name -> setState \s -> s {fileName = name, fileDirty = false}
         }
     receiveProps _ = pure unit
@@ -55,15 +56,19 @@ component = React.component { displayName: "App", initialState, receiveProps, re
                 , fileDirty: state.fileDirty
                 , split:     state.split
                 , onSplitChange: \sp -> setState \s -> s {split = sp}
+                , paginated: state.paginated
+                , onPaginatedChange: \p -> do
+                    setState \s -> s {paginated = p}
+                    renderMd state.text p
                 }
           , CodeMirror.uncontrolled
               { -- unfortunately, onChange is called on first text load
                 -- see https://github.com/scniro/react-codemirror2/issues/119
                 onChange: \txt -> do
-                  setState \s -> s {fileDirty = true}
+                  setState \s -> s {text = txt, fileDirty = true}
                   setWindowDirty
-                  renderMd txt
-              , value: state.initialText
+                  renderMd txt state.paginated
+              , value: state.text
               , autoCursor: false
               , options:
                   { mode:
@@ -84,7 +89,9 @@ component = React.component { displayName: "App", initialState, receiveProps, re
                 }
               }
           , R.div
-              { className: "preview"
+              { className: "preview" <> if state.paginated
+                                        then " paginated"
+                                        else ""
               , children: [
                   R.iframe
                   { className: "previewFrame"

@@ -4,6 +4,8 @@
 }
 body {
   font-family: Georgia;
+  margin: 50px;
+  margin-top: 100px;
 }
 img {
   max-width: 100%;

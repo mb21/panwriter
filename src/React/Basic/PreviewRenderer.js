@@ -36,6 +36,7 @@ var md = require('markdown-it')()
 
 var renderInProgress = false
   , textToRenderNext = null
+  , paginated = true
   , previewWindow
   ;
 
@@ -48,9 +49,12 @@ exports.printPreview = function() {
 ipcRenderer.on('filePrint', exports.printPreview);
 
 exports.renderMd = function(str) {
-  return function() {
-    textToRenderNext = str;
-    renderNext();
+  return function(isPaginated) {
+    return function() {
+      textToRenderNext = str;
+      paginated = isPaginated;
+      renderNext();
+    }
   }
 };
 
@@ -84,7 +88,7 @@ function render(str) {
   Document.setDoc(str, htmlText, meta);
 
   // call paged.js
-  return previewWindow ? previewWindow.render(Document)
+  return previewWindow ? previewWindow.render(Document, paginated)
                        : Promise.resolve();
 }
 
@@ -93,6 +97,6 @@ document.addEventListener("DOMContentLoaded", function() {
   var iframe = document.querySelector('.previewFrame');
   iframe.addEventListener("load", function() {
     previewWindow = iframe.contentWindow;
-    previewWindow.render(Document);
+    previewWindow.render(Document, paginated);
   });
 });

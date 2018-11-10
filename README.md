@@ -156,7 +156,6 @@ Currently, we use a custom version of `paged.js` ([pull pending](https://gitlab.
 - Preview:
     - fix relative paths for images: either with `<base>` tag ([breaks internal links](https://stackoverflow.com/questions/1889076/what-are-the-recommendations-for-html-base-tag) like `[go](#there)`) or by [rewriting the images' `src`](https://github.com/markdown-it/markdown-it/blob/master/docs/architecture.md#renderer).
     - respect `css`, `header-includes`, `toc` metadata fields
-    - add button to toggle paged.js on/off
     - sync scroll, or at least scroll on click
 - Editor:
     - adjust font-size on editor window resize

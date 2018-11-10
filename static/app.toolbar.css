@@ -39,6 +39,9 @@
 .toolbar .btns {
   margin-left: auto;
 }
+.toolbar .btns > * {
+  display: inline-block;
+}
 
 .toolbar button {
   -webkit-app-region: no-drag;
