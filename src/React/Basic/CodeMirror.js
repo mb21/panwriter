@@ -2,8 +2,13 @@
 
 var React        = require('react')
   , UnControlled = require('react-codemirror2').UnControlled
+  , ipcRenderer  = require('electron').ipcRenderer
   ;
 
+require('codemirror/addon/dialog/dialog');
+require('codemirror/addon/search/search');
+require('codemirror/addon/search/searchcursor');
+require('codemirror/addon/search/jump-to-line');
 require('codemirror/addon/mode/overlay');
 require('codemirror/mode/markdown/markdown');
 require('codemirror/mode/yaml/yaml');
@@ -36,3 +41,13 @@ exports.replaceSelection = function(fn) {
     }
   }
 }
+
+ipcRenderer.on('find', function() {
+  editor.execCommand('findPersistent');
+})
+ipcRenderer.on('findNext', function() {
+  editor.execCommand('findPersistentNext');
+})
+ipcRenderer.on('findPrevious', function() {
+  editor.execCommand('findPersistentPrev');
+})

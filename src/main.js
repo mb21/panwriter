@@ -201,6 +201,22 @@ function setMenu(aWindowIsOpen=true) {
       , {role: 'paste'}
       , {role: 'delete'}
       , {role: 'selectall'}
+      , {type: 'separator'}
+      , { label: 'Find'
+        , accelerator: 'CmdOrCtrl+F'
+        , click: windowSend.bind(this, 'find')
+        , enabled: aWindowIsOpen
+        }
+      , { label: 'Find Next'
+        , accelerator: 'CmdOrCtrl+G'
+        , click: windowSend.bind(this, 'findNext')
+        , enabled: aWindowIsOpen
+        }
+      , { label: 'Find Previous'
+        , accelerator: 'CmdOrCtrl+Shift+G'
+        , click: windowSend.bind(this, 'findPrevious')
+        , enabled: aWindowIsOpen
+        }
       ]
     }
   , { label: 'Format'

@@ -31,6 +31,26 @@ div.CodeMirror {
   outline: 0;
 }
 
+.CodeMirror-dialog {
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  font-size: 13px;
+  width: 100%;
+  padding: 2px 50px;
+  box-sizing: border-box;
+  background: rgba(230, 230, 230, 0.75);
+  z-index: 10;
+  position: fixed;
+  bottom: 0;
+}
+.CodeMirror-search-field {
+  font-size: 13px;
+  width: 200px !important;
+  margin-left: 15px;
+}
+.CodeMirror-search-hint {
+  display: none;
+}
+
 .CodeMirror div.CodeMirror-cursor {
   border-left: 1px solid black;
 }
