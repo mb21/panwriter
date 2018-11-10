@@ -49,9 +49,9 @@
     "markdown-it-sub": "^1.0.0",
     "markdown-it-sup": "^1.0.0",
     "markdown-it-texmath": "^0.5.2",
-    "react": "^16.6.0",
+    "react": "^16.6.1",
     "react-codemirror2": "^5.1.0",
-    "react-dom": "^16.4.2",
+    "react-dom": "^16.6.1",
     "yaml-front-matter": "^4.0.0"
   },
   "devDependencies": {
