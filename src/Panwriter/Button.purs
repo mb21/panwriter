@@ -1,30 +1,21 @@
 module Panwriter.Button where
 
-import Prelude
+import Data.Monoid (guard)
 
-import Effect (Effect)
-import React.Basic as React
+import React.Basic (JSX)
 import React.Basic.DOM as R
-import React.Basic.Events as Events
+import React.Basic.Events (EventHandler)
 
 type Props = {
   active   :: Boolean
-, children :: Array React.JSX
-, onClick  :: Effect Unit
+, children :: Array JSX
+, onClick  :: EventHandler
 }
 
-component :: React.Component Props
-component = React.component { displayName: "Button", initialState, receiveProps, render }
-  where
-    initialState = {}
-
-    receiveProps _ = pure unit
-
-    render { props } =
-      R.button
-        { className: if props.active
-                     then "active"
-                     else ""
-        , children: props.children
-        , onClick: Events.handler_ $ props.onClick
-        }
+button :: Props -> JSX
+button props = 
+  R.button
+    { className: guard props.active "active"
+    , children:  props.children
+    , onClick:   props.onClick
+    }

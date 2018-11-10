@@ -1,23 +1,32 @@
 module Panwriter.App where
 
 import Prelude
-
+import Data.Monoid (guard)
 import Electron.IpcRenderer as Ipc
 import Panwriter.File (initFile, setWindowDirty)
-import Panwriter.Toolbar (ViewSplit(..))
-import Panwriter.Toolbar as Toolbar
-import React.Basic as React
+import Panwriter.Toolbar (toolbar, ViewSplit(..))
 import React.Basic.CodeMirror as CodeMirror
+import React.Basic.PreviewRenderer (renderMd, printPreview)
+
+import React.Basic (Component, JSX, StateUpdate(..), capture_, createComponent, make, send)
 import React.Basic.DOM as R
 import React.Basic.Events as Events
-import React.Basic.PreviewRenderer (renderMd, printPreview)
+
+component :: Component Props
+component = createComponent "App"
 
 type Props = {}
 
-component :: React.Component Props
-component = React.component { displayName: "App", initialState, receiveProps, render }
-  where
-    initialState =
+data Action = Zoom (Number -> Number -> Number)
+            | SplitChange ViewSplit
+            | Paginate Boolean
+            | TextChanged String
+            | FileSaved String
+            | FileLoaded String String
+
+app :: Props -> JSX
+app = make component
+  { initialState:
       { text: ""
       , fileName: "Untitled"
       , fileDirty: false
@@ -26,98 +35,101 @@ component = React.component { displayName: "App", initialState, receiveProps, re
       , previewScale: 0.5
       }
 
-    receiveProps {isFirstMount: true, setState, state} = do
-      let setSplit split = const $ void $ setState \s -> s {split = split}
-      Ipc.on "splitViewOnlyEditor"  $ setSplit OnlyEditor
-      Ipc.on "splitViewSplit"       $ setSplit Split
-      Ipc.on "splitViewOnlyPreview" $ setSplit OnlyPreview
+  , didMount: \self -> do
+      let splitChange = const <<< send self <<< SplitChange
+      Ipc.on "splitViewOnlyEditor"  $ splitChange OnlyEditor
+      Ipc.on "splitViewSplit"       $ splitChange Split
+      Ipc.on "splitViewOnlyPreview" $ splitChange OnlyPreview
       initFile
-        { onFileLoad: \name txt -> do
-            void $ setState \s -> s { text        = txt
-                                    , fileName    = name
-                                    , fileDirty   = false
-                                    }
-            renderMd txt state.paginated
-        , onFileSave: \name -> setState \s -> s {fileName = name, fileDirty = false}
+        { onFileLoad: \name txt -> send self $ FileLoaded name txt
+        , onFileSave: send self <<< FileSaved
         }
-    receiveProps _ = pure unit
+  
+  , update: \{state} action -> case action of
+      Zoom op             -> Update state {previewScale = op state.previewScale 0.125}
+      SplitChange sp      -> Update state {split = sp}
+      Paginate p          -> UpdateAndSideEffects state {paginated = p}
+                              \self -> renderMd self.state.text p
+      TextChanged txt     -> UpdateAndSideEffects state {text = txt, fileDirty = true}
+                               \self -> do
+                                 setWindowDirty
+                                 renderMd txt self.state.paginated
+      FileSaved name      -> Update state {fileName = name, fileDirty = false}
+      FileLoaded name txt -> UpdateAndSideEffects state 
+                               { text      = txt
+                               , fileName  = name
+                               , fileDirty = false
+                               }
+                               \self -> renderMd txt self.state.paginated
 
-    render { props, state, setState } =
-      let zoom op = Events.handler_ $ setState \s -> s {previewScale = op s.previewScale 0.125}
-      in  R.div {
-          className: case state.split of
-                       OnlyEditor  -> "app onlyeditor"
-                       Split       -> "app split"
-                       OnlyPreview -> "app onlypreview"
-        , children: [
-            React.element
-              Toolbar.component
-                { fileName:  state.fileName
-                , fileDirty: state.fileDirty
-                , split:     state.split
-                , onSplitChange: \sp -> setState \s -> s {split = sp}
-                , paginated: state.paginated
-                , onPaginatedChange: \p -> do
-                    setState \s -> s {paginated = p}
-                    renderMd state.text p
-                }
-          , CodeMirror.uncontrolled
-              { -- unfortunately, onChange is called on first text load
-                -- see https://github.com/scniro/react-codemirror2/issues/119
-                onChange: \txt -> do
-                  setState \s -> s {text = txt, fileDirty = true}
-                  setWindowDirty
-                  renderMd txt state.paginated
-              , value: state.text
-              , autoCursor: false
-              , options:
-                  { mode:
-                    { name: "yaml-frontmatter"
-                    , base: "markdown"
+  , render: \self@{state} ->
+      R.div {
+        className: case state.split of
+                     OnlyEditor  -> "app onlyeditor"
+                     Split       -> "app split"
+                     OnlyPreview -> "app onlypreview"
+      , children: [
+          toolbar
+            { fileName:          state.fileName
+            , fileDirty:         state.fileDirty
+            , split:             state.split
+            , onSplitChange:     capture_ self <<< SplitChange
+            , paginated:         state.paginated
+            , onPaginatedChange: capture_ self <<< Paginate
+            }
+        , CodeMirror.uncontrolled
+            { -- unfortunately, onChange is called on first text load
+              -- see https://github.com/scniro/react-codemirror2/issues/119
+              onChange: send self <<< TextChanged
+            , value: state.text
+            , autoCursor: false
+            , options:
+                { mode:
+                  { name: "yaml-frontmatter"
+                  , base: "markdown"
+                  }
+                , theme: "paper"
+                , indentUnit: 4 -- because of how numbered lists behave in CommonMark
+                , tabSize: 4
+                , lineNumbers: false
+                , lineWrapping: true
+                , autofocus: true
+                , extraKeys:
+                    { "Enter": "newlineAndIndentContinueMarkdownList"
+                    , "Tab": "indentMore"
+                    , "Shift-Tab": "indentLess"
                     }
-                  , theme: "paper"
-                  , indentUnit: 4 -- because of how numbered lists behave in CommonMark
-                  , tabSize: 4
-                  , lineNumbers: false
-                  , lineWrapping: true
-                  , autofocus: true
-                  , extraKeys:
-                      { "Enter": "newlineAndIndentContinueMarkdownList"
-                      , "Tab": "indentMore"
-                      , "Shift-Tab": "indentLess"
-                      }
+              }
+            }
+        , R.div
+            { className: "preview" <> guard state.paginated " paginated"
+            , children: [
+                R.iframe
+                { className: "previewFrame"
+                , style: R.css
+                  { transform: "scale(" <> show state.previewScale <> ")"
+                  , width:  show (100.0 / state.previewScale) <> "%"
+                  , height: show (100.0 / state.previewScale) <> "%"
+                  }
+                , src: "../previewFrame/previewFrame.html"
                 }
-              }
-          , R.div
-              { className: "preview" <> if state.paginated
-                                        then " paginated"
-                                        else ""
-              , children: [
-                  R.iframe
-                  { className: "previewFrame"
-                  , style: R.css
-                    { transform: "scale(" <> show state.previewScale <> ")"
-                    , width:  show (100.0 / state.previewScale) <> "%"
-                    , height: show (100.0 / state.previewScale) <> "%"
-                    }
-                  , src: "../previewFrame/previewFrame.html"
-                  }
-                , R.button
-                  { className: "zoomBtn zoomIn"
-                  , onClick: zoom (+)
-                  , children: [R.text "+"]
-                  }
-                , R.button
-                  { className: "zoomBtn zoomOut"
-                  , onClick: zoom (-)
-                  , children: [R.text "-"]
-                  }
-                , R.button
-                  { className: "exportBtn"
-                  , onClick: Events.handler_ printPreview
-                  , children: [R.text "🖨"]
-                  }
-                ]
-              }
-          ]
-      }
+              , R.button
+                { className: "zoomBtn zoomIn"
+                , onClick: capture_ self $ Zoom (+)
+                , children: [R.text "+"]
+                }
+              , R.button
+                { className: "zoomBtn zoomOut"
+                , onClick: capture_ self $ Zoom (-)
+                , children: [R.text "-"]
+                }
+              , R.button
+                { className: "exportBtn"
+                , onClick: Events.handler_ printPreview
+                , children: [R.text "🖨"]
+                }
+              ]
+            }
+        ]
+    }
+  }

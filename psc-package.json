@@ -1,7 +1,7 @@
 {
   "name": "panwriter",
-  "set": "react-basic-patch",
-  "source": "https://github.com/KSF-Media/package-sets.git",
+  "set": "psc-0.12.0-with-react-basic-v5.0.0",
+  "source": "https://github.com/mb21/package-sets.git",
   "depends": [
     "console",
     "effect",

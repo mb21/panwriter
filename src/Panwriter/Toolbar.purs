@@ -1,11 +1,12 @@
 module Panwriter.Toolbar where
 
 import Prelude
+import Data.Monoid (guard)
 
-import Effect (Effect)
-import Panwriter.Button as Button
-import React.Basic as React
+import Panwriter.Button (button)
+import React.Basic (JSX)
 import React.Basic.DOM as R
+import React.Basic.Events (EventHandler)
 
 data ViewSplit = OnlyEditor | Split | OnlyPreview
 derive instance eqViewSplit :: Eq ViewSplit
@@ -14,86 +15,72 @@ type Props = {
   fileName          :: String
 , fileDirty         :: Boolean
 , split             :: ViewSplit
-, onSplitChange     :: ViewSplit -> Effect Unit
+, onSplitChange     :: ViewSplit -> EventHandler
 , paginated         :: Boolean
-, onPaginatedChange :: Boolean -> Effect Unit
+, onPaginatedChange :: Boolean -> EventHandler
 }
 
-component :: React.Component Props
-component = React.component { displayName: "Toolbar", initialState, receiveProps, render }
-  where
-    initialState = {}
-
-    receiveProps _ = pure unit
-
-    render { props, state, setState } =
-      let editedStr = if props.fileDirty
-                      then " — Edited"
-                      else ""
-          paginatedBtn =
-            if props.split == OnlyEditor
-            then []
-            else [
+toolbar :: Props -> JSX
+toolbar props = 
+  R.div
+    { className: "toolbar"
+    , children: [
+        R.div
+          { className: "toolbararea"
+          , children: [
               R.div
-                { className: ""
+                { className: "filename"
                 , children: [
-                    React.element
-                      Button.component
-                        { active:   props.paginated
-                        , children: [ R.img
-                                        { alt: "Paginated"
-                                        , src: "page.svg"
-                                        }
-                                    ]
-                        , onClick:  props.onPaginatedChange $ not props.paginated
-                        }
+                    R.span
+                      { children: [R.text props.fileName]
+                      }
+                  , R.span
+                      { className: "edited"
+                      , children: [R.text editedStr]
+                      }
                   ]
                 }
-              ]
-          splitBtns = [
-            R.div
-              { className: "btngroup"
-              , children: [
-                  splitButton OnlyEditor
-                , splitButton Split
-                , splitButton OnlyPreview
-                ]
-              }
+            , R.div -- icons from https://material.io/tools/icons/
+                { className: "btns"
+                , children: [paginatedBtn <> splitBtns]
+                }
             ]
-            where
-              splitButton split =
-                let splitIcon OnlyEditor  = {alt: "Editor",  src: "notes.svg"}
-                    splitIcon Split       = {alt: "Split",   src: "vertical_split.svg"}
-                    splitIcon OnlyPreview = {alt: "Preview", src: "visibility.svg"}
-                in  React.element
-                      Button.component
-                        { active:   split == props.split
-                        , children: [R.img $ splitIcon split]
-                        , onClick:  props.onSplitChange split
-                        }
-      in  R.div
-            { className: "toolbar"
-            , children: [
-                R.div
-                  { className: "toolbararea"
-                  , children: [
-                      R.div
-                        { className: "filename"
-                        , children: [
-                            R.span
-                              { children: [R.text props.fileName]
-                              }
-                          , R.span
-                              { className: "edited"
-                              , children: [R.text editedStr]
-                              }
-                          ]
-                        }
-                    , R.div -- icons from https://material.io/tools/icons/
-                        { className: "btns"
-                        , children: paginatedBtn <> splitBtns
-                        }
-                    ]
+          }
+      ]
+    }
+    where
+      editedStr = guard props.fileDirty " — Edited"
+      paginatedBtn = guard (props.split /= OnlyEditor)
+        R.div
+          { className: ""
+          , children: [
+              button
+                { active:   props.paginated
+                , children: [ R.img
+                                { alt: "Paginated"
+                                , src: "page.svg"
+                                }
+                            ]
+                , onClick:  props.onPaginatedChange $ not props.paginated
+                }
+            ]
+          }
+      splitBtns =
+        R.div
+          { className: "btngroup"
+          , children: [
+              splitButton OnlyEditor
+            , splitButton Split
+            , splitButton OnlyPreview
+            ]
+          }
+        where
+          splitButton split =
+            let splitIcon OnlyEditor  = {alt: "Editor",  src: "notes.svg"}
+                splitIcon Split       = {alt: "Split",   src: "vertical_split.svg"}
+                splitIcon OnlyPreview = {alt: "Preview", src: "visibility.svg"}
+            in  button
+                  { active:   split == props.split
+                  , children: [R.img $ splitIcon split]
+                  , onClick:  props.onSplitChange split
                   }
-              ]
-            }
