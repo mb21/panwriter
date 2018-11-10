@@ -37,7 +37,7 @@
   },
   "dependencies": {
     "babel-runtime": "^6.26.0",
-    "codemirror": "^5.40.2",
+    "codemirror": "^5.41.0",
     "fix-path": "^2.1.0",
     "katex": "^0.10.0-rc.1",
     "markdown-it": "^8.4.2",
