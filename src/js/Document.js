@@ -8,28 +8,63 @@ var remote          = require('electron').remote
   , readDataDirFile = require('./Exporter').readDataDirFile
   ;
 
-var md   = ""
-  , html = ""
-  , meta = {}
+var md       = ""
+  , yaml     = ""
+  , bodyMd   = ""
+  , meta     = {}
+  , html     = ""
   , filePath = remote.getCurrentWindow().filePathToLoad
   ;
 
-module.exports.setDoc = function(mdStr, htmlStr, metaObj) {
-  md   = mdStr;
+
+/*
+ * Setters
+ */
+
+module.exports.setDoc = function(mdStr, yamlStr, bodyMdStr, metaObj) {
+  md     = mdStr;
+  yaml   = yamlStr;
+  bodyMd = bodyMdStr;
+  meta   = metaObj;
+}
+
+module.exports.setHtml = function(htmlStr) {
   html = htmlStr;
-  meta = metaObj;
+}
+
+module.exports.setPath = function(path) {
+  filePath = path;
+}
+
+
+/*
+ * Getters
+ */
+
+module.exports.getDoc = function() {
+  return {
+    md:     md
+  , yaml:   yaml
+  , bodyMd: bodyMd
+  , meta:   meta
+  , html:   html
+  };
 }
 
 module.exports.getMd = function() {
   return md;
 }
 
+module.exports.getMeta = function() {
+  return meta;
+}
+
 module.exports.getHtml = function() {
   return html;
 }
 
-module.exports.getMeta = function() {
-  return meta;
+module.exports.getBodyMd = function() {
+  return bodyMd;
 }
 
 var defaultStaticCss = ''
@@ -61,8 +96,4 @@ module.exports.getCss = async function() {
 
 module.exports.getPath = function() {
   return filePath;
-}
-
-module.exports.setPath = function(path) {
-  filePath = path;
 }

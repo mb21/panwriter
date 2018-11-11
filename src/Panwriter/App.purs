@@ -5,6 +5,7 @@ import Data.Monoid (guard)
 import Electron.IpcRenderer as Ipc
 import Panwriter.File (initFile, setWindowDirty)
 import Panwriter.Toolbar (toolbar, ViewSplit(..))
+import Panwriter.Document (updateDocument)
 import React.Basic.CodeMirror as CodeMirror
 import React.Basic.PreviewRenderer (renderMd, printPreview)
 
@@ -49,18 +50,21 @@ app = make component
       Zoom op             -> Update state {previewScale = op state.previewScale 0.125}
       SplitChange sp      -> Update state {split = sp}
       Paginate p          -> UpdateAndSideEffects state {paginated = p}
-                              \self -> renderMd self.state.text p
+                              \self -> renderMd p
       TextChanged txt     -> UpdateAndSideEffects state {text = txt, fileDirty = true}
                                \self -> do
                                  setWindowDirty
-                                 renderMd txt self.state.paginated
+                                 updateDocument txt
+                                 renderMd self.state.paginated
       FileSaved name      -> Update state {fileName = name, fileDirty = false}
       FileLoaded name txt -> UpdateAndSideEffects state 
                                { text      = txt
                                , fileName  = name
                                , fileDirty = false
                                }
-                               \self -> renderMd txt self.state.paginated
+                               \self -> do
+                                 updateDocument txt
+                                 renderMd self.state.paginated
 
   , render: \self@{state} ->
       R.div {

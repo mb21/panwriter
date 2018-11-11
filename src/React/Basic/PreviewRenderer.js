@@ -31,11 +31,10 @@ var md = require('markdown-it')()
            .use( require('markdown-it-sub') )
            .use( require('markdown-it-sup') )
            .use( require('markdown-it-texmath').use(katex) )
-  , yamlFront = require('yaml-front-matter')
   ;
 
 var renderInProgress = false
-  , textToRenderNext = null
+  , needsRerender = false
   , paginated = true
   , previewWindow
   ;
@@ -48,21 +47,19 @@ exports.printPreview = function() {
 
 ipcRenderer.on('filePrint', exports.printPreview);
 
-exports.renderMd = function(str) {
-  return function(isPaginated) {
-    return function() {
-      textToRenderNext = str;
-      paginated = isPaginated;
-      renderNext();
-    }
+exports.renderMd = function(isPaginated) {
+  return function() {
+    needsRerender = true;
+    paginated = isPaginated;
+    renderNext();
   }
 };
 
 // buffers the latest text change and renders when previous rendering is done
 function renderNext() {
-  if (textToRenderNext !== null && !renderInProgress) {
+  if (needsRerender && !renderInProgress) {
     renderInProgress = true;
-    render(textToRenderNext)
+    render()
       .catch( function(e) {
         console.warn("paged.js crashed", e.message);
       })
@@ -70,22 +67,14 @@ function renderNext() {
         renderInProgress = false;
         renderNext();
       });
-    textToRenderNext = null;
+    needsRerender = false;
   }
 }
 
 // takes a markdown str, renders it to preview and sets Document
-function render(str) {
-  var meta;
-  try {
-    meta = yamlFront.safeLoadFront(str)
-  } catch (e) {
-    meta = {__content: str};
-  }
-
-  var htmlText = md.render(meta.__content);
-
-  Document.setDoc(str, htmlText, meta);
+function render() {
+  var htmlStr = md.render( Document.getBodyMd() );
+  Document.setHtml(htmlStr);
 
   // call paged.js
   return previewWindow ? previewWindow.render(Document, paginated)

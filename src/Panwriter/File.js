@@ -13,15 +13,20 @@ var onFileSaveCb;
 exports.initFile = function(conf) {
   return function() {
     onFileSaveCb = conf.onFileSave;
-    var win = remote.getCurrentWindow();
-    var filePath = Document.getPath();
+
+    var fileLoaded = function(text) {
+          win.fileIsDirty = false;
+          conf.onFileLoad(name)(text)();
+        }
+      , win = remote.getCurrentWindow()
+      , filePath = Document.getPath()
+      ;
+
     if (filePath) {
       var name = filename(filePath);
       if (win.isFileToImport) {
-        Importer.importFile(filePath, function(text) {
-          win.fileIsDirty = false;
-          conf.onFileLoad(name)(text)();
-        });
+        // import file
+        Importer.importFile(filePath, fileLoaded);
       } else {
         // open file
         fs.readFile(filePath, "utf8", function(err, text) {
@@ -30,8 +35,7 @@ exports.initFile = function(conf) {
           } else {
             win.setTitle(name);
             win.setRepresentedFilename(filePath);
-            win.fileIsDirty = false;
-            conf.onFileLoad(name)(text)();
+            fileLoaded(text);
           }
         });
       }
