@@ -38,7 +38,7 @@ app = make component
       }
 
   , didMount: \self -> do
-      let splitChange = const <<< send self <<< SplitChange
+      let splitChange = send self <<< SplitChange
       Ipc.on "splitViewOnlyEditor"  $ splitChange OnlyEditor
       Ipc.on "splitViewSplit"       $ splitChange Split
       Ipc.on "splitViewOnlyPreview" $ splitChange OnlyPreview
@@ -46,8 +46,8 @@ app = make component
         { onFileLoad: \name txt -> send self $ FileLoaded name txt
         , onFileSave: send self <<< FileSaved
         }
-      Ipc.on "addBold" $ const $ CodeMirror.replaceSelection Formatter.bold
-      Ipc.on "addMetadataStyle" $ const $ Formatter.addStyle >>= send self <<< TextChange
+      Ipc.on "addBold" $ CodeMirror.replaceSelection Formatter.bold
+      Ipc.on "addMetadataStyle" $ Formatter.addStyle >>= send self <<< TextChange
   
   , update: \{state} action -> case action of
       Zoom op             -> Update state {previewScale = op state.previewScale 0.125}
