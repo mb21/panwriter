@@ -210,6 +210,15 @@ function setMenu(aWindowIsOpen=true) {
         , click: windowSend.bind(this, 'addBold')
         , enabled: aWindowIsOpen
         }
+      , { label: 'Italic'
+        , accelerator: 'CmdOrCtrl+I'
+        , click: windowSend.bind(this, 'addItalic')
+        , enabled: aWindowIsOpen
+        }
+      , { label: 'Strikethrough'
+        , click: windowSend.bind(this, 'addStrikethrough')
+        , enabled: aWindowIsOpen
+        }
       , {type: 'separator'}
       , { label: 'Add Metadata Style'
         , click: windowSend.bind(this, 'addMetadataStyle')

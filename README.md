@@ -159,7 +159,7 @@ Currently, we use a custom version of `paged.js` ([pull pending](https://gitlab.
     - sync scroll, or at least scroll on click
 - Editor:
     - adjust font-size on editor window resize
-    - add `Insert` menu with YAML and markdown snippets to insert at cursor position
+    - expand `Format` menu
     - spell check
     - find/replace
 - make the app launchable from terminal with `panwriter file.md`

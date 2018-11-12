@@ -1,5 +1,7 @@
 module Panwriter.Formatter (
   bold
+, italic
+, strikethrough
 , addStyle
 ) where
 
@@ -18,6 +20,12 @@ import Web.HTML.Window (alert)
 
 bold :: String -> String
 bold txt = "**" <> txt <> "**"
+
+italic :: String -> String
+italic txt = "_" <> txt <> "_"
+
+strikethrough :: String -> String
+strikethrough txt = "~~" <> txt <> "~~"
 
 addStyle :: Effect String
 addStyle = do

@@ -46,7 +46,9 @@ app = make component
         { onFileLoad: \name txt -> send self $ FileLoaded name txt
         , onFileSave: send self <<< FileSaved
         }
-      Ipc.on "addBold" $ CodeMirror.replaceSelection Formatter.bold
+      Ipc.on "addBold"          $ CodeMirror.replaceSelection Formatter.bold
+      Ipc.on "addItalic"        $ CodeMirror.replaceSelection Formatter.italic
+      Ipc.on "addStrikethrough" $ CodeMirror.replaceSelection Formatter.strikethrough
       Ipc.on "addMetadataStyle" $ Formatter.addStyle >>= send self <<< TextChange
   
   , update: \{state} action -> case action of
