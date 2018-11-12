@@ -3,10 +3,12 @@
   "set": "psc-0.12.0-with-react-basic-v5.0.0",
   "source": "https://github.com/mb21/package-sets.git",
   "depends": [
+    "argonaut-core",
     "console",
     "effect",
     "psci-support",
     "react-basic",
+    "strings",
     "web-html"
   ]
 }

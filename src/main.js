@@ -203,6 +203,20 @@ function setMenu(aWindowIsOpen=true) {
       , {role: 'selectall'}
       ]
     }
+  , { label: 'Format'
+    , submenu: [
+        { label: 'Bold'
+        , accelerator: 'CmdOrCtrl+B'
+        , click: windowSend.bind(this, 'addBold')
+        , enabled: aWindowIsOpen
+        }
+      , {type: 'separator'}
+      , { label: 'Add Metadata Style'
+        , click: windowSend.bind(this, 'addMetadataStyle')
+        , enabled: aWindowIsOpen
+        }
+      ]
+    }
   , { label: 'View'
     , submenu: [
         { label: 'Show Only Editor'
@@ -256,7 +270,7 @@ function setMenu(aWindowIsOpen=true) {
     })
 
     // Window menu
-    template[4].submenu = [
+    template[5].submenu = [
       {role: 'close'}
     , {role: 'minimize'}
     , {role: 'zoom'}

@@ -6,6 +6,7 @@ import Electron.IpcRenderer as Ipc
 import Panwriter.File (initFile, setWindowDirty)
 import Panwriter.Toolbar (toolbar, ViewSplit(..))
 import Panwriter.Document (updateDocument)
+import Panwriter.Formatter as Formatter
 import React.Basic.CodeMirror as CodeMirror
 import React.Basic.PreviewRenderer (renderMd, printPreview)
 
@@ -21,7 +22,7 @@ type Props = {}
 data Action = Zoom (Number -> Number -> Number)
             | SplitChange ViewSplit
             | Paginate Boolean
-            | TextChanged String
+            | TextChange String
             | FileSaved String
             | FileLoaded String String
 
@@ -45,13 +46,15 @@ app = make component
         { onFileLoad: \name txt -> send self $ FileLoaded name txt
         , onFileSave: send self <<< FileSaved
         }
+      Ipc.on "addBold" $ const $ CodeMirror.replaceSelection Formatter.bold
+      Ipc.on "addMetadataStyle" $ const $ Formatter.addStyle >>= send self <<< TextChange
   
   , update: \{state} action -> case action of
       Zoom op             -> Update state {previewScale = op state.previewScale 0.125}
       SplitChange sp      -> Update state {split = sp}
       Paginate p          -> UpdateAndSideEffects state {paginated = p}
                               \self -> renderMd p
-      TextChanged txt     -> UpdateAndSideEffects state {text = txt, fileDirty = true}
+      TextChange txt      -> UpdateAndSideEffects state {text = txt, fileDirty = true}
                                \self -> do
                                  setWindowDirty
                                  updateDocument txt
@@ -84,7 +87,7 @@ app = make component
         , CodeMirror.uncontrolled
             { -- unfortunately, onChange is called on first text load
               -- see https://github.com/scniro/react-codemirror2/issues/119
-              onChange: send self <<< TextChanged
+              onChange: send self <<< TextChange
             , value: state.text
             , autoCursor: false
             , options:
