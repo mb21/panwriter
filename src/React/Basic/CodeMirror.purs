@@ -9,3 +9,7 @@ foreign import uncontrolled :: forall a.
                                  , onChange :: String -> Effect Unit
                                  | a }
                                  -> JSX
+
+-- triggers onChange
+foreign import replaceSelection :: (String -> String) -- ^ replace function that receives selected text
+                                -> Effect Unit
