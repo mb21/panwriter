@@ -17,6 +17,9 @@ exports.uncontrolled = function(props) {
     , ps = Object.assign(props, {
                editorDidMount: function(ed) {
                  editor = ed;
+                 if (props.options.autofocus) {
+                  editor.focus();
+                 }
                }
              , onChange: function (ed, diffData, value) {
                  onChange(value)();

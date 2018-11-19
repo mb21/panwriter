@@ -32,7 +32,7 @@ app = make component
       { text: ""
       , fileName: "Untitled"
       , fileDirty: false
-      , split: Split
+      , split: OnlyEditor
       , paginated: true
       , previewScale: 0.5
       }
