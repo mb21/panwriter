@@ -6,7 +6,7 @@ exports.on = function(channel) {
   return function(listener) {
     return function() {
       ipcRenderer.on(channel, function(){
-        listener()();
+        listener();
       });
     };
   };
