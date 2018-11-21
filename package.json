@@ -43,6 +43,7 @@
     "katex": "^0.10.0-rc.1",
     "markdown-it": "^8.4.2",
     "markdown-it-attrs": "^2.3.2",
+    "markdown-it-bracketed-spans": "^1.0.1",
     "markdown-it-container": "^2.0.0",
     "markdown-it-deflist": "^2.0.3",
     "markdown-it-footnote": "^3.0.1",

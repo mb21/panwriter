@@ -5,6 +5,7 @@ var ipcRenderer = require('electron').ipcRenderer
   , katex       = require('katex')
   ;
 var md = require('markdown-it')()
+           .use( require('markdown-it-bracketed-spans') )
            // TODO: sanitize attrs (at least keys with `on*` and vals with `javascript:*`, see https://github.com/arve0/markdown-it-attrs#security
            .use( require('markdown-it-attrs') )
            .use( require('markdown-it-container'), 'dynamic', {
