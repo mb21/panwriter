@@ -33,8 +33,8 @@ app = make component
       , fileName: "Untitled"
       , fileDirty: false
       , split: OnlyEditor
-      , paginated: true
-      , previewScale: 0.5
+      , paginated: false
+      , previewScale: 1.0
       }
 
   , didMount: \self -> do

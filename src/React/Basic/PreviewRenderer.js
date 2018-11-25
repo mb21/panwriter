@@ -36,7 +36,7 @@ var md = require('markdown-it')()
 
 var renderInProgress = false
   , needsRerender = false
-  , paginated = true
+  , paginated = false
   , previewWindow
   ;
 
