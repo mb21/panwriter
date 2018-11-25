@@ -26,6 +26,15 @@
   opacity: 1;
 }
 
+.toolbar .windowbuttons {
+  position: fixed;
+  top: 5px;
+  left: 8px;
+}
+.toolbar .windowbuttons:hover {
+  display: none;
+}
+
 .toolbar .filename {
   color: #676767;
   grid-column-start: 2;

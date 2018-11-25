@@ -28,7 +28,12 @@ toolbar props =
         R.div
           { className: "toolbararea"
           , children: [
-              R.div
+              R.img
+                { src: "macOS_window_buttons.png"
+                , className: "windowbuttons"
+                , height: "12"
+                }
+            , R.div
                 { className: "filename"
                 , children: [
                     R.span
