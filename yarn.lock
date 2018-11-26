@@ -1366,6 +1366,11 @@ markdown-it-implicit-figures@^0.9.0:
   version "0.9.0"
   resolved "https://registry.yarnpkg.com/markdown-it-implicit-figures/-/markdown-it-implicit-figures-0.9.0.tgz#21bf562ab4fd177828febb5e24eda571cf9d1a58"
 
+markdown-it-pandoc@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/markdown-it-pandoc/-/markdown-it-pandoc-0.5.0.tgz#a578fafbc17b73f5be344a798769a8f797619f0a"
+  integrity sha512-/D+DACt06RmL9s9brEsSyoUdbNhe93N4c/UgtvjJBbyYfFUSbHp2XewjSi34aFMVHMXy/1WLBKQb8NxQyLKwug==
+
 markdown-it-sub@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/markdown-it-sub/-/markdown-it-sub-1.0.0.tgz#375fd6026eae7ddcb012497f6411195ea1e3afe8"
