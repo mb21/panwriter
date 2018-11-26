@@ -16,21 +16,24 @@ const windows = []
     ;
 
 function createWindow(filePath, toImport=false) {
-  const win = new BrowserWindow({
+  // TODO: remove `titleBarStyle` line below and code up own buttons
+  // this will also give us rounded corners back
+  // see https://stackoverflow.com/questions/35876939
+  // and https://github.com/electron/electron/blob/master/docs/api/frameless-window.md
+  var macOSWindowConfig = process.platform === 'darwin'
+                          ? { frame: false
+                            , titleBarStyle: 'customButtonsOnHover'
+                            }
+                          : {}
+  const win = new BrowserWindow( Object.assign({
       width: 1000
     , height: 800
-    , frame: false
-    // TODO: remove `titleBarStyle` line below and code up own buttons
-    // this will also give us rounded corners back
-    // see https://stackoverflow.com/questions/35876939
-    // and https://github.com/electron/electron/blob/master/docs/api/frameless-window.md
-    , titleBarStyle: 'customButtonsOnHover'
     , webPreferences: {
         nodeIntegration: false
       //, contextIsolation: true
       , preload: __dirname + '/js/rendererPreload.js'
       }
-    });
+    }, macOSWindowConfig));
   
   win.fileIsDirty = false;
   win.filePathToLoad = filePath;
