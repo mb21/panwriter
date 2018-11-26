@@ -107,7 +107,6 @@ However, there might still be minor differences between the preview and `File ->
 
 Things we should emulate in the preview, but for which there are [no markdown-it plugins yet](https://github.com/atom-community/markdown-preview-plus/wiki/markdown-it-vs.-pandoc):
 
-- `bracketed_spans` [markdown-it-span/issue](https://github.com/pnewell/markdown-it-span/issues/2)
 - `grid_tables`: grid tables are the only ones in pandoc, that can have e.g. a list in a cell
 - [`raw_attribute`](http://pandoc.org/MANUAL.html#extension-raw_attribute): we should probably just strip them from preview
 - backslash at end of paragraph, e.g. `![](foo.png) \` An ugly workaround that already works is `![](foo.png) &nbsp;`
@@ -129,16 +128,20 @@ Unfortunately, still no browser fully implements the CSS specs for paged media (
 
 Install [yarn](https://yarnpkg.com/), then:
 
+    ## Download source code
+    git clone git@github.com:mb21/panwriter.git
+    cd panwriter
+
     ## Install npm dependencies, PureScript compiler, etc
     yarn install
 
     ## Build the PureScript project
     yarn build
 
-    # Run the app
+    ## To run the app in development mode:
     yarn start
 
-    # To build distributable app package (goes to ./dist):
+    ## To build distributable app package (goes to ./dist):
     yarn dist
 
 
@@ -161,9 +164,11 @@ Currently, we use a custom version of `paged.js` ([pull pending](https://gitlab.
     - expand `Format` menu
     - spell check
     - improve find/replace
+    - `editor.refresh()` on split change
 - make the app launchable from terminal with `panwriter file.md`
 - add a Settings/Preferences window where you can:
-    - set an editor theme css
+    - set a CodeMirror editor theme css
+    - change what we currently save in `~/.panwriter`
     - choose `pandoc` executable (probably with file-open dialog, which we can use for app sandboxing with security-scoped bookmarks)
 - [Code signing](https://www.electron.build/code-signing) and [Auto Update](https://www.electron.build/auto-update)
 - Write pandoc lua filter that does some PanWriter-specific transformations:
