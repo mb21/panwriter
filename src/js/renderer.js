@@ -2,3 +2,7 @@
 // be executed in the renderer process for that window
 
 appMain.main()
+
+if (window.platform === 'darwin') {
+  document.body.classList.add("_macOS");
+}

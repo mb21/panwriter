@@ -30,6 +30,10 @@
   position: fixed;
   top: 5px;
   left: 8px;
+  display: none;
+}
+._macOS .windowbuttons {
+  display: block;
 }
 .toolbar .windowbuttons:hover {
   display: none;

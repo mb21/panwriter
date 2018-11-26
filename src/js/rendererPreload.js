@@ -6,4 +6,5 @@ process.once('loaded', () => {
   fixPath();
   global.appMain = require('../../output/AppRenderer');
   require('./Exporter');
+  global.platform = process.platform;
 });
