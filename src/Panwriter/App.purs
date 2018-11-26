@@ -1,9 +1,9 @@
 module Panwriter.App where
 
 import Prelude
-import Data.Monoid (guard)
 import Electron.IpcRenderer as Ipc
 import Panwriter.File (initFile, setWindowDirty)
+import Panwriter.Preview (preview)
 import Panwriter.Toolbar (toolbar, ViewSplit(..))
 import Panwriter.Document (updateDocument)
 import Panwriter.Formatter as Formatter
@@ -12,15 +12,13 @@ import React.Basic.PreviewRenderer (renderMd, printPreview)
 
 import React.Basic (Component, JSX, StateUpdate(..), capture_, createComponent, make, send)
 import React.Basic.DOM as R
-import React.Basic.Events as Events
 
 component :: Component Props
 component = createComponent "App"
 
 type Props = {}
 
-data Action = Zoom (Number -> Number -> Number)
-            | SplitChange ViewSplit
+data Action = SplitChange ViewSplit
             | Paginate Boolean
             | TextChange String
             | FileSaved String
@@ -34,7 +32,6 @@ app = make component
       , fileDirty: false
       , split: OnlyEditor
       , paginated: false
-      , previewScale: 1.0
       }
 
   , didMount: \self -> do
@@ -52,7 +49,6 @@ app = make component
       Ipc.on "addMetadataStyle" $ Formatter.addStyle >>= send self <<< TextChange
   
   , update: \{state} action -> case action of
-      Zoom op             -> Update state {previewScale = op state.previewScale 0.125}
       SplitChange sp      -> Update state {split = sp}
       Paginate p          -> UpdateAndSideEffects state {paginated = p}
                               \self -> renderMd p
@@ -110,35 +106,10 @@ app = make component
                     }
               }
             }
-        , R.div
-            { className: "preview" <> guard state.paginated " paginated"
-            , children: [
-                R.iframe
-                { className: "previewFrame"
-                , style: R.css
-                  { transform: "scale(" <> show state.previewScale <> ")"
-                  , width:  show (100.0 / state.previewScale) <> "%"
-                  , height: show (100.0 / state.previewScale) <> "%"
-                  }
-                , src: "../previewFrame/previewFrame.html"
-                }
-              , R.button
-                { className: "zoomBtn zoomIn"
-                , onClick: capture_ self $ Zoom (+)
-                , children: [R.text "+"]
-                }
-              , R.button
-                { className: "zoomBtn zoomOut"
-                , onClick: capture_ self $ Zoom (-)
-                , children: [R.text "-"]
-                }
-              , R.button
-                { className: "exportBtn"
-                , onClick: Events.handler_ printPreview
-                , children: [R.text "🖨"]
-                }
-              ]
-            }
+        , preview
+            { paginated: state.paginated
+            , printPreview: printPreview
+            }  
         ]
     }
   }
