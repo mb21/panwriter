@@ -10,7 +10,8 @@
     "build": "psc-package build",
     "clean": "rm -rf .cache .psc-package .psci_modules node_modules output dist",
     "debug": "electron --inspect-brk=5858 .",
-    "dist": "electron-builder -m"
+    "dist": "electron-builder",
+    "dist-all": "electron-builder -mlw"
   },
   "repository": "https://github.com/mb21/panwriter",
   "keywords": [
@@ -23,15 +24,25 @@
     "appId": "com.panwriter.app",
     "fileAssociations": [
       {
-        "ext": [
-          "md",
-          "markdown",
-          "txt",
-          "html",
-          "docx",
-          "odt",
-          "tex"
-        ]
+        "ext": "md"
+      },
+      {
+        "ext": "markdown"
+      },
+      {
+        "ext": "txt"
+      },
+      {
+        "ext": "html"
+      },
+      {
+        "ext": "docx"
+      },
+      {
+        "ext": "odt"
+      },
+      {
+        "ext": "tex"
       }
     ]
   },
