@@ -44,7 +44,17 @@
       {
         "ext": "tex"
       }
-    ]
+    ],
+    "mac": {
+      "icon": "build/icons/icon.png"
+    },
+    "linux": {
+      "desktop": {
+        "Name": "PanWriter",
+        "Comment": "Markdown editor with pandoc integration and paginated preview"
+      },
+      "category": "Utility"
+    }
   },
   "dependencies": {
     "babel-runtime": "^6.26.0",

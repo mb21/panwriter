@@ -1,4 +1,4 @@
-<img src="build/icon.png" align="right" width="128">
+<img src="build/icons/icon.png" align="right" width="128">
 
 # PanWriter
 
