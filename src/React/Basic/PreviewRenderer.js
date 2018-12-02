@@ -2,18 +2,20 @@
 
 var ipcRenderer = require('electron').ipcRenderer
   , Document    = require('../../src/js/Document')
+  , Renderers   = require('../../src/js/Renderers')
   , md          = require('markdown-it-pandoc')()
   ;
 
 var renderInProgress = false
   , needsRerender = false
   , paginated = false
-  , previewWindow
+  , previewDiv
+  , printFn
   ;
 
 exports.printPreview = function() {
-  if (previewWindow) {
-    previewWindow.print();
+  if (printFn) {
+    printFn();
   }
 };
 
@@ -33,10 +35,11 @@ function renderNext() {
     renderInProgress = true;
     render()
       .catch( function(e) {
-        console.warn("paged.js crashed", e.message);
+        console.warn("renderer crashed", e.message);
       })
-      .then(function(){
+      .then(function(printCb){
         renderInProgress = false;
+        printFn = printCb
         renderNext();
       });
     needsRerender = false;
@@ -44,20 +47,19 @@ function renderNext() {
 }
 
 // takes a markdown str, renders it to preview and sets Document
-function render() {
+async function render() {
   var htmlStr = md.render( Document.getBodyMd() );
   Document.setHtml(htmlStr);
 
-  // call paged.js
-  return previewWindow ? previewWindow.render(Document, paginated)
-                       : Promise.resolve();
+  if (previewDiv) {
+    if (paginated) {
+      return Renderers.pagedjs(Document, previewDiv)
+    } else {
+      return Renderers.plain(Document, previewDiv)
+    }
+  }
 }
 
-// do initial render when iframe is ready
 document.addEventListener("DOMContentLoaded", function() {
-  var iframe = document.querySelector('.previewFrame');
-  iframe.addEventListener("load", function() {
-    previewWindow = iframe.contentWindow;
-    previewWindow.render(Document, paginated);
-  });
+  previewDiv = document.querySelector('.previewDiv');
 });

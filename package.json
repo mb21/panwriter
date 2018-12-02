@@ -58,7 +58,7 @@
   },
   "dependencies": {
     "babel-runtime": "^6.26.0",
-    "codemirror": "^5.41.0",
+    "codemirror": "^5.42.0",
     "fix-path": "^2.1.0",
     "js-yaml": "^3.12.0",
     "katex": "^0.10.0-rc.1",
@@ -73,6 +73,7 @@
     "markdown-it-sub": "^1.0.0",
     "markdown-it-sup": "^1.0.0",
     "markdown-it-texmath": "^0.5.2",
+    "pagedjs": "^0.1.25",
     "react": "^16.6.1",
     "react-codemirror2": "^5.1.0",
     "react-dom": "^16.6.1"

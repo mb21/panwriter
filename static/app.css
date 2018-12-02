@@ -40,9 +40,8 @@ input:active, input:focus {
 .preview.paginated {
   background-color: grey;
 }
-.previewFrame {
+.preview iframe {
   border: 0;
-  transform-origin: 0 0;
 }
 .preview > button {
   width:  36px;

@@ -1,0 +1,45 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="../node_modules/katex/dist/katex.min.css">
+    <link rel="stylesheet" href="../node_modules/markdown-it-texmath/css/texmath.css">
+    <style>
+    @media screen {
+      .pagedjs_pages {
+        overflow: scroll;
+        padding: 90px 50px 50px 50px;
+      }
+
+      .pagedjs_page {
+        background-color: white;
+        margin: 0 auto;
+        margin-bottom: 50px;
+      }
+    }
+    </style>
+  </head>
+  <body style="margin: 0; padding: 0;">
+    <!-- for some reason, if we don't prefetch this, we get a `Paged is undefined` the first time -->
+    <script src="../node_modules/pagedjs/dist/paged.legacy.js"></script>
+
+    <script>
+      var renderTo = document.body;
+      window.PagedConfig = {
+        auto: false
+      }
+
+      function render(content) {
+        renderTo.innerHTML = content;
+
+        // re-insert paged.js because it currently doesn't support re-rendering
+        var s = document.createElement('script');
+        s.src = "../node_modules/pagedjs/dist/paged.legacy.js";
+        s.type = "text/javascript";
+        s.async = false;
+        renderTo.appendChild(s);
+
+        var previewer = new Paged.Previewer();
+        return previewer.preview()
+      }
+    </script>
+  </body>
+</html>

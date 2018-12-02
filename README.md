@@ -144,14 +144,6 @@ Install [yarn](https://yarnpkg.com/), then:
     ## To build distributable app package (goes to ./dist):
     yarn dist
 
-
-Currently, we use a custom version of `paged.js` ([pull pending](https://gitlab.pagedmedia.org/tools/pagedjs/merge_requests/28)). If you would make changes to that, you would have to:
-
-    npm install -g browserify
-    cd previewFrame
-    git clone -b reflow git@gitlab.pagedmedia.org:mb21/pagedjs.git
-    clear; cd pagedjs && npm run-script compile && cd .. && browserify previewFrame.js -o previewFrame.bundle.js
-
 ### TODOs
 
 - Windows, Linux versions

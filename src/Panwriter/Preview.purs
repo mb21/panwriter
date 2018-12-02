@@ -31,14 +31,14 @@ preview = make component
       R.div
         { className: "preview" <> guard props.paginated " paginated"
         , children: [
-            R.iframe
-            { className: "previewFrame"
+            R.div
+            { className: "previewDiv"
             , style: R.css
               { transform: "scale(" <> show state.previewScale <> ")"
               , width:  show (100.0 / state.previewScale) <> "%"
               , height: show (100.0 / state.previewScale) <> "%"
+              , transformOrigin: "0 0"
               }
-            , src: "../previewFrame/previewFrame.html"
             }
           , R.button
             { className: "zoomBtn zoomIn"
