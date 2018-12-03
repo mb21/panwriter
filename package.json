@@ -48,6 +48,10 @@
     "mac": {
       "icon": "build/icons/icon.png"
     },
+    "win": {
+      "icon": "build/icons/icon.png",
+      "target": ["portable"]
+    },
     "linux": {
       "desktop": {
         "Name": "PanWriter",
@@ -81,7 +85,7 @@
   "devDependencies": {
     "electron": "2.0.13",
     "electron-builder": "^20.31.2",
-    "psc-package-bin-simple": "^1.0.4",
-    "purescript": "^0.12.0"
+    "psc-package-bin-simple": "^3.0.1",
+    "purescript": "^0.12.1"
   }
 }
