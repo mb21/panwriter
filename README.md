@@ -9,7 +9,7 @@ PanWriter is a distraction-free markdown editor with two unique features:
 
 ![](screenshot.png)
 
-**[Download PanWriter 0.5 for macOS](https://github.com/mb21/panwriter/releases)**
+**[Download PanWriter 0.5](https://github.com/mb21/panwriter/releases)**
 
 After copying the file to your `Applications` folder, the first time you have to right-click on the app, select `Open` and agree to a scary warning about us not being registered developers.
 
@@ -89,15 +89,25 @@ There are two exceptions to the rule that the key in the `output` YAML is the fi
 1. When exporting to a `.tex` file, the key should be named `latex`.
 2. When exporting to a `.pdf` file, the key for PanWriter to look up in the `output` YAML can be specified with the `pdf-format` key (see example above). Default is also `latex`, but you can also use `context`, `html`, `ms`, `beamer`, `revealjs`, etc.  In fact, you could set it to anything, if you had a corresponding key in the `output` YAML with a `to:` field. See also [Creating a PDF with pandoc](http://pandoc.org/MANUAL.html#creating-a-pdf).
 
+### User Data Directory
+
+You can place certain files in the PanWriter user directory, which [should be](https://electronjs.org/docs/api/app#appgetpathname):
+
+- macOS: `/Users/your-user-name/Library/Application Support/PanWriterUserData`
+- Linux: `~/.config/PanWriterUserData`
+- Windows: `C:\Users\your-user-name\AppData\Local\PanWriterUserData`
+
+If the directory does not exist, you can create it.
+
 ### Default CSS and YAML
 
-PanWriter will look for `~/.panwriter/default.css` to load CSS for the preview. If that file is not found, it will use sensible defaults.
+PanWriter will look for a `default.css` file in the user data directory, to load CSS for the preview. If that file is not found, it will use sensible defaults.
 
-If you put some YAML in `~/.panwriter/default.yaml`, PanWriter will merge this with the YAML in your input file (to determine the command-line arguments to call pandoc with) and add the `--metadata-file` option. The YAML should be in the same format as above.
+If you put a `default.yaml` file in the data directory, PanWriter will merge this with the YAML in your input file (to determine the command-line arguments to call pandoc with) and add the `--metadata-file` option. The YAML should be in the same format as above.
 
 ### Document types / themes
 
-You can e.g. put `type: letter` in the YAML of your input document. In that case, PanWriter will look for `~/.panwriter/letter.yaml` and `~/.panwriter/letter.css` instead of `default.yaml` and `default.css`.
+You can e.g. put `type: letter` in the YAML of your input document. In that case, PanWriter will look for `letter.yaml` and `letter.css` instead of `default.yaml` and `default.css` in the user data directory.
 
 ### Markdown syntax
 
@@ -146,7 +156,6 @@ Install [yarn](https://yarnpkg.com/), then:
 
 ### TODOs
 
-- Windows, Linux versions
 - Preview:
     - respect `css`, `header-includes`, `toc` metadata fields
     - sync scroll, or at least scroll on click
@@ -159,9 +168,9 @@ Install [yarn](https://yarnpkg.com/), then:
 - make the app launchable from terminal with `panwriter file.md`
 - add a Settings/Preferences window where you can:
     - set a CodeMirror editor theme css
-    - change what we currently save in `~/.panwriter`
+    - edit the default CSS and YAML files
     - choose `pandoc` executable (probably with file-open dialog, which we can use for app sandboxing with security-scoped bookmarks)
-- [Code signing](https://www.electron.build/code-signing) and [Auto Update](https://www.electron.build/auto-update)
+- [Auto Update](https://www.electron.build/auto-update)
 - Write pandoc lua filter that does some PanWriter-specific transformations:
   - add [page-break syntax](https://github.com/jgm/pandoc/issues/1934#issuecomment-274327751)
   - [Variable substitution in body](https://github.com/jgm/pandoc/issues/1950#issuecomment-427671251)

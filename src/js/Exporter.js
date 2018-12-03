@@ -140,7 +140,8 @@ async function readDataDirFile(type, suffix) {
   if (typeof type !== 'string') {
     type = 'default'
   }
-  const dataDir  = process.env.HOME + '/.panwriter/' //TODO: Windows
+  const dataDir = [remote.app.getPath('appData'), 'PanWriterUserData', '']
+                    .join(path.sep)
       , fileName = dataDir + type + suffix
       ;
   return await promisify(fs.readFile)(fileName, 'utf8');
