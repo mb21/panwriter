@@ -49,8 +49,7 @@
       "icon": "build/icons/icon.png"
     },
     "win": {
-      "icon": "build/icons/icon.png",
-      "target": ["portable"]
+      "icon": "build/icons/icon.png"
     },
     "linux": {
       "desktop": {
