@@ -49,7 +49,7 @@
       "icon": "build/icons/icon.png"
     },
     "win": {
-      "icon": "build/icons/icon.png"
+      "icon": "build/icons/icon.ico"
     },
     "linux": {
       "desktop": {

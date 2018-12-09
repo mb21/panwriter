@@ -1,8 +1,9 @@
-The PanWriter logo – i.e. the icon.png in this directory – is explicitly
-not licensed under the GNU GPL or any other license.
+The PanWriter logo in any form, including the files in this directory,
+is explicitly not licensed under the GNU GPL or any other license.
 
 The logo is copyright 2018 Mauro Bieg.
 
 You are free to use the logo to promote and/or refer to PanWriter.
-However, you may not use the logo to distribute PanWriter or any other app or product,
-neither in any app store nor otherwise, unless you receive a written permission by me.
+However, you may not use the logo to distribute PanWriter or any other
+app or product, neither in any app store nor otherwise, unless
+you receive a written permission by me.
