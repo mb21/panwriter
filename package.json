@@ -61,7 +61,7 @@
   },
   "dependencies": {
     "babel-runtime": "^6.26.0",
-    "codemirror": "^5.42.0",
+    "codemirror": "^5.42.2",
     "fix-path": "^2.1.0",
     "js-yaml": "^3.12.0",
     "katex": "^0.10.0-rc.1",
@@ -76,7 +76,7 @@
     "markdown-it-sub": "^1.0.0",
     "markdown-it-sup": "^1.0.0",
     "markdown-it-texmath": "^0.5.2",
-    "pagedjs": "^0.1.25",
+    "pagedjs": "^0.1.29",
     "react": "^16.6.1",
     "react-codemirror2": "^5.1.0",
     "react-dom": "^16.6.1"
@@ -84,7 +84,7 @@
   "devDependencies": {
     "electron": "2.0.13",
     "electron-builder": "^20.31.2",
-    "psc-package-bin-simple": "^3.0.1",
+    "psc-package": "^3.0.1",
     "purescript": "^0.12.1"
   }
 }
