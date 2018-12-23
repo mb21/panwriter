@@ -46,7 +46,9 @@ app = make component
       Ipc.on "addBold"          $ CodeMirror.replaceSelection Formatter.bold
       Ipc.on "addItalic"        $ CodeMirror.replaceSelection Formatter.italic
       Ipc.on "addStrikethrough" $ CodeMirror.replaceSelection Formatter.strikethrough
-      Ipc.on "addMetadataStyle" $ Formatter.addStyle >>= send self <<< TextChange
+      Ipc.on "addMetadataStyle" $ do
+        Formatter.addStyle >>= send self <<< TextChange
+        send self $ Paginate true
   
   , update: \{state} action -> case action of
       SplitChange sp      -> Update state {split = sp}

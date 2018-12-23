@@ -239,7 +239,7 @@ function setMenu(aWindowIsOpen=true) {
         , enabled: aWindowIsOpen
         }
       , {type: 'separator'}
-      , { label: 'Add Metadata Style'
+      , { label: 'Add CSS style'
         , click: windowSend.bind(this, 'addMetadataStyle')
         , enabled: aWindowIsOpen
         }
