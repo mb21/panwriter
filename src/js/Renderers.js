@@ -95,14 +95,6 @@ async function setupSwapFrames(target, filePath) {
   }
 }
 
-async function docToStr(doc) {
-  const cssStr = await doc.getCss()
-  return [
-      '<style>', cssStr, '</style>'
-    , doc.getHtml()
-    ].join('')
-}
-
 async function renderAndSwap(previewDiv, filePath, renderFn) {
   await setupSwapFrames(previewDiv, filePath);
   return renderFn(frame1.contentWindow).then( function(){
@@ -116,7 +108,10 @@ async function renderAndSwap(previewDiv, filePath, renderFn) {
 
 module.exports.plain = async function(doc, previewDiv){
   await setupSingleFrame(previewDiv, doc.getPath());
-  const content = await docToStr(doc);
+  const cssStr = await doc.getCss()
+      , content = [
+          '<style>', cssStr, '</style>', doc.getHtml()
+        ].join('')
   singleFrame.contentDocument.body.innerHTML = content;
   return singleFrame.contentWindow.print;
 }
@@ -124,7 +119,8 @@ module.exports.plain = async function(doc, previewDiv){
 module.exports.pagedjs = async function(doc, previewDiv){
   return renderAndSwap(previewDiv, doc.getPath(), async (frameWindow) => {
 
-    const content    = await docToStr(doc)
+    const cssStr     = await doc.getCss()
+        , content    = doc.getHtml()
         , renderTo   = frameWindow.document.body
         , renderDone = new Promise(resolveRender => {
             frameWindow.PagedConfig = {
@@ -147,6 +143,10 @@ module.exports.pagedjs = async function(doc, previewDiv){
         ;
 
     renderTo.innerHTML = content;
+
+    const style = document.createElement('style');
+    style.textContent = cssStr;
+    frameWindow.document.head.appendChild(style);
 
     const s = document.createElement('script');
     s.src = app.getAppPath() + "/node_modules/pagedjs/dist/paged.legacy.polyfill.js";
