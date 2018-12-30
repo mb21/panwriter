@@ -15,6 +15,8 @@ foreign import uncontrolled :: forall a.
                                  | a }
                                  -> JSX
 
+foreign import refresh :: Effect Unit
+
 -- triggers onChange
 foreign import replaceSelection :: (String -> String) -- ^ replace function that receives selected text
                                 -> Effect Unit

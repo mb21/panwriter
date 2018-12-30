@@ -51,7 +51,8 @@ app = make component
         send self $ Paginate true
   
   , update: \{state} action -> case action of
-      SplitChange sp      -> Update state {split = sp}
+      SplitChange sp      -> UpdateAndSideEffects state {split = sp}
+                              \self -> CodeMirror.refresh
       Paginate p          -> UpdateAndSideEffects state {paginated = p}
                               \self -> renderMd p
       TextChange txt      -> UpdateAndSideEffects state {text = txt, fileDirty = true}

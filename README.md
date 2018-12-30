@@ -164,7 +164,6 @@ Install [yarn](https://yarnpkg.com/), then:
     - expand `Format` menu
     - spell check
     - improve find/replace
-    - `editor.refresh()` on split change
 - make the app launchable from terminal with `panwriter file.md`
 - add a Settings/Preferences window where you can:
     - set a CodeMirror editor theme css

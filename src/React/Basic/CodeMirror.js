@@ -68,6 +68,12 @@ exports.uncontrolled = function(props) {
   return React.createElement(UnControlled, adjustProps(props, 'onChange'));
 }
 
+exports.refresh = function() {
+  if (editor) {
+    editor.refresh();
+  }
+}
+
 exports.replaceSelection = function(fn) {
   return function() {
     if (editor) {
