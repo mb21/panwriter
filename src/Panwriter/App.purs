@@ -84,12 +84,10 @@ app = make component
             , paginated:         state.paginated
             , onPaginatedChange: capture_ self <<< Paginate
             }
-        , CodeMirror.uncontrolled
-            { -- unfortunately, onChange is called on first text load
-              -- see https://github.com/scniro/react-codemirror2/issues/119
-              onChange: send self <<< TextChange
+        , CodeMirror.controlled
+            { onBeforeChange: send self <<< TextChange
             , value: state.text
-            , autoCursor: false
+            , autoCursor: true
             , options:
                 { mode:
                   { name: "yaml-frontmatter"

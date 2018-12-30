@@ -1,7 +1,9 @@
 "use strict";
 
 var React        = require('react')
-  , UnControlled = require('react-codemirror2').UnControlled
+  , ReactCM2     = require('react-codemirror2')
+  , Controlled   = ReactCM2.Controlled
+  , UnControlled = ReactCM2.UnControlled
   , CodeMirror   = require('codemirror')
   , ipcRenderer  = require('electron').ipcRenderer
   ;
@@ -46,16 +48,24 @@ var editor
     }
   ;
 
+function adjustProps(props, changeHandlerName) {
+  var onChange = props[changeHandlerName]
+    , moreProps = {
+        editorDidMount: onEditorDidMount.bind(this, props)
+      }
+    ;
+  moreProps[changeHandlerName] = function (ed, diffData, value) {
+    onChange(value)();
+  }
+  return Object.assign(props, moreProps);
+}
+
+exports.controlled = function(props) {
+  return React.createElement(Controlled, adjustProps(props, 'onBeforeChange'));
+}
+
 exports.uncontrolled = function(props) {
-  var onChange = props.onChange
-    , ps = Object.assign(props, {
-               editorDidMount: onEditorDidMount.bind(this, props)
-             , onChange: function (ed, diffData, value) {
-                 onChange(value)();
-               }
-             }
-           );
-  return React.createElement(UnControlled, ps);
+  return React.createElement(UnControlled, adjustProps(props, 'onChange'));
 }
 
 exports.replaceSelection = function(fn) {
