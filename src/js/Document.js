@@ -67,6 +67,20 @@ module.exports.getBodyMd = function() {
   return bodyMd;
 }
 
+module.exports.getNrOfYamlLines = function() {
+  if (yaml.length === 0) {
+    return 0;
+  } else {
+    var nrOfLines = 2;
+    for(var i=0; i<yaml.length; ++i) {
+      if (yaml[i] === '\n'){
+        nrOfLines++;
+      }
+    }
+    return nrOfLines;
+  }
+}
+
 var defaultStaticCss = ''
   , defaultCss = ''
   , docType = null

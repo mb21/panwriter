@@ -3,7 +3,7 @@
 var ipcRenderer = require('electron').ipcRenderer
   , Document    = require('../../src/js/Document')
   , Renderers   = require('../../src/js/Renderers')
-  , md          = require('markdown-it-pandoc')()
+  , mdItPandoc  = require('markdown-it-pandoc')()
   ;
 
 var renderInProgress = false
@@ -46,9 +46,28 @@ function renderNext() {
   }
 }
 
-// takes a markdown str, renders it to preview and sets Document
+function mdItSourceMap(nrLinesOffset) {
+  if (nrLinesOffset === undefined) {
+    nrLinesOffset = 1;
+  }
+  return function(md) {
+    var temp = md.renderer.renderToken.bind(md.renderer)
+    md.renderer.renderToken = function (tokens, idx, options) {
+      var token = tokens[idx]
+      if (token.level === 0 && token.map !== null && token.type.endsWith('_open')) {
+        token.attrPush(['data-source-line', token.map[0] + nrLinesOffset])
+      }
+      return temp(tokens, idx, options)
+    }
+  }
+}
+
+// takes a markdown str, renders it to preview and to Document.setHTML
 async function render() {
-  var htmlStr = md.render( Document.getBodyMd() );
+  var htmlStr = mdItPandoc
+        .use( mdItSourceMap(1 + Document.getNrOfYamlLines()) )
+        .render( Document.getBodyMd() )
+        ;
   Document.setHtml(htmlStr);
 
   if (previewDiv) {
