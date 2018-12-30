@@ -28,6 +28,35 @@ input:active, input:focus {
   display: none;
 }
 
+@media (max-width: 900px) {
+  /* small window and split view */
+  .app.split .CodeMirror {
+    font-size: 15px;
+  }
+  .app.split .CodeMirror-lines {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+}
+@media (max-width: 500px) {
+  /* even smaller window */
+  div.CodeMirror {
+    font-size: 15px;
+  }
+  div.CodeMirror-lines {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+}
+
+@media (min-width: 1000px) {
+  /* large screen */
+  .app.onlyeditor .CodeMirror {
+    font-size: 19px;
+  }
+}
+
+
 .react-codemirror2 {
   background-color: #f7f7f7;
 }

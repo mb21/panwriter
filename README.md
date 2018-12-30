@@ -160,7 +160,6 @@ Install [yarn](https://yarnpkg.com/), then:
     - respect `css`, `header-includes`, `toc` metadata fields
     - sync scroll, or at least scroll on click
 - Editor:
-    - adjust font-size on editor window resize
     - expand `Format` menu
     - spell check
     - improve find/replace

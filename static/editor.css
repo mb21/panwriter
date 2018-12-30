@@ -15,7 +15,8 @@ div.CodeMirror {
 }
 
 /* Make editor resize to fit its content
- * see also https://codemirror.net/doc/manual.html#styling
+ * see https://codemirror.net/doc/manual.html#styling
+ * and https://codemirror.net/demo/resize.html
  */
 .CodeMirror-scroll {
   overflow-x: auto;
@@ -25,6 +26,10 @@ div.CodeMirror {
   padding: 60px 50px 50px 50px;
   max-width: 40em;
   margin: 0 auto;
+}
+
+.CodeMirror-sizer {
+  overflow: hidden;
 }
 
 .CodeMirror-vscrollbar:focus {
