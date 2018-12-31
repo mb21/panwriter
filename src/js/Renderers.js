@@ -101,7 +101,7 @@ async function renderAndSwap(previewDiv, filePath, renderFn) {
     frame1.style.display = 'block';
     frame2.style.display = 'none';
     [frame2, frame1] = [frame1, frame2]
-    return frame2.contentWindow.print;
+    return frame2.contentWindow;
   });
 }
 
@@ -113,7 +113,7 @@ module.exports.plain = async function(doc, previewDiv){
           '<style>', cssStr, '</style>', doc.getHtml()
         ].join('')
   singleFrame.contentDocument.body.innerHTML = content;
-  return singleFrame.contentWindow.print;
+  return singleFrame.contentWindow;
 }
 
 module.exports.pagedjs = async function(doc, previewDiv){

@@ -37,9 +37,9 @@ function renderNext() {
       .catch( function(e) {
         console.warn("renderer crashed", e.message);
       })
-      .then(function(printCb){
+      .then(function(contentWindow){
         renderInProgress = false;
-        printFn = printCb
+        printFn = contentWindow.print;
         renderNext();
       });
     needsRerender = false;
