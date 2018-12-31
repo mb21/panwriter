@@ -50,8 +50,13 @@ var editor
 
 function adjustProps(props, changeHandlerName) {
   var onChange = props[changeHandlerName]
+    , onScroll = props.onScroll
     , moreProps = {
         editorDidMount: onEditorDidMount.bind(this, props)
+      , onScroll: function(ed, scrollInfo) {
+          var scrollTop = Math.round(scrollInfo.top);
+          onScroll(scrollTop)(ed)();
+        }
       }
     ;
   moreProps[changeHandlerName] = function (ed, diffData, value) {

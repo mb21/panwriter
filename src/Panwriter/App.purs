@@ -1,17 +1,18 @@
 module Panwriter.App where
 
 import Prelude
-import Electron.IpcRenderer as Ipc
-import Panwriter.File (initFile, setWindowDirty)
-import Panwriter.Preview (preview)
-import Panwriter.Toolbar (toolbar, ViewSplit(..))
-import Panwriter.Document (updateDocument)
-import Panwriter.Formatter as Formatter
-import React.Basic.CodeMirror as CodeMirror
-import React.Basic.PreviewRenderer (renderMd, printPreview)
+import Effect (Effect)
 
+import Electron.IpcRenderer as Ipc
+import Panwriter.Document (updateDocument)
+import Panwriter.File (initFile, setWindowDirty)
+import Panwriter.Formatter as Formatter
+import Panwriter.Preview (preview)
+import Panwriter.Toolbar (ViewSplit(..), toolbar)
 import React.Basic (Component, JSX, StateUpdate(..), capture_, createComponent, make, send)
+import React.Basic.CodeMirror as CodeMirror
 import React.Basic.DOM as R
+import React.Basic.PreviewRenderer (renderMd, printPreview, scrollPreview)
 
 component :: Component Props
 component = createComponent "App"
@@ -23,6 +24,15 @@ data Action = SplitChange ViewSplit
             | TextChange String
             | FileSaved String
             | FileLoaded String String
+
+
+renderPreview :: forall t. { split :: ViewSplit
+                           , paginated :: Boolean
+                           | t } -> Effect Unit
+renderPreview state = do
+    when (state.split /= OnlyEditor) $
+        renderMd state.paginated
+
 
 app :: Props -> JSX
 app = make component
@@ -52,14 +62,16 @@ app = make component
   
   , update: \{state} action -> case action of
       SplitChange sp      -> UpdateAndSideEffects state {split = sp}
-                              \self -> CodeMirror.refresh
+                               \self -> do
+                                 CodeMirror.refresh
+                                 renderPreview self.state
       Paginate p          -> UpdateAndSideEffects state {paginated = p}
-                              \self -> renderMd p
+                               \self -> renderMd p
       TextChange txt      -> UpdateAndSideEffects state {text = txt, fileDirty = true}
                                \self -> do
                                  setWindowDirty
                                  updateDocument txt
-                                 renderMd self.state.paginated
+                                 renderPreview self.state
       FileSaved name      -> Update state {fileName = name, fileDirty = false}
       FileLoaded name txt -> UpdateAndSideEffects state 
                                { text      = txt
@@ -68,7 +80,7 @@ app = make component
                                }
                                \self -> do
                                  updateDocument txt
-                                 renderMd self.state.paginated
+                                 renderPreview self.state
 
   , render: \self@{state} ->
       R.div {
@@ -87,6 +99,7 @@ app = make component
             }
         , CodeMirror.controlled
             { onBeforeChange: send self <<< TextChange
+            , onScroll: scrollPreview
             , value: state.text
             , autoCursor: true
             , options:

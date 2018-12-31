@@ -10,24 +10,94 @@ var renderInProgress = false
   , needsRerender = false
   , paginated = false
   , previewDiv
-  , printFn
+  , scrollMap
+  , frameWindow
   ;
 
 exports.printPreview = function() {
-  if (printFn) {
-    printFn();
+  if (frameWindow) {
+    frameWindow.print();
   }
 };
 
 ipcRenderer.on('filePrint', exports.printPreview);
 
+exports.scrollPreview = function(scrollTop) {
+  return function(editor) {
+    return function() {
+      if (frameWindow) {
+        if (!scrollMap) {
+          var editorOffset = parseInt(window.getComputedStyle(
+                               document.querySelector('.CodeMirror-lines')
+                             ).getPropertyValue('padding-top'), 10)
+          buildScrollMap(editor, editorOffset);
+        }
+        frameWindow.scrollTo(0, scrollMap[scrollTop]);
+      }
+    };
+  };
+};
+
 exports.renderMd = function(isPaginated) {
   return function() {
+    console.log("renderMd")
     needsRerender = true;
     paginated = isPaginated;
     renderNext();
   }
 };
+
+function buildScrollMap(editor, editorOffset) {
+  // scrollMap maps source-editor-line-offsets to preview-element-offsets
+  // (offset is the number of vertical pixels from the top)
+  scrollMap = [];
+  scrollMap[0] = 0;
+
+  // lineOffsets[i] holds top-offset of line i in the source editor
+  var lineOffsets = [undefined, 0]
+    , knownLineOffsets = []
+    , offsetSum = 0
+    ;
+  editor.eachLine( function(line) {
+    offsetSum += line.height;
+    lineOffsets.push(offsetSum);
+  });
+
+  var lastEl;
+  frameWindow.document.querySelectorAll('body > [data-source-line]').forEach( function(el){
+    // for each element in the preview with source annotation
+    var line = parseInt(el.getAttribute('data-source-line'), 10)
+      , lineOffset = lineOffsets[line]
+      ;
+    // fill in the target offset for the corresponding editor line
+    scrollMap[lineOffset] = el.offsetTop - editorOffset;
+    knownLineOffsets.push(lineOffset)
+
+    lastEl = el;
+  });
+  if (lastEl) {
+    scrollMap[offsetSum] = lastEl.offsetTop + lastEl.offsetHeight;
+    knownLineOffsets.push(offsetSum);
+  }
+
+  // fill in the blanks by interpolating between the two closest known line offsets
+  var j = 0;
+  for (var i=1; i < offsetSum; i++) {
+    if (scrollMap[i] === undefined) {
+      var a = knownLineOffsets[j]
+        , b = knownLineOffsets[j + 1]
+        ;
+      scrollMap[i] = Math.round(( scrollMap[b]*(i - a) + scrollMap[a]*(b - i) ) / (b - a));
+    } else {
+      j++;
+    }
+  }
+}
+
+function resetScrollMap () {
+  console.log("reset")
+  scrollMap = undefined;
+}
 
 // buffers the latest text change and renders when previous rendering is done
 function renderNext() {
@@ -39,7 +109,9 @@ function renderNext() {
       })
       .then(function(contentWindow){
         renderInProgress = false;
-        printFn = contentWindow.print;
+        frameWindow = contentWindow
+        frameWindow.addEventListener("resize", resetScrollMap);
+        resetScrollMap();
         renderNext();
       });
     needsRerender = false;
