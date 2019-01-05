@@ -1,6 +1,7 @@
 "use strict";
 
 var ipcRenderer = require('electron').ipcRenderer
+  , throttle    = require('lodash.throttle')
   , Document    = require('../../src/js/Document')
   , Renderers   = require('../../src/js/Renderers')
   , mdItPandoc  = require('markdown-it-pandoc')()
@@ -22,21 +23,17 @@ exports.printPreview = function() {
 
 ipcRenderer.on('filePrint', exports.printPreview);
 
-exports.scrollPreview = function(scrollTop) {
-  return function(editor) {
-    return function() {
-      if (frameWindow) {
-        if (!scrollMap) {
-          var editorOffset = parseInt(window.getComputedStyle(
-                               document.querySelector('.CodeMirror-lines')
-                             ).getPropertyValue('padding-top'), 10)
-          buildScrollMap(editor, editorOffset);
-        }
-        frameWindow.scrollTo(0, scrollMap[scrollTop]);
-      }
-    };
-  };
-};
+exports.scrollPreviewImpl = throttle( function(scrollTop, editor) {
+  if (frameWindow) {
+    if (!scrollMap) {
+      var editorOffset = parseInt(window.getComputedStyle(
+                            document.querySelector('.CodeMirror-lines')
+                          ).getPropertyValue('padding-top'), 10)
+      buildScrollMap(editor, editorOffset);
+    }
+    frameWindow.scrollTo(0, scrollMap[scrollTop])
+  }
+}, 30);
 
 exports.renderMd = function(isPaginated) {
   return function() {
