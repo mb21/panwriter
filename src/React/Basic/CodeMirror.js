@@ -75,7 +75,10 @@ exports.controlled = function(props) {
 
 exports.refresh = function() {
   if (editor) {
-    editor.refresh();
+    // use timeout to prevent interaction with scroll-sync
+    setTimeout( function(){
+      editor.refresh()
+    }, 0);
   }
 }
 

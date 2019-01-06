@@ -31,7 +31,10 @@ exports.scrollPreviewImpl = throttle( function(scrollTop, editor) {
     if (!scrollMap) {
       buildScrollMap(editor, editorOffset);
     }
-    frameWindow.scrollTo(0, scrollMap[scrollTop])
+    var scrollTo = scrollMap[scrollTop];
+    if (scrollTo !== undefined) {
+      frameWindow.scrollTo(0, scrollTo);
+    }
   }
 }, 30);
 
@@ -43,13 +46,15 @@ exports.registerScrollEditorImpl = function(editor) {
 
   scrollEditorFn = throttle( function(e) {
     e.preventDefault();
-    if (!reverseScrollMap) {
-      buildScrollMap(editor, editorOffset);
-    }
-    for (var i=frameWindow.scrollY; i>=0; i--) {
-      if (reverseScrollMap[i] !== undefined) {
-        editorScrollFrame.scrollTo(0, reverseScrollMap[i])
-        break;
+    if (frameWindow !== undefined) {
+      if (!reverseScrollMap) {
+        buildScrollMap(editor, editorOffset);
+      }
+      for (var i=frameWindow.scrollY; i>=0; i--) {
+        if (reverseScrollMap[i] !== undefined) {
+          editorScrollFrame.scrollTo(0, reverseScrollMap[i])
+          break;
+        }
       }
     }
   }, 30);
@@ -91,14 +96,23 @@ function buildScrollMap(editor, editorOffset) {
       , elOffset = Math.round(el.getBoundingClientRect().top + frameWindow.scrollY);
       ;
     // fill in the target offset for the corresponding editor line
-    scrollMap[lineOffset] = elOffset - editorOffset;
-    knownLineOffsets.push(lineOffset)
+    if (scrollMap[lineOffset] === undefined) {
+      // after pagination, we can have two elements in the preview
+      // that have the same source line. We only use the first.
+      scrollMap[lineOffset] = elOffset - editorOffset;
+      knownLineOffsets.push(lineOffset)
+    }
 
     lastEl = el;
   });
   if (lastEl) {
     scrollMap[offsetSum] = Math.ceil(lastEl.getBoundingClientRect().bottom + frameWindow.scrollY);
     knownLineOffsets.push(offsetSum);
+  }
+
+  if (knownLineOffsets[0] !== 0) {
+    // make sure line zero is in the list, to guarantee a smooth scrolling start
+    knownLineOffsets.unshift(0);
   }
 
   // fill in the blanks by interpolating between the two closest known line offsets
@@ -133,9 +147,11 @@ function renderNext() {
         renderInProgress = false;
         resetScrollMaps();
         frameWindow = contentWindow
-        frameWindow.addEventListener("resize", resetScrollMaps);
-        if (scrollEditorFn) {
-          frameWindow.addEventListener("scroll", scrollEditorFn);
+        if (frameWindow) {
+          frameWindow.addEventListener("resize", resetScrollMaps);
+          if (scrollEditorFn) {
+            frameWindow.addEventListener("scroll", scrollEditorFn);
+          }
         }
         renderNext();
       });

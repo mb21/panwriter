@@ -98,9 +98,10 @@ async function setupSwapFrames(target, filePath) {
 async function renderAndSwap(previewDiv, filePath, renderFn) {
   await setupSwapFrames(previewDiv, filePath);
   return renderFn(frame1.contentWindow).then( function(){
+    frame1.contentWindow.scrollTo(0, frame2.contentWindow.scrollY);
     frame1.style.display = 'block';
     frame2.style.display = 'none';
-    [frame2, frame1] = [frame1, frame2]
+    [frame2, frame1] = [frame1, frame2];
     return frame2.contentWindow;
   });
 }

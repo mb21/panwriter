@@ -63,8 +63,8 @@ app = make component
   , update: \{state} action -> case action of
       SplitChange sp      -> UpdateAndSideEffects state {split = sp}
                                \self -> do
-                                 CodeMirror.refresh
                                  renderPreview self.state
+                                 CodeMirror.refresh
       Paginate p          -> UpdateAndSideEffects state {paginated = p}
                                \self -> renderMd p
       TextChange txt      -> UpdateAndSideEffects state {text = txt, fileDirty = true}
