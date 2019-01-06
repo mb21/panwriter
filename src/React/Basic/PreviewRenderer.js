@@ -37,7 +37,6 @@ exports.scrollPreviewImpl = throttle( function(scrollTop, editor) {
 
 exports.renderMd = function(isPaginated) {
   return function() {
-    console.log("renderMd")
     needsRerender = true;
     paginated = isPaginated;
     renderNext();
@@ -60,20 +59,24 @@ function buildScrollMap(editor, editorOffset) {
     lineOffsets.push(offsetSum);
   });
 
-  var lastEl;
-  frameWindow.document.querySelectorAll('body > [data-source-line]').forEach( function(el){
+  var lastEl
+    , selector = paginated ? '.pagedjs_page_content [data-source-line]'
+                           : 'body > [data-source-line]'
+    ;
+  frameWindow.document.querySelectorAll(selector).forEach( function(el){
     // for each element in the preview with source annotation
     var line = parseInt(el.getAttribute('data-source-line'), 10)
       , lineOffset = lineOffsets[line]
+      , elOffset = Math.round(el.getBoundingClientRect().top + frameWindow.scrollY);
       ;
     // fill in the target offset for the corresponding editor line
-    scrollMap[lineOffset] = el.offsetTop - editorOffset;
+    scrollMap[lineOffset] = elOffset - editorOffset;
     knownLineOffsets.push(lineOffset)
 
     lastEl = el;
   });
   if (lastEl) {
-    scrollMap[offsetSum] = lastEl.offsetTop + lastEl.offsetHeight;
+    scrollMap[offsetSum] = Math.ceil(lastEl.getBoundingClientRect().bottom + frameWindow.scrollY);
     knownLineOffsets.push(offsetSum);
   }
 
@@ -92,7 +95,6 @@ function buildScrollMap(editor, editorOffset) {
 }
 
 function resetScrollMap () {
-  console.log("reset")
   scrollMap = undefined;
 }
 
