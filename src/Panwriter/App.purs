@@ -12,7 +12,7 @@ import Panwriter.Toolbar (ViewSplit(..), toolbar)
 import React.Basic (Component, JSX, StateUpdate(..), capture_, createComponent, make, send)
 import React.Basic.CodeMirror as CodeMirror
 import React.Basic.DOM as R
-import React.Basic.PreviewRenderer (renderMd, printPreview, scrollPreview)
+import React.Basic.PreviewRenderer (renderMd, printPreview, registerScrollEditor, scrollPreview)
 
 component :: Component Props
 component = createComponent "App"
@@ -100,6 +100,7 @@ app = make component
         , CodeMirror.controlled
             { onBeforeChange: send self <<< TextChange
             , onScroll: scrollPreview
+            , onEditorDidMount: registerScrollEditor
             , value: state.text
             , autoCursor: true
             , options:

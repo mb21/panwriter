@@ -51,8 +51,12 @@ var editor
 function adjustProps(props, changeHandlerName) {
   var onChange = props[changeHandlerName]
     , onScroll = props.onScroll
+    , onMount  = props.onEditorDidMount
     , moreProps = {
-        editorDidMount: onEditorDidMount.bind(this, props)
+        editorDidMount: function (ed) {
+          onEditorDidMount(props, ed);
+          onMount(ed)();
+        }
       , onScroll: function(ed, scrollInfo) {
           var scrollTop = Math.round(scrollInfo.top);
           onScroll(scrollTop)(ed)();
@@ -67,10 +71,6 @@ function adjustProps(props, changeHandlerName) {
 
 exports.controlled = function(props) {
   return React.createElement(Controlled, adjustProps(props, 'onBeforeChange'));
-}
-
-exports.uncontrolled = function(props) {
-  return React.createElement(UnControlled, adjustProps(props, 'onChange'));
 }
 
 exports.refresh = function() {

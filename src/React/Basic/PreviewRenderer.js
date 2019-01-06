@@ -11,7 +11,10 @@ var renderInProgress = false
   , needsRerender = false
   , paginated = false
   , previewDiv
+  , editorOffset = 0
+  , scrollEditorFn
   , scrollMap
+  , reverseScrollMap
   , frameWindow
   ;
 
@@ -26,14 +29,31 @@ ipcRenderer.on('filePrint', exports.printPreview);
 exports.scrollPreviewImpl = throttle( function(scrollTop, editor) {
   if (frameWindow) {
     if (!scrollMap) {
-      var editorOffset = parseInt(window.getComputedStyle(
-                            document.querySelector('.CodeMirror-lines')
-                          ).getPropertyValue('padding-top'), 10)
       buildScrollMap(editor, editorOffset);
     }
     frameWindow.scrollTo(0, scrollMap[scrollTop])
   }
 }, 30);
+
+exports.registerScrollEditorImpl = function(editor) {
+  editorOffset = parseInt(window.getComputedStyle(
+                    document.querySelector('.CodeMirror-lines')
+                  ).getPropertyValue('padding-top'), 10)
+  var editorScrollFrame = document.querySelector('.CodeMirror-scroll')
+
+  scrollEditorFn = throttle( function(e) {
+    e.preventDefault();
+    if (!reverseScrollMap) {
+      buildScrollMap(editor, editorOffset);
+    }
+    for (var i=frameWindow.scrollY; i>=0; i--) {
+      if (reverseScrollMap[i] !== undefined) {
+        editorScrollFrame.scrollTo(0, reverseScrollMap[i])
+        break;
+      }
+    }
+  }, 30);
+}
 
 exports.renderMd = function(isPaginated) {
   return function() {
@@ -48,6 +68,7 @@ function buildScrollMap(editor, editorOffset) {
   // (offset is the number of vertical pixels from the top)
   scrollMap = [];
   scrollMap[0] = 0;
+  reverseScrollMap = [];
 
   // lineOffsets[i] holds top-offset of line i in the source editor
   var lineOffsets = [undefined, 0]
@@ -91,11 +112,13 @@ function buildScrollMap(editor, editorOffset) {
     } else {
       j++;
     }
+    reverseScrollMap[ scrollMap[i] ] = i;
   }
 }
 
-function resetScrollMap () {
+function resetScrollMaps () {
   scrollMap = undefined;
+  reverseScrollMap = undefined;
 }
 
 // buffers the latest text change and renders when previous rendering is done
@@ -108,9 +131,12 @@ function renderNext() {
       })
       .then(function(contentWindow){
         renderInProgress = false;
+        resetScrollMaps();
         frameWindow = contentWindow
-        frameWindow.addEventListener("resize", resetScrollMap);
-        resetScrollMap();
+        frameWindow.addEventListener("resize", resetScrollMaps);
+        if (scrollEditorFn) {
+          frameWindow.addEventListener("scroll", scrollEditorFn);
+        }
         renderNext();
       });
     needsRerender = false;
