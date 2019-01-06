@@ -158,13 +158,12 @@ Install [yarn](https://yarnpkg.com/), then:
 
 - Preview:
     - respect `css`, `header-includes`, `toc` metadata fields
-    - sync scroll, or at least scroll on click
 - Editor:
     - expand `Format` menu
     - spell check
     - improve find/replace
 - make the app launchable from terminal with `panwriter file.md`
-- add a Settings/Preferences window where you can:
+- add a Settings/Preferences window (or should this just be a `settings.yaml` file?) where you can:
     - set a CodeMirror editor theme css
     - edit the default CSS and YAML files
     - choose `pandoc` executable (probably with file-open dialog, which we can use for app sandboxing with security-scoped bookmarks)
