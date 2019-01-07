@@ -9,9 +9,7 @@ PanWriter is a distraction-free markdown editor with two unique features:
 
 ![](screenshot.png)
 
-**[Download PanWriter 0.5](https://github.com/mb21/panwriter/releases)**
-
-After copying the file to your `Applications` folder, the first time you have to right-click on the app, select `Open` and agree to a scary warning about us not being registered developers.
+**[Download PanWriter](https://github.com/mb21/panwriter/releases)**
 
 PanWriter is very usable, but also very much a work in progress, as there are still a few rough edges (see [TODOs below](#todos)). Feedback, suggestions and contributions very much welcome! Please open an issue to start a conversation.
 
@@ -48,7 +46,7 @@ By adding a `style` field to your YAML metadata, you can change the styling of t
 
 ### Export via pandoc
 
-First, install the [latest pandoc version](https://github.com/jgm/pandoc/releases), then:
+First, install the [latest pandoc version](http://pandoc.org/installing.html), then:
 
 Select `File -> Export` and choose a format.
 
@@ -159,6 +157,8 @@ Install [yarn](https://yarnpkg.com/), then:
 - Preview:
     - respect `css`, `header-includes`, `toc` metadata fields
 - Editor:
+    - add `File -> Open Recent` menu
+    - on wanna-save-changes-prompt: add yes option
     - expand `Format` menu
     - spell check
     - improve find/replace
