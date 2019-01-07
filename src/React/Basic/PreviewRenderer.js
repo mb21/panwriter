@@ -60,6 +60,10 @@ exports.printPreview = function() {
 
 ipcRenderer.on('filePrint', exports.printPreview);
 
+exports.clearPreview = function() {
+  frameWindow = undefined;
+}
+
 exports.scrollPreviewImpl = throttle( function(scrollTop, editor) {
   if (frameWindow) {
     if (!scrollMap) {

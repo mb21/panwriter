@@ -19,3 +19,5 @@ foreign import scrollPreviewImpl :: forall editor. EffectFn2 Int editor Unit
 
 scrollPreview :: forall editor. Int -> editor -> Effect Unit
 scrollPreview = runEffectFn2 scrollPreviewImpl
+
+foreign import clearPreview :: Effect Unit
