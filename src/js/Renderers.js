@@ -117,11 +117,33 @@ module.exports.plain = async function(doc, previewDiv){
   return singleFrame.contentWindow;
 }
 
+function createStyleEl(text) {
+  const style = document.createElement('style');
+  style.textContent = text;
+  return style;
+}
+
+const pagedjsStyleEl = createStyleEl(`
+@media screen {
+  .pagedjs_pages {
+    overflow: scroll;
+    padding: 90px 50px 50px 50px;
+  }
+
+  .pagedjs_page {
+    background-color: white;
+    margin: 0 auto;
+    margin-bottom: 50px;
+  }
+}
+`);
+
 module.exports.pagedjs = async function(doc, previewDiv){
   return renderAndSwap(previewDiv, doc.getPath(), async (frameWindow) => {
 
     const cssStr     = await doc.getCss()
         , content    = doc.getHtml()
+        , frameHead  = frameWindow.document.head
         , renderTo   = frameWindow.document.body
         , renderDone = new Promise(resolveRender => {
             frameWindow.PagedConfig = {
@@ -143,11 +165,15 @@ module.exports.pagedjs = async function(doc, previewDiv){
           });
         ;
 
+    // Unfortunately, pagedjs removes our style elements from <head>
+    // and appends its transformed styles – on each render.
+    frameHead.querySelectorAll('style').forEach(s => s.remove())
     renderTo.innerHTML = content;
 
-    const style = document.createElement('style');
-    style.textContent = cssStr;
-    frameWindow.document.head.appendChild(style);
+    // repopulate
+    frameHead.appendChild( createStyleEl(cssStr) );
+    frameHead.appendChild(pagedjsStyleEl);
+    injectMathLib(frameWindow);
 
     const s = document.createElement('script');
     s.src = app.getAppPath() + "/node_modules/pagedjs/dist/paged.legacy.polyfill.js";
