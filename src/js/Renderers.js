@@ -6,6 +6,7 @@ const path   = require('path')
     ;
 
 var singleFrame
+  , singleFrameLinkEl
   , frame1
   , frame2
   ;
@@ -23,10 +24,7 @@ function injectMathLib(contentWindow) {
   [ app.getAppPath() + "/node_modules/katex/dist/katex.min.css"
   , app.getAppPath() + "/node_modules/markdown-it-texmath/css/texmath.css"
   ].forEach(href => {
-    const link = document.createElement('link');
-    link.setAttribute("rel", "stylesheet");
-    link.setAttribute("href", href);
-    contentWindow.document.head.appendChild(link);
+    contentWindow.document.head.appendChild( createLinkEl(href) );
   });
 }
 
@@ -93,6 +91,10 @@ async function setupSwapFrames(target, filePath) {
     singleFrame.remove();
     singleFrame = undefined
   }
+  if (singleFrameLinkEl) {
+    singleFrameLinkEl.remove();
+    singleFrameLinkEl = undefined;
+  }
 }
 
 async function renderAndSwap(previewDiv, filePath, renderFn) {
@@ -109,10 +111,18 @@ async function renderAndSwap(previewDiv, filePath, renderFn) {
 
 module.exports.plain = async function(doc, previewDiv){
   await setupSingleFrame(previewDiv, doc.getPath());
-  const cssStr = await doc.getCss()
+  const [cssStr, link, linkIsChanged] = await doc.getCss()
       , content = [
           '<style>', cssStr, '</style>', doc.getHtml()
         ].join('')
+  if (linkIsChanged && singleFrameLinkEl) {
+    singleFrameLinkEl.remove()
+    singleFrameLinkEl = undefined;
+  }
+  if (singleFrameLinkEl === undefined) {
+    singleFrameLinkEl = createLinkEl(link)
+    singleFrame.contentDocument.head.appendChild(singleFrameLinkEl)
+  }
   singleFrame.contentDocument.body.innerHTML = content;
   return singleFrame.contentWindow;
 }
@@ -121,6 +131,13 @@ function createStyleEl(text) {
   const style = document.createElement('style');
   style.textContent = text;
   return style;
+}
+
+function createLinkEl(href) {
+  const link = document.createElement('link');
+  link.setAttribute('rel', 'stylesheet');
+  link.setAttribute('href', href);
+  return link;
 }
 
 const pagedjsStyleEl = createStyleEl(`
@@ -141,7 +158,7 @@ const pagedjsStyleEl = createStyleEl(`
 module.exports.pagedjs = async function(doc, previewDiv){
   return renderAndSwap(previewDiv, doc.getPath(), async (frameWindow) => {
 
-    const cssStr     = await doc.getCss()
+    const [cssStr, link, _] = await doc.getCss()
         , content    = doc.getHtml()
         , frameHead  = frameWindow.document.head
         , renderTo   = frameWindow.document.body
@@ -166,14 +183,16 @@ module.exports.pagedjs = async function(doc, previewDiv){
         ;
 
     // Unfortunately, pagedjs removes our style elements from <head>
-    // and appends its transformed styles – on each render.
+    // and appends its transformed styles – on each render. Thus we not only
+    // need to clear the body, but also remove the styles from the head.
     frameHead.querySelectorAll('style').forEach(s => s.remove())
     renderTo.innerHTML = content;
 
     // repopulate
+    injectMathLib(frameWindow);
+    frameHead.appendChild( createLinkEl(link) );
     frameHead.appendChild( createStyleEl(cssStr) );
     frameHead.appendChild(pagedjsStyleEl);
-    injectMathLib(frameWindow);
 
     const s = document.createElement('script');
     s.src = app.getAppPath() + "/node_modules/pagedjs/dist/paged.legacy.polyfill.js";

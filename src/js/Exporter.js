@@ -12,7 +12,7 @@ const ipcRenderer = require('electron').ipcRenderer
 
 var previousExportConfig;
 
-module.exports.readDataDirFile = readDataDirFile;
+module.exports.getDataDirFileName = getDataDirFileName;
 
 ipcRenderer.on('fileExport', function() {
   const win = remote.getCurrentWindow()
@@ -137,14 +137,17 @@ async function defaultMeta(type) {
 
 // reads file from data directory, throws exception when not found
 async function readDataDirFile(type, suffix) {
+  const fileName = getDataDirFileName(type, suffix);
+  return await promisify(fs.readFile)(fileName, 'utf8');
+}
+
+function getDataDirFileName(type, suffix) {
   if (typeof type !== 'string') {
     type = 'default'
   }
   const dataDir = [remote.app.getPath('appData'), 'PanWriterUserData', '']
                     .join(path.sep)
-      , fileName = dataDir + type + suffix
-      ;
-  return await promisify(fs.readFile)(fileName, 'utf8');
+  return dataDir + type + suffix;
 }
 
 // constructs commandline arguments from object

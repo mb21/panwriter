@@ -5,7 +5,8 @@
 
 var remote          = require('electron').remote
   , fs              = require('fs')
-  , readDataDirFile = require('./Exporter').readDataDirFile
+  , promisify          = require('util').promisify
+  , getDataDirFileName = require('./Exporter').getDataDirFileName
   ;
 
 var md       = ""
@@ -81,31 +82,28 @@ module.exports.getNrOfYamlLines = function() {
   }
 }
 
-var defaultStaticCss = ''
-  , defaultCss = ''
+var defaultStaticCssLink = remote.app.getAppPath() + '/static/default.css'
+  , link
   , docType = null
   ;
-fs.readFile(remote.app.getAppPath() + '/static/default.css', 'utf8', (err, css) => {
-  if (err) {
-    console.warn(err.message)
-  } else {
-    defaultStaticCss = css;
-  }
-});
 module.exports.getCss = async function() {
+  var linkIsChanged = false;
   if (meta.type !== docType) {
     // cache css
     docType = meta.type;
+    const fileName = getDataDirFileName(docType, '.css')
     try {
-      defaultCss = await readDataDirFile(docType, '.css');
-    } catch(e) {
-      defaultCss = defaultStaticCss;
+        await promisify(fs.access)(fileName)
+        link = fileName;
+    } catch (err) {
+      link = defaultStaticCssLink;
     }
+    linkIsChanged = true;
   }
-  return ( typeof meta.style === "string" )
-           ? (defaultCss + meta.style)
-           : defaultCss
-           ;
+  return [ typeof meta.style === "string" ? meta.style : ''
+         , link
+         , linkIsChanged
+         ]
 }
 
 module.exports.getPath = function() {
