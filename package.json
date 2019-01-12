@@ -51,6 +51,10 @@
     "win": {
       "icon": "build/icons/icon.ico"
     },
+    "nsis": {
+      "allowToChangeInstallationDirectory": true,
+      "oneClick": false
+    },
     "linux": {
       "desktop": {
         "Name": "PanWriter",
