@@ -161,44 +161,42 @@ module.exports.pagedjs = async function(doc, previewDiv){
     const [cssStr, link, _] = await doc.getCss()
         , content    = doc.getHtml()
         , frameHead  = frameWindow.document.head
-        , renderTo   = frameWindow.document.body
-        , renderDone = new Promise(resolveRender => {
-            frameWindow.PagedConfig = {
-              before: () => Promise.all(
-                // wait for images to have loaded
-                Array.from(renderTo.querySelectorAll('img')).map(img =>
-                  new Promise(resolve => {
-                    if (img.complete) {
-                      resolve();
-                    } else {
-                      img.addEventListener('load',  resolve, {once: true});
-                      img.addEventListener('error', resolve, {once: true});
-                    }
-                  })
-                )
-              )
-            , after: resolveRender
-            }
-          });
+        , frameBody  = frameWindow.document.body
         ;
 
     // Unfortunately, pagedjs removes our style elements from <head>
     // and appends its transformed styles – on each render. Thus we not only
     // need to clear the body, but also remove the styles from the head.
     frameHead.querySelectorAll('style').forEach(s => s.remove())
-    renderTo.innerHTML = content;
+    frameBody.innerHTML = content;
 
-    // repopulate
+    // repopulate styles
     injectMathLib(frameWindow);
     frameHead.appendChild( createLinkEl(link) );
     frameHead.appendChild( createStyleEl(cssStr) );
     frameHead.appendChild(pagedjsStyleEl);
 
-    const s = document.createElement('script');
-    s.src = app.getAppPath() + "/node_modules/pagedjs/dist/paged.legacy.polyfill.js";
-    s.async = false;
-    renderTo.appendChild(s);
+    frameWindow.PagedConfig = {
+      auto: false
+    };
 
-    return renderDone;
+    await new Promise(resolve => {
+      const s = document.createElement('script');
+      s.src = app.getAppPath() + '/node_modules/pagedjs/dist/paged.legacy.polyfill.js';
+      s.async = false;
+      s.addEventListener('load', resolve);
+      frameBody.appendChild(s);
+    });
+
+    // wait for images etc. to have loaded
+    await new Promise(resolve => {
+      if (frameWindow.document.readyState === 'complete') {
+        resolve();
+      } else {
+        frameWindow.addEventListener('load', resolve, {once: true});
+      }
+    })
+
+    return frameWindow.PagedPolyfill.preview();
   })
 }
