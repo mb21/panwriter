@@ -4,7 +4,7 @@
  */
 
 .CodeMirror {
-  font-family: Menlo, Monaco, monospace;
+  font-family: Menlo, Monaco, 'Lucida Console', Consolas, monospace;
   font-size: 17px;
   line-height: 1.8em;
   color: #1a1a1a;
