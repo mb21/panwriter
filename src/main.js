@@ -6,6 +6,7 @@
 
 // Modules to control application life and create native browser window
 const {app, dialog, BrowserWindow, Menu} = require('electron')
+    , {autoUpdater} = require("electron-updater")
     , path = require('path')
     ;
 
@@ -116,6 +117,7 @@ app.on('ready', function() {
   if (windows.length === 0) {
     createWindow(undefined);
   }
+  autoUpdater.checkForUpdatesAndNotify();
 })
 
 // Quit when all windows are closed.

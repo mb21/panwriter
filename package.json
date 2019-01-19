@@ -1,7 +1,7 @@
 {
   "name": "panwriter",
   "productName": "PanWriter",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Markdown editor with pandoc integration and paginated preview",
   "main": "src/main.js",
   "scripts": {
@@ -11,7 +11,8 @@
     "clean": "rm -rf .cache .psc-package .psci_modules node_modules output dist",
     "debug": "electron --inspect-brk=5858 .",
     "dist": "electron-builder",
-    "dist-all": "electron-builder -mlw"
+    "dist-all": "electron-builder -mlw",
+    "release": "electron-builder -mlw --publish always"
   },
   "repository": "https://github.com/mb21/panwriter",
   "keywords": [
@@ -20,6 +21,7 @@
   ],
   "author": "Mauro Bieg",
   "License": "GPL-3.0-or-later",
+  "publish": "github",
   "build": {
     "appId": "com.panwriter.app",
     "fileAssociations": [
@@ -66,6 +68,7 @@
   "dependencies": {
     "babel-runtime": "^6.26.0",
     "codemirror": "^5.42.2",
+    "electron-updater": "^4.0.6",
     "fix-path": "^2.1.0",
     "js-yaml": "^3.12.0",
     "katex": "^0.10.0-rc.1",
