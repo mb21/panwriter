@@ -48,7 +48,10 @@ exports.setWindowDirty = function() {
   win.fileIsDirty = true;
 }
 
-ipcRenderer.on('fileSave', function() {
+ipcRenderer.on('fileSave', function(_event, opts) {
+  if (opts === undefined) {
+    opts = {};
+  }
   var filePath = Document.getPath();
   if (filePath === undefined) {
     var win  = remote.getCurrentWindow();
@@ -74,6 +77,9 @@ ipcRenderer.on('fileSave', function() {
       win.setRepresentedFilename(filePath);
       win.fileIsDirty = false;
       onFileSaveCb(name)();
+      if (opts.closeWindowAfterSave) {
+        win.close();
+      }
     }
   });
 });

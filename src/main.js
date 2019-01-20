@@ -57,14 +57,19 @@ function createWindow(filePath, toImport=false) {
       const selected = dialog.showMessageBox(win, {
           type: "question"
         , message: "This document has unsaved changes."
-        , buttons: ["Cancel", "Don't Save"]
+        , buttons: ["Save", "Cancel", "Don't Save"]
         })
       switch (selected) {
         case 0:
-          // Cancel
+          // Save
+          win.webContents.send('fileSave', {closeWindowAfterSave: true});
           e.preventDefault();
           break;
         case 1:
+          // Cancel
+          e.preventDefault();
+          break;
+        case 2:
           // Don't Save
           break;
         default:
