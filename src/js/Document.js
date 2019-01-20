@@ -17,6 +17,9 @@ var md       = ""
   , filePath = remote.getCurrentWindow().filePathToLoad
   ;
 
+if (filePath) {
+  addToRecentFiles(filePath);
+}
 
 /*
  * Setters
@@ -35,6 +38,7 @@ module.exports.setHtml = function(htmlStr) {
 
 module.exports.setPath = function(path) {
   filePath = path;
+  addToRecentFiles(filePath);
 }
 
 
@@ -108,4 +112,21 @@ module.exports.getCss = async function() {
 
 module.exports.getPath = function() {
   return filePath;
+}
+
+
+/*
+ * Private
+ */
+
+function addToRecentFiles(filePath) {
+  var recents = JSON.parse( localStorage.getItem('recentFiles') )
+  if (recents instanceof Array) {
+    recents = recents.filter(f => f !== filePath)
+  } else {
+    recents = [];
+  }
+  recents.unshift(filePath);
+  recents = recents.slice(0, 15);
+  localStorage.setItem('recentFiles', JSON.stringify(recents));
 }

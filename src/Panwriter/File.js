@@ -32,6 +32,7 @@ exports.initFile = function(conf) {
         fs.readFile(filePath, "utf8", function(err, text) {
           if (err) {
             alert("Could not open file.\n" + err.message);
+            win.close();
           } else {
             win.setTitle(name);
             win.setRepresentedFilename(filePath);

@@ -15,6 +15,7 @@ const {app, dialog, BrowserWindow, Menu} = require('electron')
 const windows = []
     , mdExtensions = ['md', 'txt', 'markdown']
     ;
+let recentFiles = [];
 
 function createWindow(filePath, toImport=false) {
   // TODO: remove `titleBarStyle` line below and code up own buttons
@@ -41,13 +42,14 @@ function createWindow(filePath, toImport=false) {
   win.isFileToImport = toImport;
   win.setTitle("Untitled");
 
+  windows.push(win);
+
+  win.webContents.on('did-finish-load', () => setMenu());
+
   win.loadFile('static/index.html')
 
   // Open the DevTools.
   // win.webContents.openDevTools()
-
-  windows.push(win);
-  setMenu();
 
   win.on('close', function(e) {
     // this does not intercept a reload
@@ -76,6 +78,7 @@ function createWindow(filePath, toImport=false) {
           e.preventDefault();
       }
     }
+    fetchRecentFiles(); // call to localStorage while we still have a window
   })
 
   win.on('closed', function() {
@@ -84,6 +87,8 @@ function createWindow(filePath, toImport=false) {
     if (i > -1) {
       windows.splice(i, 1);
     }
+
+    setMenuQuick(windows.length > 0);
   })
 
   win.on('minimize', function() {
@@ -121,6 +126,7 @@ app.on('open-file', function(e, filePath) {
 app.on('ready', function() {
   if (windows.length === 0) {
     createWindow(undefined);
+    setMenuQuick();
   }
   autoUpdater.checkForUpdatesAndNotify();
 })
@@ -130,7 +136,7 @@ app.on('window-all-closed', function() {
   // On OS X it is common for applications and their menu bar
   // to stay active until the user quits explicitly with Cmd + Q
   if (process.platform === 'darwin') {
-    setMenu(false);
+    setMenuQuick(false);
   } else {
     app.quit()
   }
@@ -164,6 +170,10 @@ function windowSend(name, opts) {
 }
 
 function setMenu(aWindowIsOpen=true) {
+  fetchRecentFiles().then( () => setMenuQuick(aWindowIsOpen) );
+}
+
+function setMenuQuick(aWindowIsOpen=true) {
   var template = [
     { label: 'File'
     , submenu: [
@@ -175,6 +185,21 @@ function setMenu(aWindowIsOpen=true) {
         , accelerator: 'CmdOrCtrl+O'
         , click: () => openDialog()
         }
+      , { label: 'Open Recent'
+        , submenu: recentFiles.map(f => {
+            return {
+              label: path.basename(f)
+            , click: () => createWindow(f)
+            }
+          }).concat([
+              {type: 'separator'}
+            , { label: 'Clear Menu'
+              , click: clearRecentFiles
+              , enabled: recentFiles.length > 0 && aWindowIsOpen
+              }
+          ])
+        }
+      , {type: 'separator'}
       , { label: 'Save'
         , accelerator: 'CmdOrCtrl+S'
         , click: windowSend.bind(this, 'fileSave')
@@ -326,4 +351,22 @@ function setMenu(aWindowIsOpen=true) {
   }
   var menu = Menu.buildFromTemplate(template);
   Menu.setApplicationMenu(menu);
+}
+
+// fetches recentFiles from the localStorage of a renderer process
+async function fetchRecentFiles() {
+  const win = BrowserWindow.getFocusedWindow();
+  if (win) {
+    return win.webContents.executeJavaScript("localStorage.getItem('recentFiles')")
+      .then(res => {
+        recentFiles = JSON.parse(res) || []
+      });
+  }
+}
+
+function clearRecentFiles() {
+  const win = BrowserWindow.getFocusedWindow();
+  win.webContents.executeJavaScript("localStorage.setItem('recentFiles', '[]')")
+  recentFiles = []
+  setMenuQuick();
 }
