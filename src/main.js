@@ -158,9 +158,9 @@ function openDialog(toImport=false) {
   }
 }
 
-function windowSend(name) {
+function windowSend(name, opts) {
   const win = BrowserWindow.getFocusedWindow();
-  win.webContents.send(name);
+  win.webContents.send(name, opts);
 }
 
 function setMenu(aWindowIsOpen=true) {
@@ -171,7 +171,7 @@ function setMenu(aWindowIsOpen=true) {
         , accelerator: 'CmdOrCtrl+N'
         , click: () => createWindow()
         }
-      , { label: 'Open'
+      , { label: 'Open…'
         , accelerator: 'CmdOrCtrl+O'
         , click: () => openDialog()
         }
@@ -180,12 +180,17 @@ function setMenu(aWindowIsOpen=true) {
         , click: windowSend.bind(this, 'fileSave')
         , enabled: aWindowIsOpen
         }
+      , { label: 'Save As…'
+        , accelerator: 'CmdOrCtrl+Shift+S'
+        , click: windowSend.bind(this, 'fileSave', {saveAsNewFile: true})
+        , enabled: aWindowIsOpen
+        }
       , { label: 'Print / PDF'
         , accelerator: 'CmdOrCtrl+P'
         , click: windowSend.bind(this, 'filePrint')
         , enabled: aWindowIsOpen
         }
-      , { label: 'Export'
+      , { label: 'Export…'
         , accelerator: 'CmdOrCtrl+Shift+E'
         , click: windowSend.bind(this, 'fileExport')
         , enabled: aWindowIsOpen
@@ -195,7 +200,7 @@ function setMenu(aWindowIsOpen=true) {
         , click: windowSend.bind(this, 'fileExportLikePrevious')
         , enabled: aWindowIsOpen
         }
-      , { label: 'Import'
+      , { label: 'Import…'
         , accelerator: 'CmdOrCtrl+I'
         , click: () => openDialog(true)
         }
@@ -270,7 +275,6 @@ function setMenu(aWindowIsOpen=true) {
         , enabled: aWindowIsOpen
         }
       , {type: 'separator'}
-      , {role: 'forcereload'}
       , {role: 'toggledevtools'}
       , {type: 'separator'}
       , {role: 'resetzoom'}
@@ -287,6 +291,13 @@ function setMenu(aWindowIsOpen=true) {
       ]
     }
   ]
+
+  if (process.mainModule.filename.indexOf('app.asar') === -1) {
+    // with a future electron release, we can use !app.isPackaged
+    const viewMenu = template[3].submenu;
+    viewMenu.push({type: 'separator'});
+    viewMenu.push({role: 'forcereload'});
+  }
 
   if (process.platform === 'darwin') {
     template.unshift({

@@ -53,7 +53,7 @@ ipcRenderer.on('fileSave', function(_event, opts) {
     opts = {};
   }
   var filePath = Document.getPath();
-  if (filePath === undefined) {
+  if (filePath === undefined || opts.saveAsNewFile) {
     var win  = remote.getCurrentWindow();
     filePath = remote.dialog.showSaveDialog(win, {
         defaultPath: 'Untitled.md'
