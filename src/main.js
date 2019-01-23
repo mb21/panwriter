@@ -24,7 +24,7 @@ function createWindow(filePath, toImport=false) {
     , frame: process.platform !== 'darwin'
     , webPreferences: {
         nodeIntegration: false
-      //, contextIsolation: true
+      , contextIsolation: false
       , preload: __dirname + '/js/rendererPreload.js'
       }
     });
@@ -309,8 +309,7 @@ function setMenuQuick(aWindowIsOpen=true) {
     }
   ]
 
-  if (process.mainModule.filename.indexOf('app.asar') === -1) {
-    // with a future electron release, we can use !app.isPackaged
+  if (!app.isPackaged) {
     const viewMenu = template[3].submenu;
     viewMenu.push({type: 'separator'});
     viewMenu.push({role: 'forcereload'});
