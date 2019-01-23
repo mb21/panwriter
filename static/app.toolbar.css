@@ -33,10 +33,39 @@
   display: none;
 }
 ._macOS .windowbuttons {
-  display: block;
+  display: flex;
 }
-.toolbar .windowbuttons:hover {
+._macOS .windowbuttons > div {
+  -webkit-app-region: no-drag;
+  cursor: default;
+  box-sizing: border-box;
+  width: 12px;
+  height: 12px;
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 50%;
+  margin-top: 1px;
+  margin-left: 5px;
+  margin-right: 4px;
+  line-height: 0;
+}
+._macOS .windowbuttons > div:nth-child(1) {
+  background-color: rgb(255, 95, 87);
+  border-color: rgb(226, 70, 63);
+}
+._macOS .windowbuttons > div:nth-child(2) {
+  background-color: rgb(255, 189, 46);
+  border-color: rgb(225, 161, 22);
+}
+._macOS .windowbuttons > div:nth-child(3) {
+  background-color: rgb(40, 201, 64);
+  border-color: rgb(18, 172, 40);
+}
+._macOS .windowbuttons img {
   display: none;
+}
+._macOS .windowbuttons:hover img {
+  display: inline;
 }
 
 .toolbar .filename {

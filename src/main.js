@@ -18,24 +18,16 @@ const windows = []
 let recentFiles = [];
 
 function createWindow(filePath, toImport=false) {
-  // TODO: remove `titleBarStyle` line below and code up own buttons
-  // this will also give us rounded corners back
-  // see https://stackoverflow.com/questions/35876939
-  // and https://github.com/electron/electron/blob/master/docs/api/frameless-window.md
-  var macOSWindowConfig = process.platform === 'darwin'
-                          ? { frame: false
-                            , titleBarStyle: 'customButtonsOnHover'
-                            }
-                          : {}
-  const win = new BrowserWindow( Object.assign({
+  const win = new BrowserWindow({
       width: 1000
     , height: 800
+    , frame: process.platform !== 'darwin'
     , webPreferences: {
         nodeIntegration: false
       //, contextIsolation: true
       , preload: __dirname + '/js/rendererPreload.js'
       }
-    }, macOSWindowConfig));
+    });
   
   win.fileIsDirty = false;
   win.filePathToLoad = filePath;
