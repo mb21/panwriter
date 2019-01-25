@@ -101,16 +101,8 @@ function createWindow(filePath, toImport=false) {
 // and https://www.electron.build/configuration/configuration#PlatformSpecificBuildOptions-fileAssociations
 app.on('open-file', function(e, filePath) {
   e.preventDefault();
-  const toImport = mdExtensions.indexOf( path.extname(filePath).substr(1) ) > -1
-                     ? false : true;
-  // on electon 3.0, replace with app.whenReady()
-  if (app.isReady()) {
-    createWindow(filePath, toImport);
-  } else {
-    app.on('ready', function() {
-      createWindow(filePath, toImport);
-    });
-  }
+  const toImport = mdExtensions.indexOf( path.extname(filePath).substr(1) ) < 0;
+  app.whenReady().then(() => createWindow(filePath, toImport));
 });
 
 // This method will be called when Electron has finished
