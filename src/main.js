@@ -8,6 +8,7 @@
 const {app, dialog, BrowserWindow, Menu} = require('electron')
     , {autoUpdater} = require("electron-updater")
     , path = require('path')
+    , fs = require('fs')
     ;
 
 // Keep a global reference of the windows, if you don't, the windows will
@@ -116,7 +117,16 @@ app.on('open-file', function(e, filePath) {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', function() {
-  if (windows.length === 0) {
+  const args = process.argv.slice(1)
+  if (args.length > 0 && app.isPackaged) {
+    args.forEach(arg => {
+      fs.realpath(arg, (err, fileName) => {
+        if (!err) {
+          createWindow(fileName);
+        }
+      });
+    });
+  } else if (windows.length === 0) {
     createWindow(undefined);
     setMenuQuick();
   }

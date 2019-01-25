@@ -121,6 +121,18 @@ Things we should emulate in the preview, but for which there are [no markdown-it
 
 Pandoc markdown supports a few more things which will not render correctly in the preview, but which are not so commonly used. However, you can still use them in your markdown file, and export via pandoc will work.
 
+### Launching from the command-line
+
+You can set up your system to launch PanWriter with:
+
+    panwriter myfile.md
+
+On macOS, you should put the following in your `~/.bash_profile` or similar:
+
+    function panwriter(){ open -a PanWriter "$@"; }
+
+On Linux and Windows, you can make an alias to the correct location of the `panwriter` executable.
+
 
 ## About CSS for print
 
@@ -160,7 +172,6 @@ Install [yarn](https://yarnpkg.com/), then:
     - expand `Format` menu
     - spell check
     - improve find/replace
-- make the app launchable from terminal with `panwriter file.md`
 - add a Settings/Preferences window (or should this just be a `settings.yaml` file?) where you can:
     - set a CodeMirror editor theme css
     - edit the default CSS and YAML files
