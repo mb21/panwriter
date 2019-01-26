@@ -18,7 +18,7 @@ const windows = []
     ;
 let recentFiles = [];
 
-function createWindow(filePath, toImport=false) {
+function createWindow(filePath, toImport=false, wasCreatedOnStartup=false) {
   const win = new BrowserWindow({
       width: 1000
     , height: 800
@@ -31,11 +31,13 @@ function createWindow(filePath, toImport=false) {
       }
     });
   
+  win.wasCreatedOnStartup = wasCreatedOnStartup;
   win.fileIsDirty = false;
   win.filePathToLoad = filePath;
   win.isFileToImport = toImport;
   win.setTitle("Untitled");
 
+  windows.filter(w => w.wasCreatedOnStartup).forEach(w => w.close())
   windows.push(win);
 
   win.webContents.on('did-finish-load', () => setMenu());
@@ -123,7 +125,7 @@ app.on('ready', function() {
       });
     });
   } else if (windows.length === 0) {
-    createWindow(undefined);
+    createWindow(undefined, false, true);
     setMenuQuick();
   }
   autoUpdater.checkForUpdatesAndNotify();
