@@ -23,6 +23,7 @@ function createWindow(filePath, toImport=false) {
       width: 1000
     , height: 800
     , frame: process.platform !== 'darwin'
+    , show: false
     , webPreferences: {
         nodeIntegration: false
       , contextIsolation: false
@@ -38,6 +39,9 @@ function createWindow(filePath, toImport=false) {
   windows.push(win);
 
   win.webContents.on('did-finish-load', () => setMenu());
+  win.once('ready-to-show', () => {
+    win.show()
+  });
 
   win.loadFile('static/index.html')
 
