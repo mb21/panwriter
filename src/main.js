@@ -40,9 +40,9 @@ function createWindow(filePath, toImport=false, wasCreatedOnStartup=false) {
   windows.filter(w => w.wasCreatedOnStartup).forEach(w => w.close())
   windows.push(win);
 
-  win.webContents.on('did-finish-load', () => setMenu());
   win.once('ready-to-show', () => {
-    win.show()
+    win.show();
+    setMenu();
   });
 
   win.loadFile('static/index.html')
