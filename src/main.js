@@ -37,7 +37,7 @@ function createWindow(filePath, toImport=false, wasCreatedOnStartup=false) {
   win.isFileToImport = toImport;
   win.setTitle("Untitled");
 
-  windows.filter(w => w.wasCreatedOnStartup).forEach(w => w.close())
+  windows.filter(w => w.wasCreatedOnStartup && !w.fileIsDirty).forEach(w => w.close())
   windows.push(win);
 
   win.once('ready-to-show', () => {
