@@ -22,6 +22,9 @@ img {
 h1, h2, h3, h4, h5, h6 {
   margin-top: 1.5em;
 }
+blockquote {
+  margin: 2.5em 0 2.5em 2.5em;
+}
 code {
   font-family: Menlo, Monaco, 'Lucida Console', Consolas, monospace;
 }
