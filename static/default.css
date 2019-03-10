@@ -15,6 +15,7 @@ html {
 body {
   margin: 50px;
   margin-top: 100px;
+  word-wrap: break-word;
 }
 img {
   max-width: 100%;
@@ -24,7 +25,21 @@ h1, h2, h3, h4, h5, h6 {
 }
 blockquote {
   margin: 2.5em 0 2.5em 2.5em;
+  background-color: rgb(246,248,250);
 }
 code {
   font-family: Menlo, Monaco, 'Lucida Console', Consolas, monospace;
+  background-color: rgb(246,248,250);
+  font-size: 85%;
+  margin: 0;
+  padding: .2em .4em;
+}
+pre {
+  padding: 16px;
+  background-color: rgb(246,248,250);
+  overflow: auto;
+}
+pre code {
+  padding: 0;
+  overflow: visible;
 }
