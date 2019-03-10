@@ -4,12 +4,14 @@ var ipcRenderer = require('electron').ipcRenderer
   , Document    = require('../../src/js/Document')
   , Renderers   = require('../../src/js/Renderers')
   , mdItPandoc  = require('markdown-it-pandoc')()
+  , throttle    = require('../../src/js/throttle').throttle
   ;
 
 var renderInProgress = false
   , needsRerender = false
   , paginated = false
   , previewDiv
+  , editor
   , editorOffset = 0
   , scrollEditorFn
   , scrollMap
@@ -17,40 +19,6 @@ var renderInProgress = false
   , frameWindow
   , scrollSyncTimeout // shared between scrollPreview and scrollEditor
   ;
-
-// adapted from https://github.com/jashkenas/underscore/blob/master/underscore.js#L842
-function throttle(func, wait, timeout) {
-  var context, args, result;
-  var previous = 0;
-
-  var later = function() {
-    previous = Date.now();
-    timeout = null;
-    result = func.apply(context, args);
-    if (!timeout) context = args = null;
-  };
-
-  var throttled = function() {
-    var now = Date.now();
-    var remaining = wait - (now - previous);
-    context = this;
-    args = arguments;
-    if (remaining <= 0 || remaining > wait) {
-      if (timeout) {
-        clearTimeout(timeout);
-        timeout = null;
-      }
-      previous = now;
-      result = func.apply(context, args);
-      if (!timeout) context = args = null;
-    } else if (!timeout) {
-      timeout = setTimeout(later, remaining);
-    }
-    return result;
-  };
-
-  return throttled;
-};
 
 exports.printPreview = function() {
   if (frameWindow) {
@@ -64,19 +32,22 @@ exports.clearPreview = function() {
   frameWindow = undefined;
 }
 
-exports.scrollPreviewImpl = throttle( function(scrollTop, editor) {
+exports.scrollPreview = throttle( function() {
   if (frameWindow) {
     if (!scrollMap) {
       buildScrollMap(editor, editorOffset);
     }
-    var scrollTo = scrollMap[scrollTop];
-    if (scrollTo !== undefined) {
+    var scrollTop = Math.round(editor.getScrollInfo().top)
+      , scrollTo = scrollMap[scrollTop]
+      ;
+    if (scrollTo !== undefined && frameWindow) {
       frameWindow.scrollTo(0, scrollTo);
     }
   }
 }, 30, scrollSyncTimeout);
 
-exports.registerScrollEditorImpl = function(editor) {
+exports.registerScrollEditorImpl = function(ed) {
+  editor = ed;
   editorOffset = parseInt(window.getComputedStyle(
                     document.querySelector('.CodeMirror-lines')
                   ).getPropertyValue('padding-top'), 10)

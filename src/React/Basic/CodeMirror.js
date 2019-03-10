@@ -57,10 +57,7 @@ function adjustProps(props, changeHandlerName) {
           onEditorDidMount(props, ed);
           onMount(ed)();
         }
-      , onScroll: function(ed, scrollInfo) {
-          var scrollTop = Math.round(scrollInfo.top);
-          onScroll(scrollTop)(ed)();
-        }
+      , onScroll: onScroll
       }
     ;
   moreProps[changeHandlerName] = function (ed, diffData, value) {

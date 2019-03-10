@@ -7,7 +7,7 @@ import React.Basic (JSX)
 foreign import controlled :: forall a editor.
                                 { value            :: String
                                 , onBeforeChange   :: String -> Effect Unit
-                                , onScroll         :: Int -> editor -> Effect Unit
+                                , onScroll         :: Effect Unit
                                 , onEditorDidMount :: editor -> Effect Unit
                                 | a }
                                 -> JSX
