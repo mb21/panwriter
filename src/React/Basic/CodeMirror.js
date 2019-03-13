@@ -29,7 +29,7 @@ var editor
       var charWidth = editor.defaultCharWidth()
         , basePadding = 4
         // matches markdown list `-`, `+`, `*`, `1.`, `1)` and blockquote `>` markers:
-        , listRe = /(([-|\+|\*|\>]|\d+[\.|\)])\s+)(.*)/
+        , listRe = /^(([-|\+|\*|\>]|\d+[\.|\)])\s+)(.*)/
         ;
       editor.on("renderLine", function(cm, line, elt) {
         var txt  = line.text
