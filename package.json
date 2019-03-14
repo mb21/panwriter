@@ -62,7 +62,11 @@
         "Name": "PanWriter",
         "Comment": "Markdown editor with pandoc integration and paginated preview"
       },
-      "category": "Utility"
+      "category": "Utility",
+      "target": [
+        "snap",
+        "AppImage"
+      ]
     }
   },
   "dependencies": {
