@@ -9,6 +9,7 @@ jobs:
           name: "Build"
           command: |
             npm i
+            npm run build
             npm run dist -- -l --publish=never
       - run:
           name: "Publish to Store"
