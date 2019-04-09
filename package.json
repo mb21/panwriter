@@ -87,7 +87,7 @@
     "markdown-it-sub": "^1.0.0",
     "markdown-it-sup": "^1.0.0",
     "markdown-it-texmath": "^0.5.2",
-    "pagedjs": "^0.1.30",
+    "pagedjs": "^0.1.33",
     "react": "^16.6.1",
     "react-codemirror2": "^5.1.0",
     "react-dom": "^16.6.1"

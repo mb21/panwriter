@@ -182,7 +182,7 @@ module.exports.pagedjs = async function(doc, previewDiv){
 
     await new Promise(resolve => {
       const s = document.createElement('script');
-      s.src = app.getAppPath() + '/node_modules/pagedjs/dist/paged.legacy.polyfill.js';
+      s.src = app.getAppPath() + '/node_modules/pagedjs/dist/paged.polyfill.js';
       s.async = false;
       s.addEventListener('load', resolve);
       frameBody.appendChild(s);
