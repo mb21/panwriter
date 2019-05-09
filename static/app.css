@@ -71,6 +71,7 @@ input:active, input:focus {
 }
 .preview iframe {
   border: 0;
+  position: absolute;
 }
 .preview > button {
   width:  36px;

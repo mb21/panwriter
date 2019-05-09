@@ -101,8 +101,8 @@ async function renderAndSwap(previewDiv, filePath, renderFn) {
   await setupSwapFrames(previewDiv, filePath);
   return renderFn(frame1.contentWindow).then( function(){
     frame1.contentWindow.scrollTo(0, frame2.contentWindow.scrollY);
-    frame1.style.display = 'block';
-    frame2.style.display = 'none';
+    frame1.style.top = '0';
+    frame2.style.top = '-1000vh'; // `display: none` would break pagedjs
     [frame2, frame1] = [frame1, frame2];
     return frame2.contentWindow;
   });
