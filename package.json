@@ -87,13 +87,13 @@
     "markdown-it-sub": "^1.0.0",
     "markdown-it-sup": "^1.0.0",
     "markdown-it-texmath": "^0.5.2",
-    "pagedjs": "^0.1.33",
+    "pagedjs": "0.1.34",
     "react": "^16.6.1",
     "react-codemirror2": "^5.1.0",
     "react-dom": "^16.6.1"
   },
   "devDependencies": {
-    "electron": "^4.1.4",
+    "electron": "4.2",
     "electron-builder": "^20.38.5",
     "psc-package": "^3.0.1",
     "purescript": "^0.12.1"
