@@ -25,7 +25,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 blockquote {
   margin: 2.5em 0 2.5em 2.5em;
-  background-color: rgb(246,248,250);
+  padding-left: 16px;
+  border-left: 2px solid #e6e6e6;
 }
 code {
   font-family: Menlo, Monaco, 'Lucida Console', Consolas, monospace;
