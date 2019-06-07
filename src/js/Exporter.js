@@ -202,6 +202,7 @@ function exportFormats() {
   , { name: 'groff (ms)',                     extensions: ['ms'] }
   , { name: 'GNU Texinfo (texinfo)',          extensions: ['texinfo'] }
   , { name: 'Textile (textile)',              extensions: ['textile'] }
+  , { name: 'Jira wiki',                      extensions: ['jira'] }
   , { name: 'DokuWiki (dokuwiki)',            extensions: ['dokuwiki'] }
   , { name: 'MediaWiki (mediawiki)',          extensions: ['mediawiki'] }
   , { name: 'Muse (muse)',                    extensions: ['muse'] }
