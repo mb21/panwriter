@@ -76,7 +76,7 @@ async function fileExport(exp) {
   pandoc.stderr.on('data', function(data) {
     errout.push(data);
   });
-  
+
   pandoc.on('close', function(exitCode) {
     const success = exitCode === 0
         , toMsg = "Called: " + cmdDebug
@@ -127,7 +127,7 @@ function mergeAndValidate(docMeta, extMeta, outputPath) {
 // reads the right default yaml file
 async function defaultMeta(type) {
   try {
-    const str = await readDataDirFile(type, '.yaml');
+    const [str, fileName] = await readDataDirFile(type, '.yaml');
     return [ jsYaml.safeLoad(str), ['--metadata-file', fileName] ]
   } catch(e) {
     console.warn("Error loading or parsing YAML file." + e.message);
@@ -138,7 +138,8 @@ async function defaultMeta(type) {
 // reads file from data directory, throws exception when not found
 async function readDataDirFile(type, suffix) {
   const fileName = getDataDirFileName(type, suffix);
-  return await promisify(fs.readFile)(fileName, 'utf8');
+  const str = await promisify(fs.readFile)(fileName, 'utf8');
+  return [str, fileName]
 }
 
 function getDataDirFileName(type, suffix) {
