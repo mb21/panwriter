@@ -102,7 +102,7 @@ function mergeAndValidate(docMeta, extMeta, outputPath) {
     toFormat = 'latex'
   }
 
-  const extractOut = meta => (meta.output && typeof meta.output === 'object')
+  const extractOut = meta => (meta && meta.output && typeof meta.output === 'object')
                                ? meta.output[toFormat]
                                : {}
                                ;
