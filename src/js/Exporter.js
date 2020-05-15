@@ -128,7 +128,7 @@ function mergeAndValidate(docMeta, extMeta, outputPath) {
 async function defaultMeta(type) {
   try {
     const [str, fileName] = await readDataDirFile(type, '.yaml');
-    return [ jsYaml.safeLoad(str), ['--metadata-file', fileName] ]
+    return [ jsYaml.safeLoad(str) || {}, ['--metadata-file', fileName] ]
   } catch(e) {
     console.warn("Error loading or parsing YAML file." + e.message);
     return [ {}, [] ];
