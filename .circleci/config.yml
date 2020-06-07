@@ -11,14 +11,14 @@ jobs:
             npm i
             npm run build
             npm run dist -- -l --publish=never
-      - run:
-          name: "Publish to Store"
-          command: |
-            apt-get update
-            DEBIAN_FRONTEND=noninteractive apt-get -yq install snapcraft
-            mkdir .snapcraft
-            echo $SNAPCRAFT_LOGIN_FILE | base64 --decode --ignore-garbage > .snapcraft/snapcraft.cfg
-            snapcraft push dist/*.snap --release stable
+#      - run:
+#          name: "Publish to Store"
+#          command: |
+#            apt-get update
+#            DEBIAN_FRONTEND=noninteractive apt-get -yq install snapcraft
+#            mkdir .snapcraft
+#            echo $SNAPCRAFT_LOGIN_FILE | base64 --decode --ignore-garbage > .snapcraft/snapcraft.cfg
+#            snapcraft push dist/*.snap --release stable
 workflows:
   version: 2
   build_and_deploy:
