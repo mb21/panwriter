@@ -39,10 +39,15 @@ uncomment this when https://gitlab.pagedmedia.org/tools/pagedjs/issues/94 is fix
 */
 html {
   font-family: 'IBM Plex Sans', 'Segoe UI', Helvetica, Arial, sans-serif;
-  font-size: 18px;
   line-height: 1.7;
   background-color: #fcfcfc;
   color: #1a1a1a;
+  font-size: 18px;
+}
+@media (min-width: 1000px) {
+  html {
+    font-size: 20px;
+  }
 }
 body {
   margin: 0 auto;
@@ -58,14 +63,21 @@ p {
 a {
   color: #1a1a1a;
 }
+a::visited {
+  color: #1a1a1a;
+}
 img {
   max-width: 100%;
 }
 h1, h2, h3, h4, h5, h6 {
-  margin-top: 1.5em;
+  margin-top: 1.7em;
 }
 ol, ul {
   padding-left: 1.7em;
+  margin-top: 1.7em;
+}
+li > ol, li > ul {
+  margin-top: 0;
 }
 blockquote {
   margin: 1.7em 0 1.7em 1.7em;
@@ -75,14 +87,15 @@ blockquote {
 }
 code {
   font-family: Menlo, Monaco, 'Lucida Console', Consolas, monospace;
-  background-color: rgb(246,248,250);
+  background-color: #f0f0f0;
   font-size: 85%;
   margin: 0;
   padding: .2em .4em;
 }
 pre {
+  line-height: 1.5em;
   padding: 1em;
-  background-color: rgb(246,248,250);
+  background-color: #f0f0f0;
   overflow: auto;
 }
 pre code {
@@ -90,5 +103,18 @@ pre code {
   overflow: visible;
 }
 hr {
-  color: #1a1a1a;
+  background-color: #1a1a1a;
+  border: none;
+  height: 1px;
+  margin-top: 1.7em;
+}
+table {
+  border-collapse: collapse;
+  width: 100%;
+  overflow-x: auto;
+  display: block;
+}
+th, td {
+  border-bottom: 1px solid lightgray;
+  padding: 1em 3em 1em 0;
 }
