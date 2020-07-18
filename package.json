@@ -92,7 +92,7 @@
     "react-dom": "^16.6.1"
   },
   "devDependencies": {
-    "electron": "5.0.1",
+    "electron": "9.1.0",
     "electron-builder": "^22.7.0",
     "psc-package": "^3.0.1",
     "purescript": "^0.12.1"

@@ -50,31 +50,30 @@ function createWindow(filePath, toImport=false, wasCreatedOnStartup=false) {
   // Open the DevTools.
   // win.webContents.openDevTools()
 
-  win.on('close', function(e) {
+  win.on('close', async function(e) {
     // this does not intercept a reload
     // see https://github.com/electron/electron/blob/master/docs/api/browser-window.md#event-close
     // and https://github.com/electron/electron/issues/9966
     if (win.fileIsDirty) {
-      const selected = dialog.showMessageBox(win, {
+      e.preventDefault();
+      const selected = await dialog.showMessageBox(win, {
           type: "question"
         , message: "This document has unsaved changes."
         , buttons: ["Save", "Cancel", "Don't Save"]
         })
-      switch (selected) {
+      switch (selected.response) {
         case 0:
           // Save
           win.webContents.send('fileSave', {closeWindowAfterSave: true});
-          e.preventDefault();
           break;
         case 1:
           // Cancel
-          e.preventDefault();
           break;
         case 2:
           // Don't Save
+          win.fileIsDirty = false;
+          win.close()
           break;
-        default:
-          e.preventDefault();
       }
     }
     fetchRecentFiles(); // call to localStorage while we still have a window
@@ -150,17 +149,17 @@ app.on('activate', function() {
   }
 })
 
-function openDialog(toImport=false) {
+async function openDialog(toImport=false) {
   const formats = toImport ? [] : [
             { name: 'Markdown', extensions: mdExtensions }
           ]
-      , fileNames = dialog.showOpenDialog({
+      , fileNames = await dialog.showOpenDialog({
           filters: formats
         , buttonLabel: toImport ? 'Import' : undefined
         })
       ;
-  if (fileNames !== undefined && fileNames.length > 0) {
-    createWindow( fileNames[0], toImport);
+  if (fileNames && fileNames.filePaths.length > 0) {
+    createWindow(fileNames.filePaths[0], toImport);
   }
 }
 
@@ -202,27 +201,27 @@ function setMenuQuick(aWindowIsOpen=true) {
       , {type: 'separator'}
       , { label: 'Save'
         , accelerator: 'CmdOrCtrl+S'
-        , click: windowSend.bind(this, 'fileSave')
+        , click: () => windowSend('fileSave')
         , enabled: aWindowIsOpen
         }
       , { label: 'Save As…'
         , accelerator: 'CmdOrCtrl+Shift+S'
-        , click: windowSend.bind(this, 'fileSave', {saveAsNewFile: true})
+        , click: () => windowSend('fileSave', {saveAsNewFile: true})
         , enabled: aWindowIsOpen
         }
       , { label: 'Print / PDF'
         , accelerator: 'CmdOrCtrl+P'
-        , click: windowSend.bind(this, 'filePrint')
+        , click: () => windowSend('filePrint')
         , enabled: aWindowIsOpen
         }
       , { label: 'Export…'
         , accelerator: 'CmdOrCtrl+Shift+E'
-        , click: windowSend.bind(this, 'fileExport')
+        , click: () => windowSend('fileExport')
         , enabled: aWindowIsOpen
         }
       , { label: 'Export like previous'
         , accelerator: 'CmdOrCtrl+E'
-        , click: windowSend.bind(this, 'fileExportLikePrevious')
+        , click: () => windowSend('fileExportLikePrevious')
         , enabled: aWindowIsOpen
         }
       , { label: 'Import…'
@@ -244,17 +243,17 @@ function setMenuQuick(aWindowIsOpen=true) {
       , {type: 'separator'}
       , { label: 'Find'
         , accelerator: 'CmdOrCtrl+F'
-        , click: windowSend.bind(this, 'find')
+        , click: () => windowSend('find')
         , enabled: aWindowIsOpen
         }
       , { label: 'Find Next'
         , accelerator: 'CmdOrCtrl+G'
-        , click: windowSend.bind(this, 'findNext')
+        , click: () => windowSend('findNext')
         , enabled: aWindowIsOpen
         }
       , { label: 'Find Previous'
         , accelerator: 'CmdOrCtrl+Shift+G'
-        , click: windowSend.bind(this, 'findPrevious')
+        , click: () => windowSend('findPrevious')
         , enabled: aWindowIsOpen
         }
       ]
@@ -263,21 +262,21 @@ function setMenuQuick(aWindowIsOpen=true) {
     , submenu: [
         { label: 'Bold'
         , accelerator: 'CmdOrCtrl+B'
-        , click: windowSend.bind(this, 'addBold')
+        , click: () => windowSend('addBold')
         , enabled: aWindowIsOpen
         }
       , { label: 'Italic'
         , accelerator: 'CmdOrCtrl+I'
-        , click: windowSend.bind(this, 'addItalic')
+        , click: () => windowSend('addItalic')
         , enabled: aWindowIsOpen
         }
       , { label: 'Strikethrough'
-        , click: windowSend.bind(this, 'addStrikethrough')
+        , click: () => windowSend('addStrikethrough')
         , enabled: aWindowIsOpen
         }
       , {type: 'separator'}
       , { label: 'Add CSS style'
-        , click: windowSend.bind(this, 'addMetadataStyle')
+        , click: () => windowSend('addMetadataStyle')
         , enabled: aWindowIsOpen
         }
       ]
@@ -286,17 +285,17 @@ function setMenuQuick(aWindowIsOpen=true) {
     , submenu: [
         { label: 'Show Only Editor'
         , accelerator: 'CmdOrCtrl+1'
-        , click: windowSend.bind(this, 'splitViewOnlyEditor')
+        , click: () => windowSend('splitViewOnlyEditor')
         , enabled: aWindowIsOpen
         }
       , { label: 'Show Split View'
         , accelerator: 'CmdOrCtrl+2'
-        , click: windowSend.bind(this, 'splitViewSplit')
+        , click: () => windowSend('splitViewSplit')
         , enabled: aWindowIsOpen
         }
       , { label: 'Show Only Preview'
         , accelerator: 'CmdOrCtrl+3'
-        , click: windowSend.bind(this, 'splitViewOnlyPreview')
+        , click: () => windowSend('splitViewOnlyPreview')
         , enabled: aWindowIsOpen
         }
       , {type: 'separator'}

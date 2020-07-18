@@ -25,20 +25,22 @@ ipcRenderer.on('fileExport', function() {
     defaultPath   = path.basename(inputPath, path.extname(inputPath))
   }
 
-  const outputPath = remote.dialog.showSaveDialog(win, {
+  remote.dialog.showSaveDialog(win, {
     defaultPath: defaultPath
   , buttonLabel: 'Export'
   , filters: exportFormats()
-  });
-  if (outputPath !== undefined){
-    let exp = {
-      outputPath: outputPath
-    , spawnOpts: spawnOpts
-    };
-    fileExport(exp).then( () => {
-      previousExportConfig = exp;
-    });
-  }
+  }).then(res => {
+    const outputPath = res.filePath
+    if (outputPath){
+      const exp = {
+        outputPath: outputPath
+      , spawnOpts: spawnOpts
+      };
+      fileExport(exp).then( () => {
+        previousExportConfig = exp;
+      });
+    }
+  })
 });
 
 ipcRenderer.on('fileExportLikePrevious', function() {

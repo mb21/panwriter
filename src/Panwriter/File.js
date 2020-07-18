@@ -54,35 +54,38 @@ ipcRenderer.on('fileSave', function(_event, opts) {
     opts = {};
   }
   var filePath = Document.getPath();
-  if (filePath === undefined || opts.saveAsNewFile) {
-    var win  = remote.getCurrentWindow();
-    filePath = remote.dialog.showSaveDialog(win, {
-        defaultPath: 'Untitled.md'
-      , filters: [
-          { name: 'Markdown', extensions: ['md', 'txt', 'markdown'] }
-        ]
-      });
-    if (filePath === undefined) {
+  var filePathPromise = filePath === undefined || opts.saveAsNewFile
+    ? remote.dialog.showSaveDialog(remote.getCurrentWindow(), {
+          defaultPath: 'Untitled.md'
+        , filters: [
+            { name: 'Markdown', extensions: ['md', 'txt', 'markdown'] }
+          ]
+        })
+    : filePathPromise = Promise.resolve({filePath: filePath});
+
+  filePathPromise.then(function(res) {
+    filePath = res.filePath
+    if (!filePath) {
       return;
     }
-  }
-  fs.writeFile(filePath, Document.getMd(), function(err){
-    if (err) {
-      alert("Could not save file.\n" + err.message);
-    } else {
-      var win = remote.getCurrentWindow()
-        , name = filename(filePath)
-        ;
-      Document.setPath(filePath);
-      win.setTitle(name);
-      win.setRepresentedFilename(filePath);
-      win.fileIsDirty = false;
-      onFileSaveCb(name)();
-      if (opts.closeWindowAfterSave) {
-        win.close();
+    fs.writeFile(filePath, Document.getMd(), function(err){
+      if (err) {
+        alert("Could not save file.\n" + err.message);
+      } else {
+        var win = remote.getCurrentWindow()
+          , name = filename(filePath)
+          ;
+        Document.setPath(filePath);
+        win.setTitle(name);
+        win.setRepresentedFilename(filePath);
+        win.fileIsDirty = false;
+        onFileSaveCb(name)();
+        if (opts.closeWindowAfterSave) {
+          win.close();
+        }
       }
-    }
-  });
+    });
+  })
 });
 
 function filename(filePath) {
