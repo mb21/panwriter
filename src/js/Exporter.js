@@ -1,11 +1,10 @@
 "use strict";
 
-const ipcRenderer = require('electron').ipcRenderer
-    , remote      = require('electron').remote
-    , spawn       = require('child_process').spawn
+const { ipcRenderer, remote, clipboard } = require('electron')
+    , { spawn }   = require('child_process')
     , fs          = require('fs')
     , path        = require('path')
-    , promisify   = require('util').promisify
+    , { promisify } = require('util')
     , jsYaml      = require('js-yaml')
     , Document    = require('./Document')
     ;
@@ -52,13 +51,34 @@ ipcRenderer.on('fileExportLikePrevious', function() {
   }
 });
 
+ipcRenderer.on('fileExportToClipboard', function() {
+  const meta = Document.getMeta();
+  const format = meta.output && Object.keys(meta.output)[0];
+  if (format) {
+    fileExport({toClipboardFormat: format});
+  } else {
+    alert(`Couldn't find output format in YAML metadata.
+
+Add something like the following at the top of your document:
+
+---
+output:
+  html: true
+---`);
+  }
+});
+
+ipcRenderer.on('fileExportHTMLToClipboard', function() {
+  fileExport({toClipboardFormat: 'html', toClipboardHTML: true});
+});
+
 
 // Calls pandoc, takes export settings object
 async function fileExport(exp) {
   // simplified version of what I did in https://github.com/mb21/panrun
   const docMeta = Document.getMeta()
       , [extMeta, fileArg] = await defaultMeta(docMeta.type)
-      , out = mergeAndValidate(docMeta, extMeta, exp.outputPath)
+      , out = mergeAndValidate(docMeta, extMeta, exp.outputPath, exp.toClipboardFormat)
       ;
   const win  = remote.getCurrentWindow()
       , cmd  = 'pandoc'
@@ -79,29 +99,53 @@ async function fileExport(exp) {
     errout.push(data);
   });
 
+  const stdout = [];
+  if (exp.toClipboardFormat) {
+    pandoc.stdout.on('data', function(data) {
+      stdout.push(data.toString('utf8'));
+    });
+  }
+
   pandoc.on('close', function(exitCode) {
     const success = exitCode === 0
         , toMsg = "Called: " + cmdDebug
         ;
-    remote.dialog.showMessageBox(win, {
-      type:    success ? 'info' : 'error'
-    , message: success ? 'Success!' : 'Failed to export'
-    , detail:  [toMsg, ''].concat( errout.join('') ).join('\n')
-    , buttons: ['OK']
-    });
+    if (success && exp.toClipboardFormat) {
+      if (exp.toClipboardHTML) {
+        clipboard.write({
+          text: Document.getMd(),
+          html: stdout.join('')
+        });
+      } else {
+        clipboard.writeText(stdout.join(''));
+      }
+    }
+    if (!exp.toClipboardFormat || !success) {
+      remote.dialog.showMessageBox(win, {
+        type:    success ? 'info' : 'error'
+      , message: success ? 'Success!' : 'Failed to export'
+      , detail:  [toMsg, ''].concat( errout.join('') ).join('\n')
+      , buttons: ['OK']
+      });
+    }
   });
 };
 
 // merges both metas, sets proper defaults and returns output[toFormat] part
-function mergeAndValidate(docMeta, extMeta, outputPath) {
-  let toFormat = path.extname(outputPath)
-  if (toFormat && toFormat[0] === '.') {
-    toFormat = toFormat.substr(1);
-  }
-  if (toFormat === 'pdf') {
-    toFormat = docMeta['pdf-format'] || extMeta['pdf-format'] || 'latex'
-  } else if (toFormat === 'tex') {
-    toFormat = 'latex'
+function mergeAndValidate(docMeta, extMeta, outputPath, toClipboardFormat) {
+  let toFormat;
+  if (outputPath) {
+    toFormat = path.extname(outputPath)
+    if (toFormat && toFormat[0] === '.') {
+      toFormat = toFormat.substr(1);
+    }
+    if (toFormat === 'pdf') {
+      toFormat = docMeta['pdf-format'] || extMeta['pdf-format'] || 'latex';
+    } else if (toFormat === 'tex') {
+      toFormat = 'latex';
+    }
+  } else {
+    toFormat = toClipboardFormat;
   }
 
   const extractOut = meta => (meta && meta.output && typeof meta.output === 'object')
@@ -110,8 +154,10 @@ function mergeAndValidate(docMeta, extMeta, outputPath) {
                                ;
   const out = Object.assign( extractOut(extMeta), extractOut(docMeta) );
 
-  //make sure output goes to file user selected in GUI
-  out.output = outputPath;
+  if (outputPath) {
+    //make sure output goes to file user selected in GUI
+    out.output = outputPath;
+  }
 
   // allow user to set `to: epub2`, `to: gfm`, `to: revealjs` etc.
   if (out.to === undefined) {
@@ -119,7 +165,7 @@ function mergeAndValidate(docMeta, extMeta, outputPath) {
   }
 
   // unless explicitly disabled, use `-s`
-  if (out.standalone !== false) {
+  if (out.standalone !== false && !toClipboardFormat) {
     out.standalone = true;
   }
 

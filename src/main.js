@@ -224,6 +224,16 @@ function setMenuQuick(aWindowIsOpen=true) {
         , click: () => windowSend('fileExportLikePrevious')
         , enabled: aWindowIsOpen
         }
+      , { label: 'Export to clipboard'
+        , accelerator: 'CmdOrCtrl+Alt+E'
+        , click: () => windowSend('fileExportToClipboard')
+        , enabled: aWindowIsOpen
+        }
+      , { label: 'Export as rich text to clipboard'
+        , accelerator: 'CmdOrCtrl+Alt+Shift+E'
+        , click: () => windowSend('fileExportHTMLToClipboard')
+        , enabled: aWindowIsOpen
+        }
       , { label: 'Import…'
         , accelerator: 'CmdOrCtrl+I'
         , click: () => openDialog(true)
