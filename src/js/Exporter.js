@@ -13,7 +13,7 @@ var previousExportConfig;
 
 module.exports.getDataDirFileName = getDataDirFileName;
 
-ipcRenderer.on('fileExport', function() {
+const fileExportDialog = function() {
   const win = remote.getCurrentWindow()
       , spawnOpts = {}
       , inputPath = Document.getPath()
@@ -40,14 +40,14 @@ ipcRenderer.on('fileExport', function() {
       });
     }
   })
-});
+};
+ipcRenderer.on('fileExport', fileExportDialog);
 
 ipcRenderer.on('fileExportLikePrevious', function() {
   if (previousExportConfig) {
     fileExport(previousExportConfig);
   } else {
-    alert( "This document has not been exported yet, since it was opened.\n\n" +
-           "Use 'File → Export' first." );
+    fileExportDialog();
   }
 });
 
