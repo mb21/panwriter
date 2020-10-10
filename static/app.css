@@ -17,11 +17,11 @@ input:active, input:focus {
 .app > * {
   width: 100vw;
 }
-.app.split > .react-codemirror2,
+.app.split > .editor,
 .app.split > .preview {
   width: 50vw;
 }
-.app.onlypreview > .react-codemirror2 {
+.app.onlypreview > .editor {
   display: none;
 }
 .app.onlyeditor > .preview {
@@ -59,6 +59,11 @@ input:active, input:focus {
 
 .react-codemirror2 {
   background-color: #f7f7f7;
+}
+
+/* Hide text editor when metaEditor is open */
+.metaeditor + .react-codemirror2 {
+  display: none;
 }
 
 .preview {

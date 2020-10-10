@@ -1,0 +1,54 @@
+.metaeditor {
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif; /* see same line in app.toolbar.css */
+  background-color: #ececec;
+  color: #1a1a1a;
+  min-height: 100%;
+  padding: 50px 20px;
+  box-sizing: border-box;
+}
+
+.metaeditor .backbtn {
+  position: fixed;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+.metaeditor .content {
+  padding-top: 40px;
+  max-width: 50vw;
+  margin: 0 auto;
+}
+.metaeditor h4 {
+  font-size: 12px;
+  margin: 2em 0 1em 0;
+}
+
+.metaeditor .kvs {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+}
+.metaeditor label {
+  font-size: 12px;
+  padding: 3px 10px 0 0;
+}
+
+.metaeditor input,
+.metaeditor textarea,
+.metaeditor select {
+  font-size: 12px;
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif; /* see same line in app.toolbar.css */
+  color: #1a1a1a;
+  border: 1px solid #bdbdbd;
+  padding: 3px 3px 1px 3px;
+  margin-bottom: 3px;
+}
+.metaeditor textarea {
+  resize: vertical;
+  min-height: 7em;
+  font-family: Menlo, Monaco, 'Lucida Console', Consolas, monospace;
+}
+.metaeditor textarea:focus,
+.metaeditor select:focus {
+  outline: none;
+}

@@ -18,7 +18,7 @@
   transition: opacity 0.2s ease-out;
   opacity: 0;
   display: grid;
-  grid-template-columns: 1fr auto minmax(max-content, 1fr);
+  grid-template-columns: max-content minmax(max-content, 1fr) auto minmax(max-content, 1fr);
   grid-column-gap: 5px;
   align-items: center;
 }
@@ -28,10 +28,10 @@
 }
 
 /* Place an invisible block where the macOS .windowbuttons are going to be
- * to push the title text away on very small windows */
+ * to push the other stuff to the right away on very small windows */
 ._macOS .toolbar > .toolbararea::before {
   display: block;
-  width: 80px;
+  width: 70px;
   content: ' ';
 }
 
@@ -84,7 +84,7 @@
 
 .toolbar .filename {
   color: #676767;
-  grid-column-start: 2;
+  grid-column-start: 3;
   max-height: 30px;
   cursor: default;
 }
@@ -124,6 +124,10 @@
 
 .toolbar button img {
   height: 20px;
+}
+
+.toolbar .leftbtns {
+  margin-left: 5px;
 }
 
 .toolbar .btngroup button:not(:first-child) {

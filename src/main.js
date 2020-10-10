@@ -284,11 +284,6 @@ function setMenuQuick(aWindowIsOpen=true) {
         , click: () => windowSend('addStrikethrough')
         , enabled: aWindowIsOpen
         }
-      , {type: 'separator'}
-      , { label: 'Add CSS style'
-        , click: () => windowSend('addMetadataStyle')
-        , enabled: aWindowIsOpen
-        }
       ]
     }
   , { label: 'View'

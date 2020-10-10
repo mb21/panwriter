@@ -10,6 +10,31 @@ var yamlFrontRe = /^(-{3}(?:\n|\r)([\w\W]+?)(?:\n|\r)-{3})?([\w\W]*)*/;
 
 exports.getDocument = Document.getDoc;
 
+exports.defaultVars = Document.defaultVars;
+
+exports.setMeta = function(metaObj) {
+  return function() {
+    for (var key in metaObj) {
+      if (metaObj[key] === '') {
+        delete metaObj[key]
+      }
+    }
+    Document.setMeta(metaObj)
+  }
+}
+
+exports.writeMetaToDoc = function() {
+  var metaObj = Document.getMeta();
+  var bodyStr = Document.getBodyMd();
+  var yamlStr = Object.keys(metaObj).length > 0
+    ? jsYaml.safeDump(metaObj, {skipInvalid: true})
+    : '';
+  var mdStr = (yamlStr ? '---\n' + yamlStr + '---\n\n' : '')
+    + bodyStr.trim();
+  Document.setDoc(mdStr, yamlStr, bodyStr, metaObj);
+  return mdStr
+}
+
 exports.updateDocument = function(mdStr) {
   return function() {
     var yamlStr = ''
@@ -20,7 +45,7 @@ exports.updateDocument = function(mdStr) {
       ;
     try {
       if (yaml = results[2]) {
-        var meta = jsYaml.safeLoad(yaml);
+        var meta = jsYaml.safeLoad(yaml, {schema: jsYaml.JSON_SCHEMA});
         if (typeof meta === 'object' && !(meta instanceof Array) ) {
           yamlStr = yaml
           bodyStr = results[3] || '';

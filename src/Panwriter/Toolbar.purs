@@ -17,12 +17,14 @@ component :: Component Props
 component = createComponent "Toolbar"
 
 type Props = {
-  fileName          :: String
-, fileDirty         :: Boolean
-, split             :: ViewSplit
-, onSplitChange     :: ViewSplit -> EventHandler
-, paginated         :: Boolean
-, onPaginatedChange :: Boolean -> EventHandler
+  fileName           :: String
+, fileDirty          :: Boolean
+, metaEditorOpen     :: Boolean
+, onMetaEditorChange :: Boolean -> EventHandler
+, split              :: ViewSplit
+, onSplitChange      :: ViewSplit -> EventHandler
+, paginated          :: Boolean
+, onPaginatedChange  :: Boolean -> EventHandler
 }
 
 data Action = Close
@@ -42,7 +44,18 @@ toolbar = make component
       Minimize -> UpdateAndSideEffects state \self -> CurrentWindow.minimize
       Maximize -> UpdateAndSideEffects state \self -> CurrentWindow.maximize
   , render: \self ->
-      let paginatedBtn props = guard (props.split /= OnlyEditor)
+      let metaEditorBtn props = guard (props.split /= OnlyPreview) 
+            button
+              { active:   props.metaEditorOpen
+              , children: [ R.img
+                              { alt: "Edit metadata"
+                              , src: "metaEditor.svg"
+                              }
+                          ]
+              , onClick:  props.onMetaEditorChange $ not props.metaEditorOpen
+              }
+
+          paginatedBtn props = guard (props.split /= OnlyEditor)
             R.div
               { className: ""
               , children: [
@@ -90,6 +103,12 @@ toolbar = make component
                           onClick: capture_ self action
                         , children: [R.img { src: "macOS_window_" <> showAction action <> ".svg" }]
                         }
+                    }
+                , R.div
+                    { className: "leftbtns"
+                    , children: [
+                        metaEditorBtn self.props
+                      ]
                     }
                 , R.div
                     { className: "filename"

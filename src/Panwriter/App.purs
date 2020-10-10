@@ -1,12 +1,14 @@
 module Panwriter.App where
 
 import Prelude
+import Data.Monoid (guard)
 import Effect (Effect)
 
 import Electron.IpcRenderer as Ipc
 import Panwriter.Document (updateDocument)
 import Panwriter.File (initFile, setWindowDirty)
 import Panwriter.Formatter as Formatter
+import Panwriter.MetaEditor (metaEditor)
 import Panwriter.Preview (preview)
 import Panwriter.Toolbar (ViewSplit(..), toolbar)
 import React.Basic (Component, JSX, StateUpdate(..), capture_, createComponent, make, send)
@@ -20,7 +22,10 @@ component = createComponent "App"
 
 type Props = {}
 
-data Action = SplitChange ViewSplit
+data Action = OpenMetaEdit Boolean
+            | ExitMetaEditor String
+            | RenderPreview
+            | SplitChange ViewSplit
             | Paginate Boolean
             | TextChange String
             | FileSaved String
@@ -42,6 +47,7 @@ app = make component
       { text: ""
       , fileName: "Untitled"
       , fileDirty: false
+      , metaEditorOpen: false
       , split: OnlyEditor
       , paginated: false
       }
@@ -58,11 +64,9 @@ app = make component
       Ipc.on "addBold"          $ CodeMirror.replaceSelection Formatter.bold
       Ipc.on "addItalic"        $ CodeMirror.replaceSelection Formatter.italic
       Ipc.on "addStrikethrough" $ CodeMirror.replaceSelection Formatter.strikethrough
-      Ipc.on "addMetadataStyle" $ do
-        Formatter.addStyle >>= send self <<< TextChange
-        send self $ Paginate true
   
   , update: \{state} action -> case action of
+      OpenMetaEdit o      -> Update state {metaEditorOpen = o}
       SplitChange sp      -> UpdateAndSideEffects state {split = sp}
                                \self -> do
                                  renderPreview self.state
@@ -73,6 +77,13 @@ app = make component
                                \self -> do
                                  setWindowDirty
                                  updateDocument txt
+                                 renderPreview self.state
+      ExitMetaEditor txt  -> UpdateAndSideEffects state {text = txt, metaEditorOpen = false}
+                               \self -> do
+                                 renderPreview self.state
+                                 CodeMirror.refresh
+      RenderPreview       -> UpdateAndSideEffects state
+                               \self -> do
                                  renderPreview self.state
       FileSaved name      -> Update state {fileName = name, fileDirty = false}
       FileLoaded name txt -> UpdateAndSideEffects state 
@@ -94,35 +105,46 @@ app = make component
           toolbar
             { fileName:          state.fileName
             , fileDirty:         state.fileDirty
+            , metaEditorOpen:    state.metaEditorOpen
+            , onMetaEditorChange: capture_ self <<< OpenMetaEdit
             , split:             state.split
             , onSplitChange:     capture_ self <<< SplitChange
             , paginated:         state.paginated
             , onPaginatedChange: capture_ self <<< Paginate
             }
-        , CodeMirror.controlled
-            { onBeforeChange: send self <<< TextChange
-            , onScroll: scrollPreview
-            , onEditorDidMount: registerScrollEditor
-            , value: state.text
-            , autoCursor: true
-            , options:
-                { mode:
-                  { name: "yaml-frontmatter"
-                  , base: "markdown"
+        , R.div
+          { className: "editor"
+          , children: [
+              guard state.metaEditorOpen $ metaEditor
+                { onBack: send self <<< ExitMetaEditor
+                , onChange: send self $ RenderPreview
+                }
+            , CodeMirror.controlled
+                { onBeforeChange: send self <<< TextChange
+                , onScroll: scrollPreview
+                , onEditorDidMount: registerScrollEditor
+                , value: state.text
+                , autoCursor: true
+                , options:
+                    { mode:
+                      { name: "yaml-frontmatter"
+                      , base: "markdown"
+                      }
+                    , theme: "paper"
+                    , indentUnit: 4 -- because of how numbered lists behave in CommonMark
+                    , tabSize: 4
+                    , lineNumbers: false
+                    , lineWrapping: true
+                    , autofocus: true
+                    , extraKeys:
+                        { "Enter": "newlineAndIndentContinueMarkdownList"
+                        , "Tab": "indentMore"
+                        , "Shift-Tab": "indentLess"
+                        }
                   }
-                , theme: "paper"
-                , indentUnit: 4 -- because of how numbered lists behave in CommonMark
-                , tabSize: 4
-                , lineNumbers: false
-                , lineWrapping: true
-                , autofocus: true
-                , extraKeys:
-                    { "Enter": "newlineAndIndentContinueMarkdownList"
-                    , "Tab": "indentMore"
-                    , "Shift-Tab": "indentLess"
-                    }
-              }
-            }
+                }
+            ]
+          }
         , preview
             { paginated: state.paginated
             , printPreview: printPreview

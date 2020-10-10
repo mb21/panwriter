@@ -109,17 +109,19 @@ async function renderAndSwap(previewDiv, filePath, renderFn) {
 }
 
 
-module.exports.plain = async function(doc, previewDiv){
-  await setupSingleFrame(previewDiv, doc.getPath());
-  const [cssStr, link, linkIsChanged] = await doc.getCss()
+module.exports.plain = async function(Document, previewDiv){
+  await setupSingleFrame(previewDiv, Document.getPath());
+  const [cssStr, link, linkIsChanged] = await Document.getCss()
       , content = [
-          '<style>', cssStr, '</style>', doc.getHtml()
+          '<style>', cssStr, '</style>'
+        , Document.getMeta()['header-includes']
+        , Document.getHtml()
         ].join('')
   if (linkIsChanged && singleFrameLinkEl) {
     singleFrameLinkEl.remove()
     singleFrameLinkEl = undefined;
   }
-  if (singleFrameLinkEl === undefined) {
+  if (singleFrameLinkEl === undefined && link) {
     singleFrameLinkEl = createLinkEl(link)
     singleFrame.contentDocument.head.appendChild(singleFrameLinkEl)
   }
@@ -155,11 +157,11 @@ const pagedjsStyleEl = createStyleEl(`
 }
 `);
 
-module.exports.pagedjs = async function(doc, previewDiv){
-  return renderAndSwap(previewDiv, doc.getPath(), async (frameWindow) => {
+module.exports.pagedjs = async function(Document, previewDiv){
+  return renderAndSwap(previewDiv, Document.getPath(), async (frameWindow) => {
 
-    const [cssStr, link, _] = await doc.getCss()
-        , content    = doc.getHtml()
+    const [cssStr, link, _] = await Document.getCss()
+        , content    = Document.getMeta()['header-includes'] + Document.getHtml()
         , frameHead  = frameWindow.document.head
         , frameBody  = frameWindow.document.body
         ;
@@ -172,7 +174,9 @@ module.exports.pagedjs = async function(doc, previewDiv){
 
     // repopulate styles
     injectMathLib(frameWindow);
-    frameHead.appendChild( createLinkEl(link) );
+    if (link) {
+      frameHead.appendChild( createLinkEl(link) );
+    }
     frameHead.appendChild( createStyleEl(cssStr) );
     frameHead.appendChild(pagedjsStyleEl);
 

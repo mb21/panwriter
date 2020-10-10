@@ -18,6 +18,12 @@ type Document = {
 
 foreign import getDocument :: Effect Document
 
+foreign import defaultVars :: Meta
+
+foreign import setMeta :: Meta -> Effect Unit
+
+foreign import writeMetaToDoc :: Effect String
+
 -- note: this does not cause a rerender
 foreign import updateDocument :: String -- ^ markdown string
                               -> Effect Unit

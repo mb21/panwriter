@@ -5,7 +5,7 @@
 PanWriter is a distraction-free markdown editor with two unique features:
 
 1. Tight integration with pandoc for import/export to/from plenty of file formats (including HTML, docx, LaTeX and EPUB).
-2. Preview pane that can show pages – including page breaks etc. Layout adjustments are done in-file using CSS, and are immediately reflected in the preview.
+2. Preview pane that can show pages – including page breaks etc. Layout adjustments are immediately reflected in the preview.
 
 ![](screenshot.png)
 
@@ -21,28 +21,9 @@ Select `File -> 'Print / PDF'` and `PDF -> 'Save as PDF'` in the print dialog (e
 
 This will export exactly what’s shown in the preview, and not use pandoc at all.
 
-By adding a `style` field to your YAML metadata, you can change the styling of the preview and immediately see the changes. (You can later save your CSS as a theme, see [Document types](#document-types--themes) below.)
-
-    ---
-    title: my document
-    style: |
-      @page {
-        size: A4;
-        margin-top: 2cm;
-      }
-      body {
-        font-size: 20px; /* set base */
-      }
-      h1 {
-        font-size: 1.5em; /* scale relative to base */
-      }
-    ---
-
-    # my document
+You can change the styling of the preview and immediately see the changes. (You can later save your CSS as a theme, see [Document types](#document-types--themes) below.)
 
 ![](screenshot-css.png)
-
-(To include that CSS when exporting to HTML/EPUB with pandoc, you would have to use a custom pandoc template with the snippet `<style>$style$</style>`. We’ll try to make this more straight-forward in the future.)
 
 ### Export via pandoc
 
@@ -56,6 +37,7 @@ If you have a YAML metadata block, like in the following example, PanWriter will
 
     ---
     title: my document
+    fontsize: 18px
     pdf-format: latex  # optional
     output:
       html:
@@ -109,7 +91,7 @@ You can e.g. put `type: letter` in the YAML of your input document. In that case
 
 ### Markdown syntax
 
-We use `markdown-it` for the preview pane, which is fully [CommonMark](https://commonmark.org/)-compliant. We also added a bunch of plugins, to make the preview behave as much as pandoc as possible (including attributes, [`fenced_divs`](http://pandoc.org/MANUAL.html#extension-fenced_divs), `definition_lists`, `footnotes`, `implicit_figures`, `subscript`, `superscript`, `yaml_metadata_block` and `tex_math_dollars`). We explicitly don't support `raw_html` or `raw_tex`, since everything should be doable with the `fenced_divs`, `bracketed_spans` and `raw_attribute` extensions.
+We use `markdown-it` for the preview pane, which is fully [CommonMark](https://commonmark.org/)-compliant. We also added a bunch of plugins, to make the preview behave as much as pandoc as possible (including attributes, [`fenced_divs`](http://pandoc.org/MANUAL.html#extension-fenced_divs), `definition_lists`, `footnotes`, `grid_tables`, `implicit_figures`, `subscript`, `superscript`, `yaml_metadata_block` and `tex_math_dollars`). We explicitly don't support `raw_html` or `raw_tex`, since everything should be doable with the `fenced_divs`, `bracketed_spans` and `raw_attribute` extensions.
 
 However, there might still be minor differences between the preview and `File -> 'Print / PDF'` on one hand, and `File -> Export` on the other.
 
@@ -166,7 +148,7 @@ Install [yarn](https://yarnpkg.com/), then:
 ### TODOs
 
 - Preview:
-    - respect `css`, `header-includes`, `toc` metadata fields
+    - respect `css`, `toc` metadata fields
 - Editor:
     - expand `Format` menu
     - spell check
@@ -178,7 +160,6 @@ Install [yarn](https://yarnpkg.com/), then:
 - Write pandoc lua filter that does some PanWriter-specific transformations:
   - add [page-break syntax](https://github.com/jgm/pandoc/issues/1934#issuecomment-274327751)
   - [Variable substitution in body](https://github.com/jgm/pandoc/issues/1950#issuecomment-427671251)
-  - read out `style` metadata and inject into `header-includes`
   - read out `type` metadata and if it references a css file, put the path into the `css` metadata variable
 - GUI popup on file import: at least allow to set `-f`, `-t`, `--track-changes` and `--extract-media` pandoc options.
 - Unify PanWriter custom document type and pandoc template concepts?

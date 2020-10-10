@@ -7,6 +7,7 @@ var remote          = require('electron').remote
   , fs              = require('fs')
   , promisify          = require('util').promisify
   , getDataDirFileName = require('./Exporter').getDataDirFileName
+  , { parseToTemplate, interpolateTemplate, extractDefaultVars } = require('./templates')
   ;
 
 var md       = ""
@@ -34,6 +35,10 @@ module.exports.setDoc = function(mdStr, yamlStr, bodyMdStr, metaObj) {
 
 module.exports.setHtml = function(htmlStr) {
   html = htmlStr;
+}
+
+module.exports.setMeta = function(metaObj) {
+  meta = metaObj;
 }
 
 module.exports.setPath = function(path) {
@@ -86,10 +91,14 @@ module.exports.getNrOfYamlLines = function() {
   }
 }
 
-var defaultStaticCssLink = remote.app.getAppPath() + '/static/default.css'
-  , link
+const appPath = remote.app.getAppPath()
+    , template = parseToTemplate( fs.readFileSync(appPath + '/static/preview.pandoc-styles.css', 'utf-8') )
+    , defaultStaticCssLink = appPath + '/static/preview.panwriter-default.css'
+    ;
+let link = undefined
   , docType = null
   ;
+module.exports.defaultVars = extractDefaultVars(template);
 module.exports.getCss = async function() {
   var linkIsChanged = false;
   if (meta.type !== docType) {
@@ -104,10 +113,9 @@ module.exports.getCss = async function() {
     }
     linkIsChanged = true;
   }
-  return [ typeof meta.style === "string" ? meta.style : ''
-         , link
-         , linkIsChanged
-         ]
+
+  const cssStr = interpolateTemplate(template, meta);
+  return [cssStr, link, linkIsChanged]
 }
 
 module.exports.getPath = function() {

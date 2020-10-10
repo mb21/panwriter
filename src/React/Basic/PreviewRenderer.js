@@ -150,7 +150,7 @@ function renderNext() {
     renderInProgress = true;
     render()
       .catch( function(e) {
-        console.warn("renderer crashed", e.message);
+        console.warn("renderer crashed", e.message, e.stack);
       })
       .then(function(contentWindow){
         renderInProgress = false;
