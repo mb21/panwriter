@@ -75,6 +75,18 @@
   dependencies:
     "@types/node" "*"
 
+"@types/linkify-it@*":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@types/linkify-it/-/linkify-it-2.1.0.tgz#ea3dd64c4805597311790b61e872cbd1ed2cd806"
+  integrity sha512-Q7DYAOi9O/+cLLhdaSvKdaumWyHbm7HAk/bFwwyTuU0arR5yyCeW5GOoqt4tJTpDRxhpx9Q8kQL6vMpuw9hDSw==
+
+"@types/markdown-it@0.0.9":
+  version "0.0.9"
+  resolved "https://registry.yarnpkg.com/@types/markdown-it/-/markdown-it-0.0.9.tgz#a5d552f95216c478e0a27a5acc1b28dcffd989ce"
+  integrity sha512-IFSepyZXbF4dgSvsk8EsgaQ/8Msv1I5eTL0BZ0X3iGO9jw6tCVtPG8HchIPm3wrkmGdqZOD42kE0zplVi1gYDA==
+  dependencies:
+    "@types/linkify-it" "*"
+
 "@types/node@*":
   version "14.0.11"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-14.0.11.tgz#61d4886e2424da73b7b25547f59fdcb534c165a3"
@@ -207,6 +219,11 @@ argparse@^1.0.7:
   resolved "https://registry.yarnpkg.com/argparse/-/argparse-1.0.10.tgz#bcd6791ea5ae09725e17e5ad988134cd40b3d911"
   dependencies:
     sprintf-js "~1.0.2"
+
+argparse@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/argparse/-/argparse-2.0.1.tgz#246f50f3ca78a3240f6c997e8a9bd1eac49e4b38"
+  integrity sha512-8+9WqebbFzpX9OR+Wa6O29asIogeRMzcGtAINdpMHHyAg10f05aSFVBbcEqGf/PXw1EjAZ+q2/bEBg3DvurK3Q==
 
 astral-regex@^1.0.0:
   version "1.0.0"
@@ -787,9 +804,10 @@ end-of-stream@^1.1.0:
   dependencies:
     once "^1.4.0"
 
-entities@~1.1.1:
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/entities/-/entities-1.1.2.tgz#bdfa735299664dfafd34529ed4f8522a275fea56"
+entities@~2.0.0:
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/entities/-/entities-2.0.3.tgz#5c487e5742ab93c15abb5da22759b8590ec03b7f"
+  integrity sha512-MyoZ0jgnLvB2X3Lg5HqpFmn1kybDiIfEQmKzTb5apr51Rb+T3KdmMiqa70T+bhGnyv7bQ6WMj2QMHpGMmlrUYQ==
 
 env-paths@^2.2.0:
   version "2.2.0"
@@ -1389,6 +1407,13 @@ linkify-it@^2.0.0:
   dependencies:
     uc.micro "^1.0.1"
 
+linkify-it@^3.0.1:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/linkify-it/-/linkify-it-3.0.2.tgz#f55eeb8bc1d3ae754049e124ab3bb56d97797fb8"
+  integrity sha512-gDBO4aHNZS6coiZCKVhSNh43F9ioIL4JwRjLZPkoLIY4yZFwg264Y5lu2x6rb1Js42Gh6Yqm2f6L2AJcnkzinQ==
+  dependencies:
+    uc.micro "^1.0.1"
+
 load-from-cwd-or-npm@^3.0.0, load-from-cwd-or-npm@^3.0.1:
   version "3.0.4"
   resolved "https://registry.yarnpkg.com/load-from-cwd-or-npm/-/load-from-cwd-or-npm-3.0.4.tgz#205537c478c4e4744c20e4f7d3e16e63964cfcf7"
@@ -1476,18 +1501,20 @@ make-dir@^3.0.0:
   dependencies:
     semver "^6.0.0"
 
-markdown-it-attrs@^2.3.2:
-  version "2.3.2"
-  resolved "https://registry.yarnpkg.com/markdown-it-attrs/-/markdown-it-attrs-2.3.2.tgz#7068c40571735e1b0f5c412ac802627a9fd0db01"
+markdown-it-attrs@^3.0.3:
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/markdown-it-attrs/-/markdown-it-attrs-3.0.3.tgz#92acdb16fe551cb056c5eb9848413443cafb5231"
+  integrity sha512-cLnICU2t61skNCr4Wih/sdza+UbQcqJGZwvqAypnbWA284nzDm+Gpc90iaRk/JjsIy4emag5v3s0rXFhFBWhCA==
 
 markdown-it-bracketed-spans@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/markdown-it-bracketed-spans/-/markdown-it-bracketed-spans-1.0.1.tgz#9905c87347b5383cd15c3c9b6e72d38315e528de"
   integrity sha512-ffDHx7bdOEecvo/EPpsatFLNnLZBRdj+ZF/v6gGJh0ixU0oVWxUUeJn5daVnT0sn0MU73G9oPDTqBX82z99fnw==
 
-markdown-it-container@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/markdown-it-container/-/markdown-it-container-2.0.0.tgz#0019b43fd02eefece2f1960a2895fba81a404695"
+markdown-it-container@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/markdown-it-container/-/markdown-it-container-3.0.0.tgz#1d19b06040a020f9a827577bb7dbf67aa5de9a5b"
+  integrity sha512-y6oKTq4BB9OQuY/KLfk/O3ysFhB3IMYoIWhGJEidXt1NQFocFK2sA2t0NYZAMyMShAGL6x5OPIbrmXPIqaN9rw==
 
 markdown-it-deflist@^2.0.3:
   version "2.0.3"
@@ -1497,14 +1524,22 @@ markdown-it-footnote@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/markdown-it-footnote/-/markdown-it-footnote-3.0.1.tgz#7f3730747cacc86e2fe0bf8a17a710f34791517a"
 
+markdown-it-gridtables@^0.2.2:
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/markdown-it-gridtables/-/markdown-it-gridtables-0.2.2.tgz#ff8e3edee1de02815ec09ad862cdd43b15822f56"
+  integrity sha512-JdnD4NSFaMAko0/6HwThepgSkcMoVLGZ7yUy+7HQjGDWqRVeom+L21FqiF3uqVee7k/n8rQH3aN+e5Ws8sgEUA==
+  dependencies:
+    "@types/markdown-it" "0.0.9"
+    markdown-it "^10.0.0"
+
 markdown-it-implicit-figures@^0.9.0:
   version "0.9.0"
   resolved "https://registry.yarnpkg.com/markdown-it-implicit-figures/-/markdown-it-implicit-figures-0.9.0.tgz#21bf562ab4fd177828febb5e24eda571cf9d1a58"
 
-markdown-it-pandoc@^0.5.0:
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/markdown-it-pandoc/-/markdown-it-pandoc-0.5.0.tgz#a578fafbc17b73f5be344a798769a8f797619f0a"
-  integrity sha512-/D+DACt06RmL9s9brEsSyoUdbNhe93N4c/UgtvjJBbyYfFUSbHp2XewjSi34aFMVHMXy/1WLBKQb8NxQyLKwug==
+markdown-it-pandoc@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/markdown-it-pandoc/-/markdown-it-pandoc-1.1.0.tgz#d5aec2fa4e91829d801619d7a5ea116b149e6e8c"
+  integrity sha512-T97i2yMQKPYze6sgTLTDdZqxN/BoxqRCufkuxXPj+NMp6fEhk0kPqSyN0YoFI9TCzw2xJ75+UQMEheeH8e8qCw==
 
 markdown-it-sub@^1.0.0:
   version "1.0.0"
@@ -1518,14 +1553,25 @@ markdown-it-texmath@^0.5.2:
   version "0.5.2"
   resolved "https://registry.yarnpkg.com/markdown-it-texmath/-/markdown-it-texmath-0.5.2.tgz#6a77e32d3cc21edb17fe43b34f1fce53a577e594"
 
-markdown-it@^8.4.2:
-  version "8.4.2"
-  resolved "https://registry.yarnpkg.com/markdown-it/-/markdown-it-8.4.2.tgz#386f98998dc15a37722aa7722084f4020bdd9b54"
-  integrity sha512-GcRz3AWTqSUphY3vsUqQSFMbgR38a4Lh3GWlHRh/7MRwz8mcu9n2IO7HOh+bXHrR9kOPDl5RNCaEsrneb+xhHQ==
+markdown-it@^10.0.0:
+  version "10.0.0"
+  resolved "https://registry.yarnpkg.com/markdown-it/-/markdown-it-10.0.0.tgz#abfc64f141b1722d663402044e43927f1f50a8dc"
+  integrity sha512-YWOP1j7UbDNz+TumYP1kpwnP0aEa711cJjrAQrzd0UXlbJfc5aAq0F/PZHjiioqDC1NKgvIMX+o+9Bk7yuM2dg==
   dependencies:
     argparse "^1.0.7"
-    entities "~1.1.1"
+    entities "~2.0.0"
     linkify-it "^2.0.0"
+    mdurl "^1.0.1"
+    uc.micro "^1.0.5"
+
+markdown-it@^12.0.2:
+  version "12.0.2"
+  resolved "https://registry.yarnpkg.com/markdown-it/-/markdown-it-12.0.2.tgz#4401beae8df8aa2221fc6565a7188e60a06ef0ed"
+  integrity sha512-4Lkvjbv2kK+moL9TbeV+6/NHx+1Q+R/NIdUlFlkqkkzUcTod4uiyTJRiBidKR9qXSdkNFkgv+AELY8KN9vSgVA==
+  dependencies:
+    argparse "^2.0.1"
+    entities "~2.0.0"
+    linkify-it "^3.0.1"
     mdurl "^1.0.1"
     uc.micro "^1.0.5"
 

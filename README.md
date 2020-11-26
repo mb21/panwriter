@@ -115,7 +115,6 @@ However, there might still be minor differences between the preview and `File ->
 
 Things we should emulate in the preview, but for which there are [no markdown-it plugins yet](https://github.com/atom-community/markdown-preview-plus/wiki/markdown-it-vs.-pandoc):
 
-- `grid_tables`: grid tables are the only ones in pandoc, that can have e.g. a list in a cell
 - [`raw_attribute`](http://pandoc.org/MANUAL.html#extension-raw_attribute): we should probably just strip them from preview
 - backslash at end of paragraph, e.g. `![](foo.png) \` An ugly workaround that already works is `![](foo.png) &nbsp;`
 
