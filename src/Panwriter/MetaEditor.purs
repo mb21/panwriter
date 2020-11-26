@@ -73,7 +73,6 @@ layoutKvs = [{
         ""
       , "Georgia, serif"
       , "Helvetica, Arial, sans-serif"
-      , "IBM Plex Sans, sans-serif"
       , "Palatino, Palatino Linotype, serif"
       ]
   }

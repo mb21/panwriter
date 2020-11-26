@@ -154,6 +154,16 @@ function mergeAndValidate(docMeta, extMeta, outputPath, toClipboardFormat) {
                                ;
   const out = Object.assign( extractOut(extMeta), extractOut(docMeta) );
 
+  if (typeof out.metadata !== 'object') {
+    out.metadata = {};
+  }
+  if (docMeta.mainfont === undefined) {
+    out.metadata.mainfont = '-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif';
+  }
+  if (docMeta.monobackgroundcolor === undefined) {
+    out.metadata.monobackgroundcolor = '#f0f0f0';
+  }
+
   if (outputPath) {
     //make sure output goes to file user selected in GUI
     out.output = outputPath;
