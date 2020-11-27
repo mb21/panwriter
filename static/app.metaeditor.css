@@ -2,15 +2,18 @@
   font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif; /* see same line in app.toolbar.css */
   background-color: #ececec;
   color: #1a1a1a;
-  min-height: 100%;
+  height: 100vh;
   padding: 50px 20px;
   box-sizing: border-box;
+  overflow: auto;
+  position: relative;
 }
 
 .metaeditor .backbtn {
-  position: fixed;
+  position: absolute;
   border: 0;
   padding: 0;
+  background: none;
   cursor: pointer;
 }
 

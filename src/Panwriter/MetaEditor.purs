@@ -14,6 +14,7 @@ import React.Basic.DOM as R
 import React.Basic.DOM.Events (targetValue)
 import Panwriter.Document (getDocument, defaultVars, setMeta, writeMetaToDoc, Meta)
 import Panwriter.File (setWindowDirty)
+import React.Basic.ColorPicker (colorPicker)
 
 
 type Kv = {
@@ -27,6 +28,7 @@ data FieldType = String
                | Textarea { onLoad :: String -> String, onDone :: String -> String }
                | Number   { onLoad :: String -> String, onDone :: String -> String, step :: String }
                | Select   { options :: Array String }
+               | Color
 
 removeWrappingStyle :: String -> String
 removeWrappingStyle s = fromMaybe s mbStripped
@@ -88,6 +90,26 @@ layoutKvs = [{
 , type: Number { step: "0.1", onLoad: identity, onDone: identity }
 , placeholder: ""
 }, {
+  name: "fontcolor"
+, label: "Font color"
+, type: Color
+, placeholder: ""
+}, {
+  name: "linkcolor"
+, label: "Link color"
+, type: Color
+, placeholder: ""
+}, {
+  name: "monobackgroundcolor"
+, label: "Code bg"
+, type: Color
+, placeholder: ""
+}, {
+  name: "backgroundcolor"
+, label: "Background"
+, type: Color
+, placeholder: ""
+}, {
   name: "header-includes"
 , label: "Include CSS"
 , type: Textarea { onLoad: removeWrappingStyle , onDone: addWrappingStyle}
@@ -111,10 +133,11 @@ renderKv self kv = [
   , children: [R.text $ kv.label <> ":"]
   }
 , case kv.type of
-    String     -> R.input    { id: kv.name, value: v, onChange: onChange identity, placeholder: p, type: "text" }
-    Textarea t -> R.textarea { id: kv.name, value: t.onLoad v, onChange: onChange t.onDone, placeholder: p }
-    Number n   -> R.input    { id: kv.name, value: n.onLoad v, onChange: onChange n.onDone, placeholder: p, type: "number", step: n.step }
-    Select s   -> R.select   { id: kv.name, value: v, onChange: onChange identity, children: optsToJsx s.options }
+    String     -> R.input     { id: kv.name, value: v, onChange: onChange identity, placeholder: p, type: "text" }
+    Textarea t -> R.textarea  { id: kv.name, value: t.onLoad v, onChange: onChange t.onDone, placeholder: p }
+    Number n   -> R.input     { id: kv.name, value: n.onLoad v, onChange: onChange n.onDone, placeholder: p, type: "number", step: n.step }
+    Select s   -> R.select    { id: kv.name, value: v, onChange: onChange identity, children: optsToJsx s.options }
+    Color      -> colorPicker { id: kv.name, value: v, onChange: \c -> send self (SetMetaValue kv.name c) }
 ]
   where
     p = kv.placeholder

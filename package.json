@@ -90,6 +90,7 @@
     "pagedjs": "0.1.34",
     "react": "^16.6.1",
     "react-codemirror2": "^5.1.0",
+    "react-color": "^2.19.3",
     "react-dom": "^16.6.1"
   },
   "devDependencies": {

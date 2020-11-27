@@ -1,0 +1,23 @@
+.colorpicker input {
+  width: 4.5em;
+}
+.colorpicker .rectangle {
+  display: inline-block;
+  height: 19px;
+  width:  19px;
+  vertical-align: middle;
+  margin-left: 0.25em;
+  margin-bottom: 2px;
+  cursor: pointer;
+  border: 1px solid #bdbdbd;
+}
+.colorpicker .background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+.colorpicker .sketch-picker {
+  position: absolute;
+}
