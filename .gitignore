@@ -4,3 +4,4 @@ output
 .psc-ide-port
 .psc-package
 dist
+.DS_Store
