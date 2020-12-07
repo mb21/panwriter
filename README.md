@@ -91,7 +91,7 @@ You can e.g. put `type: letter` in the YAML of your input document. In that case
 
 ### Markdown syntax
 
-We use `markdown-it` for the preview pane, which is fully [CommonMark](https://commonmark.org/)-compliant. We also added a bunch of plugins, to make the preview behave as much as pandoc as possible (including attributes, [`fenced_divs`](http://pandoc.org/MANUAL.html#extension-fenced_divs), `definition_lists`, `footnotes`, `grid_tables`, `implicit_figures`, `subscript`, `superscript`, `yaml_metadata_block` and `tex_math_dollars`). We explicitly don't support `raw_html` or `raw_tex`, since everything should be doable with the `fenced_divs`, `bracketed_spans` and `raw_attribute` extensions.
+We use `markdown-it` for the preview pane, which is fully [CommonMark](https://commonmark.org/)-compliant. It supports [GFM](https://github.github.com/gfm/) tables (basically pandoc `pipe_tables`) and GFM Strikethrough (`strikeout`) out of the box. We also added a [bunch of plugins](https://github.com/mb21/markdown-it-pandoc), to make the preview behave as much as pandoc as possible (including attributes, [`fenced_divs`](http://pandoc.org/MANUAL.html#extension-fenced_divs), `definition_lists`, `footnotes`, `grid_tables`, `implicit_figures`, `subscript`, `superscript`, `yaml_metadata_block` and `tex_math_dollars`). We explicitly don't support `raw_html` or `raw_tex`, since everything should be doable with the `fenced_divs`, `bracketed_spans` and `raw_attribute` extensions.
 
 However, there might still be minor differences between the preview and `File -> 'Print / PDF'` on one hand, and `File -> Export` on the other.
 
