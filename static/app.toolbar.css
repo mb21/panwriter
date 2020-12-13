@@ -6,9 +6,7 @@
 }
 
 .toolbar > .toolbararea {
-  /* see https://www.smashingmagazine.com/2015/11/using-system-ui-fonts-practical-guide/
-     and https://bugs.chromium.org/p/chromium/issues/detail?id=578799 */
-  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--system-font);
   font-size: 13px;
   grid-template-rows: 38px;
   overflow: hidden;

@@ -1,3 +1,18 @@
+:root {
+  /* about system-font: https://www.smashingmagazine.com/2015/11/using-system-ui-fonts-practical-guide/ */
+  --system-font: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  --mono-font: Menlo, Monaco, 'Lucida Console', Consolas, monospace;
+
+  --background-color: #f7f7f7;
+  --underlay-background-color: #808080;
+  --overlay-background-color: #ececec;
+  --overlay-transparent-background-color: #e6e6e6bf;
+  --font-color: #1a1a1a;
+  --highlight-font-color:#888888;
+  --input-border-color: #bdbdbd;
+  --light-separator: #d3d3d3;
+}
+
 html, body {
   margin: 0;
 }
@@ -58,7 +73,7 @@ input:active, input:focus {
 
 
 .react-codemirror2 {
-  background-color: #f7f7f7;
+  background-color: var(--background-color);
 }
 
 /* Hide text editor when metaEditor is open */
@@ -69,10 +84,10 @@ input:active, input:focus {
 .preview {
   overflow: hidden;
   position: relative;
-  border-left: 1px solid lightgrey;
+  border-left: 1px solid var(--light-separator);
 }
 .preview.paginated > .previewDiv {
-  background-color: grey;
+  background-color: var(--underlay-background-color);
 }
 .preview iframe {
   border: 0;
@@ -82,12 +97,12 @@ input:active, input:focus {
   width:  36px;
   height: 36px;
   border-radius: 18px;
-  box-shadow: 0 1px rgba(0, 0, 0, .039);
+  box-shadow: 0 1px #0000000a;
   transition: opacity 0.2s ease-out;
   opacity: 0;
 }
 .preview > button:active {
-  background: lightgrey;
+  background: var(--overlay-background-color);
 }
 .preview:hover > button {
   transition: opacity 0.12s ease-in;
@@ -98,7 +113,7 @@ input:active, input:focus {
   bottom: 10px;
   right:  10px;
   font-size: 27px;
-  background: #f7f7f7;
+  background: var(--background-color);
   border: 0;
   cursor: pointer;
   line-height: 1;

@@ -9,7 +9,7 @@
   margin-left: 0.25em;
   margin-bottom: 2px;
   cursor: pointer;
-  border: 1px solid #bdbdbd;
+  border: 1px solid var(--input-border-color);
 }
 .colorpicker .background {
   position: absolute;

@@ -1,7 +1,7 @@
 .metaeditor {
-  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif; /* see same line in app.toolbar.css */
-  background-color: #ececec;
-  color: #1a1a1a;
+  font-family: var(--system-font);
+  background-color: var(--overlay-background-color);
+  color: var(--font-color);
   height: 100vh;
   padding: 50px 20px;
   box-sizing: border-box;
@@ -40,16 +40,16 @@
 .metaeditor textarea,
 .metaeditor select {
   font-size: 12px;
-  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif; /* see same line in app.toolbar.css */
-  color: #1a1a1a;
-  border: 1px solid #bdbdbd;
+  font-family: var(--system-font);
+  color: var(--font-color);
+  border: 1px solid var(--input-border-color);
   padding: 3px 3px 1px 3px;
   margin-bottom: 3px;
 }
 .metaeditor textarea {
   resize: vertical;
   min-height: 7em;
-  font-family: Menlo, Monaco, 'Lucida Console', Consolas, monospace;
+  font-family: var(--mono-font);
 }
 .metaeditor textarea:focus,
 .metaeditor select:focus {
