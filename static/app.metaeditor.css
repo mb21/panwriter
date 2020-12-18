@@ -1,6 +1,6 @@
 .metaeditor {
   font-family: var(--system-font);
-  background-color: var(--overlay-background-color);
+  background-color: var(--background-color);
   color: var(--font-color);
   height: 100vh;
   padding: 50px 20px;
@@ -14,7 +14,6 @@
   border: 0;
   padding: 0;
   background: none;
-  cursor: pointer;
 }
 
 .metaeditor .content {
@@ -43,6 +42,7 @@
   font-family: var(--system-font);
   color: var(--font-color);
   border: 1px solid var(--input-border-color);
+  border-bottom: 1px solid var(--input-border-bottom-color);
   padding: 3px 3px 1px 3px;
   margin-bottom: 3px;
 }
