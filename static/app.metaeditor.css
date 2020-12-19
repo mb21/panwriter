@@ -35,23 +35,8 @@
   padding: 3px 10px 0 0;
 }
 
-.metaeditor input,
-.metaeditor textarea,
-.metaeditor select {
-  font-size: 12px;
-  font-family: var(--system-font);
-  color: var(--font-color);
-  border: 1px solid var(--input-border-color);
-  border-bottom: 1px solid var(--input-border-bottom-color);
-  padding: 3px 3px 1px 3px;
-  margin-bottom: 3px;
-}
 .metaeditor textarea {
   resize: vertical;
   min-height: 7em;
   font-family: var(--mono-font);
-}
-.metaeditor textarea:focus,
-.metaeditor select:focus {
-  outline: none;
 }

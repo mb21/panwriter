@@ -20,4 +20,15 @@
 }
 .colorpicker .sketch-picker {
   position: absolute;
+  background-color: var(--overlay-background-color) !important;
+  border-radius: 10px !important;
+  padding-bottom: 6px !important;
+}
+.colorpicker .sketch-picker label {
+  color: var(--font-color) !important;
+}
+.colorpicker .sketch-picker input {
+  box-shadow: none !important;
+  border: 1px solid var(--input-border-color) !important;
+  border-bottom: 1px solid var(--input-border-bottom-color) !important;
 }

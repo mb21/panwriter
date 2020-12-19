@@ -11,8 +11,8 @@
   grid-template-rows: 38px;
   overflow: hidden;
   -webkit-app-region: drag;
-  background: var(--background-color);
-  border-bottom: 1px solid var(--light-separator);
+  background: var(--overlay-background-color);
+  border-bottom: 1px solid var(--separator-color);
   transition: opacity 0.2s ease-out;
   opacity: 0;
   display: grid;
@@ -113,11 +113,11 @@
 .toolbar button:hover,
 .toolbar button:active,
 .toolbar button.active {
-  background: var(--overlay-background-color);
+  background: var(--button-active-color);
 }
 .toolbar button:active:hover,
 .toolbar button.active:hover {
-  background: var(--light-separator);
+  background: var(--button-active-onhover-color);
 }
 
 .toolbar button img {

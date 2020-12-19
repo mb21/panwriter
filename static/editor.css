@@ -54,7 +54,7 @@ div.CodeMirror {
 }
 
 .CodeMirror div.CodeMirror-cursor {
-  border-left: 1px solid black;
+  border-left: 1px solid var(--cursor-color);
 }
 
 .cm-s-paper .cm-keyword      { color: var(--highlight-font-color); }
