@@ -3,17 +3,17 @@
   --system-font: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
   --mono-font: Menlo, Monaco, 'Lucida Console', Consolas, monospace;
 
-  --background-color: #f7f7f7;
-  --underlay-background-color: #808080;
-  --overlay-background-color: #ececec;
-  --overlay-transparent-background-color: #e6e6e6bf;
-  --font-color: #1a1a1a;
-  --highlight-font-color:#888888;
-  --filename-font-color: #656565;
-  --edited-font-color: #888888;
-  --input-border-color: #e9e9e9;
-  --input-border-bottom-color: #c7c7c7;
-  --light-separator: #d3d3d3;
+  --background-color: rgb(247, 247, 247);
+  --underlay-background-color: rgb(128, 128, 128);
+  --overlay-background-color: rgb(236, 236, 236);
+  --overlay-transparent-background-color: rgba(230, 230, 230, 0.749);
+  --font-color: rgb(26, 26, 26);
+  --highlight-font-color:rgb(136, 136, 136);
+  --filename-font-color: rgb(101, 101, 101);
+  --edited-font-color: rgb(136, 136, 136);
+  --input-border-color: rgb(233, 233, 233);
+  --input-border-bottom-color: rgb(199, 199, 199);
+  --light-separator: rgb(211, 211, 211);
 }
 
 html, body {
