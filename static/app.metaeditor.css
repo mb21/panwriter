@@ -40,3 +40,11 @@
   min-height: 7em;
   font-family: var(--mono-font);
 }
+@media (prefers-color-scheme: light) {
+  .metaeditor .darkmodewarning {
+    display: none;
+  }
+}
+.metaeditor .darkmodewarning {
+  font-size: 12px;
+}

@@ -197,6 +197,10 @@ metaEditor = make component
               , R.h4
                   { children: [R.text "Layout"]
                   }
+              , R.p
+                  { className: "darkmodewarning"
+                  , children: [R.text "Previewing custom colors in dark mode is not supported."]
+                  }
               , R.div
                   { className: "kvs"
                   , children: concatMap (renderKv self) layoutKvs
