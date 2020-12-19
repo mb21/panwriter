@@ -161,7 +161,7 @@ module.exports.pagedjs = async function(Document, previewDiv){
   return renderAndSwap(previewDiv, Document.getPath(), async (frameWindow) => {
 
     const [cssStr, link, _] = await Document.getCss()
-        , content    = Document.getMeta()['header-includes'] + Document.getHtml()
+        , content    = (Document.getMeta()['header-includes'] || '') + Document.getHtml()
         , frameHead  = frameWindow.document.head
         , frameBody  = frameWindow.document.body
         ;
