@@ -161,7 +161,8 @@ module.exports.pagedjs = async function(Document, previewDiv){
   return renderAndSwap(previewDiv, Document.getPath(), async (frameWindow) => {
 
     const [cssStr, link, _] = await Document.getCss()
-        , content    = (Document.getMeta()['header-includes'] || '') + Document.getHtml()
+        , metaHtml   = Document.getMeta()['header-includes']
+        , content    = Document.getHtml()
         , frameHead  = frameWindow.document.head
         , frameBody  = frameWindow.document.body
         ;
@@ -176,6 +177,9 @@ module.exports.pagedjs = async function(Document, previewDiv){
     injectMathLib(frameWindow);
     if (link) {
       frameHead.appendChild( createLinkEl(link) );
+    }
+    if (metaHtml) {
+      frameHead.insertAdjacentHTML('beforeend', metaHtml);
     }
     frameHead.appendChild( createStyleEl(cssStr) );
     frameHead.appendChild(pagedjsStyleEl);
