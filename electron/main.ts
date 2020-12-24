@@ -1,25 +1,24 @@
-"use strict";
+import { app, BrowserWindow, dialog, Menu } from 'electron';
+import * as path from 'path';
+import * as fs from 'fs';
+const { autoUpdater } = require('electron-updater');
 
-// This file is currently the only one that runs in the main process
-// see https://electronjs.org/docs/tutorial/application-architecture
-
-
-// Modules to control application life and create native browser window
-const {app, dialog, BrowserWindow, Menu} = require('electron')
-    , {autoUpdater} = require("electron-updater")
-    , path = require('path')
-    , fs = require('fs')
-    ;
+declare class CustomBrowserWindow extends Electron.BrowserWindow {
+  wasCreatedOnStartup?: boolean;
+  fileIsDirty?: boolean;
+  filePathToLoad?: string;
+  isFileToImport?: boolean;
+}
 
 // Keep a global reference of the windows, if you don't, the windows will
 // be closed automatically when the JavaScript object is garbage collected.
-const windows = []
+const windows: CustomBrowserWindow[] = []
     , mdExtensions = ['md', 'txt', 'markdown']
     ;
-let recentFiles = [];
+let recentFiles: string[] = [];
 
-function createWindow(filePath, toImport=false, wasCreatedOnStartup=false) {
-  const win = new BrowserWindow({
+const createWindow = (filePath?: string, toImport=false, wasCreatedOnStartup=false) => {
+  const win: CustomBrowserWindow = new BrowserWindow({
       width: 1000
     , height: 800
     , frame: process.platform !== 'darwin'
@@ -27,10 +26,11 @@ function createWindow(filePath, toImport=false, wasCreatedOnStartup=false) {
     , webPreferences: {
         nodeIntegration: false
       , contextIsolation: false
-      , preload: __dirname + '/js/rendererPreload.js'
+      //, preload: __dirname + '/js/rendererPreload.js'
+      , sandbox: true
       }
     });
-  
+
   win.wasCreatedOnStartup = wasCreatedOnStartup;
   win.fileIsDirty = false;
   win.filePathToLoad = filePath;
@@ -45,12 +45,20 @@ function createWindow(filePath, toImport=false, wasCreatedOnStartup=false) {
     setMenu();
   });
 
-  win.loadFile('static/index.html')
+  const isDev = true;
+  if (isDev) {
+    win.loadURL('http://localhost:3000/index.html');
+  } else {
+    // i.e. 'build/index.html'
+    win.loadURL(`file://${__dirname}/../index.html`);
+    // we used to have: win.loadFile('public/index.html')
+  }
 
-  // Open the DevTools.
-  // win.webContents.openDevTools()
+  if (isDev) {
+    win.webContents.openDevTools()
+  }
 
-  win.on('close', async function(e) {
+  win.on('close', async (e) => {
     // this does not intercept a reload
     // see https://github.com/electron/electron/blob/master/docs/api/browser-window.md#event-close
     // and https://github.com/electron/electron/issues/9966
@@ -79,7 +87,7 @@ function createWindow(filePath, toImport=false, wasCreatedOnStartup=false) {
     fetchRecentFiles(); // call to localStorage while we still have a window
   })
 
-  win.on('closed', function() {
+  win.on('closed',() => {
     // Dereference the window so it can be garbage collected
     const i = windows.indexOf(win);
     if (i > -1) {
@@ -89,14 +97,14 @@ function createWindow(filePath, toImport=false, wasCreatedOnStartup=false) {
     setMenuQuick(windows.length > 0);
   })
 
-  win.on('minimize', function() {
+  win.on('minimize', () => {
     if (windows.filter(w => !w.isMinimized()).length === 0) {
       // no non-minimized windows
       setMenu(false);
     }
   });
 
-  win.on('restore', function() {
+  win.on('restore', () => {
     setMenu();
   });
 }
@@ -104,16 +112,16 @@ function createWindow(filePath, toImport=false, wasCreatedOnStartup=false) {
 // macOS only, on file-drag etc.
 // see https://electronjs.org/docs/all#event-open-file-macos
 // and https://www.electron.build/configuration/configuration#PlatformSpecificBuildOptions-fileAssociations
-app.on('open-file', function(e, filePath) {
+app.on('open-file', (e, filePath) => {
   e.preventDefault();
   const toImport = mdExtensions.indexOf( path.extname(filePath).substr(1) ) < 0;
   app.whenReady().then(() => createWindow(filePath, toImport));
-});
+})
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', function() {
+app.on('ready', () => {
   const args = process.argv.slice(1)
   if (args.length > 0 && app.isPackaged) {
     args.forEach(arg => {
@@ -131,7 +139,7 @@ app.on('ready', function() {
 })
 
 // Quit when all windows are closed.
-app.on('window-all-closed', function() {
+app.on('window-all-closed', () => {
   // On OS X it is common for applications and their menu bar
   // to stay active until the user quits explicitly with Cmd + Q
   if (process.platform === 'darwin') {
@@ -141,7 +149,7 @@ app.on('window-all-closed', function() {
   }
 })
 
-app.on('activate', function() {
+app.on('activate', () => {
   // On OS X it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   if (windows.length === 0) {
@@ -149,7 +157,7 @@ app.on('activate', function() {
   }
 })
 
-async function openDialog(toImport=false) {
+const openDialog = async (toImport=false) => {
   const formats = toImport ? [] : [
             { name: 'Markdown', extensions: mdExtensions }
           ]
@@ -163,17 +171,19 @@ async function openDialog(toImport=false) {
   }
 }
 
-function windowSend(name, opts) {
+const windowSend = (name: string, opts?: object) => {
   const win = BrowserWindow.getFocusedWindow();
-  win.webContents.send(name, opts);
+  if (win) {
+    win.webContents.send(name, opts);
+  }
 }
 
-function setMenu(aWindowIsOpen=true) {
+const setMenu = (aWindowIsOpen=true) => {
   fetchRecentFiles().then( () => setMenuQuick(aWindowIsOpen) );
 }
 
-function setMenuQuick(aWindowIsOpen=true) {
-  var template = [
+const setMenuQuick = (aWindowIsOpen=true) => {
+  const template: Electron.MenuItemConstructorOptions[] = [
     { label: 'File'
     , submenu: [
         { label: 'New'
@@ -189,7 +199,7 @@ function setMenuQuick(aWindowIsOpen=true) {
             return {
               label: path.basename(f)
             , click: () => createWindow(f)
-            }
+            } as Electron.MenuItemConstructorOptions
           }).concat([
               {type: 'separator'}
             , { label: 'Clear Menu'
@@ -249,7 +259,7 @@ function setMenuQuick(aWindowIsOpen=true) {
       , {role: 'copy'}
       , {role: 'paste'}
       , {role: 'delete'}
-      , {role: 'selectall'}
+      , {role: 'selectall' as Electron.MenuItemConstructorOptions['role']}
       , {type: 'separator'}
       , { label: 'Find'
         , accelerator: 'CmdOrCtrl+F'
@@ -304,11 +314,11 @@ function setMenuQuick(aWindowIsOpen=true) {
         , enabled: aWindowIsOpen
         }
       , {type: 'separator'}
-      , {role: 'toggledevtools'}
+      , {role: 'toggledevtools' as Electron.MenuItemConstructorOptions['role']}
       , {type: 'separator'}
-      , {role: 'resetzoom'}
-      , {role: 'zoomin'}
-      , {role: 'zoomout'}
+      , {role: 'resetzoom' as Electron.MenuItemConstructorOptions['role']}
+      , {role: 'zoomin'    as Electron.MenuItemConstructorOptions['role']}
+      , {role: 'zoomout'   as Electron.MenuItemConstructorOptions['role']}
       , {type: 'separator'}
       , {role: 'togglefullscreen'}
       ]
@@ -323,8 +333,10 @@ function setMenuQuick(aWindowIsOpen=true) {
 
   if (!app.isPackaged) {
     const viewMenu = template[3].submenu;
-    viewMenu.push({type: 'separator'});
-    viewMenu.push({role: 'forcereload'});
+    if (viewMenu && ('push' in viewMenu)) {
+      viewMenu.push({type: 'separator'});
+      viewMenu.push({role: 'forcereload' as Electron.MenuItemConstructorOptions['role']});
+    }
   }
 
   if (process.platform === 'darwin') {
@@ -336,7 +348,7 @@ function setMenuQuick(aWindowIsOpen=true) {
       , {role: 'services', submenu: []}
       , {type: 'separator'}
       , {role: 'hide'}
-      , {role: 'hideothers'}
+      , {role: 'hideothers' as Electron.MenuItemConstructorOptions['role']}
       , {role: 'unhide'}
       , {type: 'separator'}
       , {role: 'quit'}
@@ -357,7 +369,7 @@ function setMenuQuick(aWindowIsOpen=true) {
 }
 
 // fetches recentFiles from the localStorage of a renderer process
-async function fetchRecentFiles() {
+const fetchRecentFiles = async () => {
   const win = BrowserWindow.getFocusedWindow();
   if (win) {
     return win.webContents.executeJavaScript("localStorage.getItem('recentFiles')")
@@ -367,9 +379,11 @@ async function fetchRecentFiles() {
   }
 }
 
-function clearRecentFiles() {
+const clearRecentFiles = () => {
   const win = BrowserWindow.getFocusedWindow();
-  win.webContents.executeJavaScript("localStorage.setItem('recentFiles', '[]')")
+  if (win) {
+    win.webContents.executeJavaScript("localStorage.setItem('recentFiles', '[]')")
+  }
   recentFiles = []
   setMenuQuick();
 }

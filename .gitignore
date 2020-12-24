@@ -1,7 +1,5 @@
 node_modules
-output
-.psci_modules
-.psc-ide-port
-.psc-package
 dist
 .DS_Store
+.eslintcache
+build/electron/
