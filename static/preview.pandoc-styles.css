@@ -28,7 +28,6 @@ body {
     padding: 1em;
   }
 }
-/* please uncomment when it doesn't make paged.js crash anymore
 @media print {
   p, h2, h3 {
     orphans: 3;
@@ -38,7 +37,6 @@ body {
     page-break-after: avoid;
   }
 }
-*/
 p {
   margin: 1em 0;
 }
