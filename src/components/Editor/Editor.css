@@ -1,4 +1,4 @@
-/* overrides for https://github.com/codemirror/CodeMirror/blob/master/lib/codemirror.css */
+@import './codemirror.css'; /* https://github.com/codemirror/CodeMirror/blob/master/lib/codemirror.css */
 
 .CodeMirror {
   font-family: var(--mono-font);
