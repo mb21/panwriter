@@ -15,6 +15,7 @@ import from 'codemirror/addon/edit/continuelist'
 
 import { AppState } from '../../appState/AppState'
 import { Action }   from '../../appState/asyncReducer'
+import { registerScrollEditor, scrollPreview } from '../../renderPreview/scrolling'
 
 import './Editor.css'
 
@@ -27,8 +28,10 @@ export const Editor = (props: Props) => {
   const { state, dispatch } = props
   return (
     <CodeMirror
-      onBeforeChange={(_ed, _diff, text) => dispatch({type: 'setText', text})}
-      onScroll={undefined}
+      onBeforeChange={ (_ed, _diff, md) =>
+        dispatch({ type: 'setMdAndRenderPreview', md, state })
+      }
+      onScroll={scrollPreview}
       editorDidMount={onEditorDidMount}
       value={state.doc.md}
       autoCursor={true}
@@ -77,6 +80,8 @@ const onEditorDidMount = (editor: IInstance) => {
     }
   });
   editor.refresh();
+
+  registerScrollEditor(editor);
 
   // ipcRenderer.on('find',         () => editor.execCommand('findPersistent'))
   // ipcRenderer.on('findNext',     () => editor.execCommand('findPersistentNext'))

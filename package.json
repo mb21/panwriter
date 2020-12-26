@@ -9,6 +9,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
+    "lint": "eslint src",
     "tsc": "tsc",
     "electron:tsc": "tsc -p electron",
     "electron:dev": "concurrently \"BROWSER=none yarn start\" \"wait-on http://localhost:3000 && yarn run electron:tsc -w\" \"wait-on http://localhost:3000 && yarn run electron:tsc -p electron && electron .\"",
@@ -115,11 +116,13 @@
   },
   "devDependencies": {
     "@types/codemirror": "^0.0.102",
+    "@types/js-yaml": "^3.12.5",
     "@types/react": "^16.9.53",
     "@types/react-dom": "^16.9.8",
     "concurrently": "^5.3.0",
     "electron": "^11.1.1",
     "electron-builder": "^22.9.1",
+    "raw-loader": "^4.0.2",
     "typescript": "^4.1.3",
     "wait-on": "^5.2.0"
   }

@@ -1,9 +1,11 @@
-"use strict";
+const { getCss } = require('./templates/getCss')
 
+/*
 const path   = require('path')
     , shell  = require('electron').shell
     , app = require('electron').remote.app
     ;
+*/
 
 var singleFrame
   , singleFrameLinkEl
@@ -11,6 +13,7 @@ var singleFrame
   , frame2
   ;
 
+/*
 function injectBaseTag(contentWindow, filePath) {
   // so relative image URLs etc. are found
   const cwd = path.dirname(filePath)
@@ -46,6 +49,7 @@ function interceptClicks(contentWindow, e) {
   }
   return false;
 }
+*/
 
 async function insertFrame(src, target, filePath=undefined, sandbox=undefined) {
   const frame = document.createElement('iframe');
@@ -55,6 +59,7 @@ async function insertFrame(src, target, filePath=undefined, sandbox=undefined) {
   frame.setAttribute("src", src);
   frame.setAttribute("style", "width: 100%; height: 100%;");
   target.appendChild(frame);
+  /*
   return new Promise(resolve => {
     const contentWindow = frame.contentWindow
     contentWindow.addEventListener('DOMContentLoaded', () => {
@@ -66,6 +71,8 @@ async function insertFrame(src, target, filePath=undefined, sandbox=undefined) {
       return resolve(frame);
     })
   })
+  */
+  return frame // TODO: remove this line when above is commented out again
 }
 
 async function setupSingleFrame(target, filePath) {
@@ -109,13 +116,13 @@ async function renderAndSwap(previewDiv, filePath, renderFn) {
 }
 
 
-module.exports.plain = async function(Document, previewDiv){
-  await setupSingleFrame(previewDiv, Document.getPath());
-  const [cssStr, link, linkIsChanged] = await Document.getCss()
+export const renderPlain = async (doc, previewDiv) => {
+  await setupSingleFrame(previewDiv, doc.filePath);
+  const [cssStr, link, linkIsChanged] = await getCss(doc)
       , content = [
           '<style>', cssStr, '</style>'
-        , Document.getMeta()['header-includes']
-        , Document.getHtml()
+        , doc.meta['header-includes']
+        , doc.html
         ].join('')
   if (linkIsChanged && singleFrameLinkEl) {
     singleFrameLinkEl.remove()
@@ -157,12 +164,14 @@ const pagedjsStyleEl = createStyleEl(`
 }
 `);
 
-module.exports.pagedjs = async function(Document, previewDiv){
-  return renderAndSwap(previewDiv, Document.getPath(), async (frameWindow) => {
+export const renderPaged = undefined
+/*
+export const renderPaged = async (doc, previewDiv) => {
+  return renderAndSwap(previewDiv, doc.getPath(), async (frameWindow) => {
 
-    const [cssStr, link, _] = await Document.getCss()
-        , metaHtml   = Document.getMeta()['header-includes']
-        , content    = Document.getHtml()
+    const [cssStr, link, _] = await doc.getCss()
+        , metaHtml   = doc.getMeta()['header-includes']
+        , content    = doc.getHtml()
         , frameHead  = frameWindow.document.head
         , frameBody  = frameWindow.document.body
         ;
@@ -208,3 +217,4 @@ module.exports.pagedjs = async function(Document, previewDiv){
     return frameWindow.PagedPolyfill.preview();
   })
 }
+*/

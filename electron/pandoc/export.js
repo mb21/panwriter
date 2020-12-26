@@ -1,5 +1,3 @@
-"use strict";
-
 const { ipcRenderer, remote, clipboard } = require('electron')
     , { spawn }   = require('child_process')
     , fs          = require('fs')

@@ -11,8 +11,8 @@ export type PureAction = {
   type: 'togglePaginated';
 }
 | {
-  type: 'setText';
-  text: string;
+  type: 'setMdText';
+  md: string;
   }
 
 export const pureReducer = (state: AppState, action: PureAction): AppState => {
@@ -26,9 +26,9 @@ export const pureReducer = (state: AppState, action: PureAction): AppState => {
     case 'setSplit': {
       return { ...state, split: action.split }
     }
-    case 'setText': {
+    case 'setMdText': {
       const { doc } = state
-      doc.md = action.text
+      doc.md = action.md
       doc.fileDirty = true
       return { ...state, doc }
     }

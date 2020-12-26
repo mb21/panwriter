@@ -1,5 +1,3 @@
-"use strict";
-
 // TODO: GUI popup for import options, at least for:
 // -f, -t, --track-changes and --extract-media
 

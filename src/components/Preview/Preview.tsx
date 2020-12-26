@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { forwardRef, useState } from 'react'
 
 import './Preview.css'
 
@@ -7,12 +7,13 @@ interface Props {
   printPreview: () => void;
 }
 
-export const Preview = (props: Props) => {
+export const Preview = forwardRef((props: Props, ref: React.Ref<HTMLDivElement>) => {
   const { paginated } = props
   const [zoom, setZoom] = useState(1.0)
   return (
     <div className={`preview${paginated ? ' paginated' : ''}`}>
       <div
+        ref={ref}
         className='previewDiv'
         style={{
           transform: `scale(${zoom})`
@@ -26,4 +27,4 @@ export const Preview = (props: Props) => {
       <button className='exportBtn' onClick={props.printPreview}>🖨</button>
     </div>
   )
-}
+})

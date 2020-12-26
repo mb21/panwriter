@@ -1,4 +1,4 @@
-import { useReducer } from 'react'
+import { createRef, useReducer } from 'react'
 
 import { AppState }     from '../../appState/AppState'
 import { asyncReducer } from '../../appState/asyncReducer'
@@ -24,6 +24,7 @@ export const App = () => {
         <Editor state={state} dispatch={dispatch} />
       </div>
       <Preview
+        ref={state.previewDivRef}
         paginated={state.paginated}
         printPreview={() => undefined} // TODO
         />
@@ -45,4 +46,5 @@ const initialState: AppState = {
 , metaEditorOpen: false
 , split: 'onlyEditor'
 , paginated: false
+, previewDivRef: createRef()
 }
