@@ -1,9 +1,11 @@
+import { RefObject } from 'react'
+
 export interface AppState {
   doc: Doc;
   metaEditorOpen: boolean;
   split: ViewSplit;
   paginated: boolean;
-  previewDivRef?: React.RefObject<HTMLDivElement>;
+  previewDivRef?: RefObject<HTMLDivElement>;
 }
 
 export interface Doc {

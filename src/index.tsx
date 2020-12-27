@@ -2,6 +2,12 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import { App } from './components/App/App'
 
+window.ipcApi.once('sendPlatform', platform => {
+  if (platform === 'darwin') {
+    document.body.classList.add('_macOS')
+  }
+})
+
 ReactDOM.render(
   <React.StrictMode>
     <App />

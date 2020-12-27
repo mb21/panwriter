@@ -3,3 +3,4 @@ dist
 .DS_Store
 .eslintcache
 build/electron/
+build/src/

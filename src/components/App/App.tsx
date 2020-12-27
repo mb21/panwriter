@@ -8,12 +8,20 @@ import { Editor }       from '../Editor/Editor'
 import { MetaEditor }   from '../MetaEditor/MetaEditor'
 import { Preview }      from '../Preview/Preview'
 import { Toolbar }      from '../Toolbar/Toolbar'
+import { IpcApi } from '../../../electron/preload'
 
 import './App.css'
+
+declare global {
+  interface Window {
+    ipcApi: IpcApi;
+  }
+}
 
 export const App = () => {
   const [state, disp] = useReducer(pureReducer, initialState)
   const dispatch = asyncReducer(disp)
+  window.ipcApi.setDoc(state.doc)
   return (
     <div className={`app ${state.split.toLowerCase()}`}>
       <Toolbar state={state} dispatch={dispatch} />
