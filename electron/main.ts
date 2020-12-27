@@ -1,7 +1,10 @@
 import { app, BrowserWindow, dialog, Menu } from 'electron';
 import * as path from 'path';
 import * as fs from 'fs';
+import { initIpc } from './ipc'
+
 const { autoUpdater } = require('electron-updater');
+
 
 declare class CustomBrowserWindow extends Electron.BrowserWindow {
   wasCreatedOnStartup?: boolean;
@@ -17,6 +20,8 @@ const windows: CustomBrowserWindow[] = []
     ;
 let recentFiles: string[] = [];
 
+initIpc()
+
 const createWindow = (filePath?: string, toImport=false, wasCreatedOnStartup=false) => {
   const win: CustomBrowserWindow = new BrowserWindow({
       width: 1000
@@ -25,8 +30,8 @@ const createWindow = (filePath?: string, toImport=false, wasCreatedOnStartup=fal
     , show: false
     , webPreferences: {
         nodeIntegration: false
-      , contextIsolation: false
-      //, preload: __dirname + '/js/rendererPreload.js'
+      , contextIsolation: true
+      , preload: __dirname + '/preload.js'
       , sandbox: true
       }
     });
