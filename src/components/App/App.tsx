@@ -19,7 +19,7 @@ export const App = () => {
       <Toolbar state={state} dispatch={dispatch} />
       <div className='editor'>
         { state.metaEditorOpen
-          ? <MetaEditor />
+          ? <MetaEditor state={state} dispatch={dispatch} />
           : null }
         <Editor state={state} dispatch={dispatch} />
       </div>
