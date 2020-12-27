@@ -1,4 +1,4 @@
-import { AppState, ViewSplit } from './AppState'
+import { AppState, Meta, ViewSplit } from './AppState'
 
 export type PureAction = {
   type: 'toggleMetaEditorOpen';
@@ -13,7 +13,11 @@ export type PureAction = {
 | {
   type: 'setMdText';
   md: string;
-  }
+}
+| {
+  type: 'setMeta';
+  meta: Meta;
+}
 
 export const pureReducer = (state: AppState, action: PureAction): AppState => {
   switch (action.type) {
@@ -30,6 +34,11 @@ export const pureReducer = (state: AppState, action: PureAction): AppState => {
       const { doc } = state
       doc.md = action.md
       doc.fileDirty = true
+      return { ...state, doc }
+    }
+    case 'setMeta': {
+      const { doc } = state
+      doc.meta = action.meta
       return { ...state, doc }
     }
   }

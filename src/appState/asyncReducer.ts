@@ -1,14 +1,24 @@
 // import { ipcRenderer } from 'electron'
 
 import { PureAction } from './pureReducer'
-import { AppState } from '../appState/AppState'
+import { AppState, Doc } from '../appState/AppState'
 import { renderPreview } from '../renderPreview/renderPreview'
-import { parseYaml } from '../renderPreview/convertYaml'
+import { parseYaml, serializeMetaToMd } from '../renderPreview/convertYaml'
 
 export type Action = PureAction | {
-  type: 'setMdAndRenderPreview';
+  type: 'setMdAndRender';
   md: string;
   state: AppState;
+}
+| {
+  type: 'setMetaAndRender';
+  key: string;
+  value: string;
+  state: AppState;
+}
+| {
+  type: 'closeMetaEditorAndSetMd';
+  doc: Doc;
 }
 
 const convertAndRenderPreview = (state: AppState) => {
@@ -22,7 +32,19 @@ export const asyncReducer = (
   dispatch: React.Dispatch<PureAction>
 ) => (async (action: Action): Promise<void> => {
   switch (action.type) {
-    case 'setMdAndRenderPreview': {
+    case 'closeMetaEditorAndSetMd': {
+      // ipcRenderer.send('setWindowDirty')
+      const md = serializeMetaToMd(action.doc)
+      return dispatch({ type: 'setMdText', md })
+    }
+    case 'setMetaAndRender': {
+      const { key, value, state } = action
+      const { meta } = state.doc
+      meta[key] = value
+      renderPreview(state)
+      return dispatch({ type: 'setMeta', meta })
+    }
+    case 'setMdAndRender': {
       // ipcRenderer.send('setWindowDirty')
       const { md } = action
       action.state.doc.md = md

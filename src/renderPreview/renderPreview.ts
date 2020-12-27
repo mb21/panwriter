@@ -1,7 +1,7 @@
 import { AppState } from '../appState/AppState'
 import { convertMd } from './convertMd'
 import { renderPlain, renderPaged } from './renderPreviewImpl'
-import { initScroll } from './scrolling'
+import { clearPreview, initScroll } from './scrolling'
 
 let renderInProgress = false
   , needsRerender = false
@@ -14,7 +14,11 @@ let renderInProgress = false
  */
 export const renderPreview = (state: AppState): void => {
   needsRerender = true;
-  renderNext(state);
+  if (state.split === 'onlyEditor') {
+    clearPreview()
+  } else {
+    renderNext(state)
+  }
 };
 
 /**

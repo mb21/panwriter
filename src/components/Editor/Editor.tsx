@@ -29,7 +29,7 @@ export const Editor = (props: Props) => {
   return (
     <CodeMirror
       onBeforeChange={ (_ed, _diff, md) =>
-        dispatch({ type: 'setMdAndRenderPreview', md, state })
+        dispatch({ type: 'setMdAndRender', md, state })
       }
       onScroll={scrollPreview}
       editorDidMount={onEditorDidMount}

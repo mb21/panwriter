@@ -1,5 +1,5 @@
 import jsYaml from 'js-yaml'
-import { Meta } from '../appState/AppState';
+import { Doc, Meta } from '../appState/AppState';
 
 // from https://github.com/dworthen/js-yaml-front-matter/blob/master/src/index.js#L14
 const yamlFrontRe = /^(-{3}(?:\n|\r)([\w\W]+?)(?:\n|\r)-{3})?([\w\W]*)*/;
@@ -40,16 +40,12 @@ exports.setMeta = function(metaObj) {
     Document.setMeta(metaObj)
   }
 }
-
-exports.writeMetaToDoc = function() {
-  var metaObj = Document.getMeta();
-  var bodyStr = Document.getBodyMd();
-  var yamlStr = Object.keys(metaObj).length > 0
-    ? jsYaml.safeDump(metaObj, {skipInvalid: true})
-    : '';
-  var mdStr = (yamlStr ? '---\n' + yamlStr + '---\n\n' : '')
-    + bodyStr.trim();
-  Document.setDoc(mdStr, yamlStr, bodyStr, metaObj);
-  return mdStr
-}
 */
+
+export const serializeMetaToMd = (doc: Doc): string => {
+  const { meta, bodyMd } = doc
+  var yamlStr = Object.keys(meta).length > 0
+    ? jsYaml.safeDump(meta, {skipInvalid: true})
+    : '';
+  return (yamlStr ? '---\n' + yamlStr + '---\n\n' : '') + bodyMd.trim()
+}

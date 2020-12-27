@@ -27,7 +27,8 @@ export interface Doc {
   fileDirty: boolean;
 }
 
-export type Meta = string | number | boolean | null | Meta[] | { [key: string]: Meta };
+export type Meta = Record<string, JSON>
+export type JSON = string | number | boolean | null | Meta[] | { [key: string]: JSON };
 
 export const viewSplits = ['onlyEditor', 'split', 'onlyPreview'] as const
 export type ViewSplit = typeof viewSplits[number]
