@@ -1,5 +1,5 @@
 import { spawn, SpawnOptionsWithoutStdio } from 'child_process'
-import { app, clipboard, dialog, remote } from 'electron'
+import { app, BrowserWindow, clipboard, dialog } from 'electron'
 import { readFile } from 'fs'
 import * as jsYaml from 'js-yaml'
 import { basename, dirname, extname, sep } from 'path'
@@ -17,7 +17,7 @@ type Out = any // TODO
 
 // var previousExportConfig;
 
-export const fileExportDialog = async (doc: Doc) => {
+export const fileExportDialog = async (win: BrowserWindow, doc: Doc) => {
   const spawnOpts: SpawnOptionsWithoutStdio = {}
   const inputPath = doc.filePath
 
@@ -39,7 +39,7 @@ export const fileExportDialog = async (doc: Doc) => {
       outputPath
     , spawnOpts
     };
-    await fileExport(doc, exp)
+    await fileExport(win, doc, exp)
     // previousExportConfig = exp;
   }
 };
@@ -48,39 +48,41 @@ export const fileExportDialog = async (doc: Doc) => {
 /*
 ipcRenderer.on('fileExportLikePrevious', () => {
   if (previousExportConfig) {
-    fileExport(doc, previousExportConfig);
+    fileExport(win, doc, previousExportConfig);
   } else {
     fileExportDialog();
   }
 });
 */
 
-export const fileExportToClipboard = (doc: Doc) => {
+export const fileExportToClipboard = (win: BrowserWindow, doc: Doc) => {
   const { meta }  = doc
   const format = meta.output && Object.keys(meta.output)[0]
   if (format) {
-    fileExport(doc, {toClipboardFormat: format})
+    fileExport(win, doc, {toClipboardFormat: format})
   } else {
-    alert(`Couldn't find output format in YAML metadata.
-
-Add something like the following at the top of your document:
+    dialog.showMessageBox(win, {
+      type: 'error'
+    , message: 'Couldn\'t find output format in YAML metadata'
+    , detail: `Add something like the following at the top of your document:
 
 ---
 output:
   html: true
----`);
+---`
+    })
   }
 }
 
-export const fileExportHTMLToClipboard = (doc: Doc) => {
-  fileExport(doc, { toClipboardFormat: 'html', toClipboardHTML: true })
+export const fileExportHTMLToClipboard = (win: BrowserWindow, doc: Doc) => {
+  fileExport(win, doc, { toClipboardFormat: 'html', toClipboardHTML: true })
 }
 
 
 /**
  * Calls pandoc, takes export settings object
  */
-const fileExport = async (doc: Doc, exp: ExportOptions) => {
+const fileExport = async (win: BrowserWindow, doc: Doc, exp: ExportOptions) => {
   // simplified version of what I did in https://github.com/mb21/panrun
   const docMeta = doc.meta
   const type = typeof docMeta.type === 'string'
@@ -89,54 +91,67 @@ const fileExport = async (doc: Doc, exp: ExportOptions) => {
   const [extMeta, fileArg] = await defaultMeta(type)
   const out = mergeAndValidate(docMeta, extMeta, exp.outputPath, exp.toClipboardFormat)
 
-  const win  = remote.getCurrentWindow()
   const cmd  = 'pandoc'
   const args = fileArg.concat( toArgs(out) )
   const cmdDebug = cmd + ' ' + args.join(' ')
+  let receivedError = false
 
-  const pandoc = spawn(cmd, args, exp.spawnOpts);
-  pandoc.stdin.write(doc.md);
-  pandoc.stdin.end();
+  try {
+    const pandoc = spawn(cmd, args, exp.spawnOpts);
+    pandoc.stdin.write(doc.md);
+    pandoc.stdin.end();
 
-  pandoc.on('error', err => {
-    alert("Failed to execute command:\n" + cmdDebug + '\n\n' + err.message
-      + '\n\nHave you installed pandoc?');
-  });
-
-  const errout: string[] = [];
-  pandoc.stderr.on('data', data => {
-    errout.push(data.toString('utf8'));
-  });
-
-  const stdout: string[] = [];
-  if (exp.toClipboardFormat) {
-    pandoc.stdout.on('data', data => {
-      stdout.push(data.toString('utf8'));
-    });
-  }
-
-  pandoc.on('close', exitCode => {
-    const success = exitCode === 0
-    const toMsg = 'Called: ' + cmdDebug
-    if (success && exp.toClipboardFormat) {
-      if (exp.toClipboardHTML) {
-        clipboard.write({
-          text: doc.md,
-          html: stdout.join('')
-        });
-      } else {
-        clipboard.writeText(stdout.join(''));
-      }
-    }
-    if (!exp.toClipboardFormat || !success) {
+    pandoc.on('error', err => {
+      receivedError = true
       dialog.showMessageBox(win, {
-        type:    success ? 'info' : 'error'
-      , message: success ? 'Success!' : 'Failed to export'
-      , detail:  [toMsg, ''].concat( errout.join('') ).join('\n')
-      , buttons: ['OK']
+        type: 'error'
+      , message: 'Failed to call pandoc'
+      , detail: `Make sure you have it installed, see pandoc.org/installing
+
+  Failed to execute command:
+  ${cmdDebug}
+
+  ${err.message}`
+      })
+    });
+
+    const errout: string[] = [];
+    pandoc.stderr.on('data', data => {
+      errout.push(data.toString('utf8'));
+    });
+
+    const stdout: string[] = [];
+    if (exp.toClipboardFormat) {
+      pandoc.stdout.on('data', data => {
+        stdout.push(data.toString('utf8'));
       });
     }
-  });
+
+    pandoc.on('close', exitCode => {
+      const success = exitCode === 0
+      const toMsg = 'Called: ' + cmdDebug
+      if (success && exp.toClipboardFormat) {
+        if (exp.toClipboardHTML) {
+          clipboard.write({
+            text: doc.md,
+            html: stdout.join('')
+          });
+        } else {
+          clipboard.writeText(stdout.join(''));
+        }
+      }
+      if ((!exp.toClipboardFormat || !success) && !receivedError) {
+        dialog.showMessageBox(win, {
+          type:    success ? 'info' : 'error'
+        , message: success ? 'Success!' : 'Failed to export'
+        , detail:  [toMsg, ''].concat( errout.join('') ).join('\n')
+        , buttons: ['OK']
+        });
+      }
+    });
+  } catch (e) {
+    console.error('Failed to spawn pandoc', e)
+  }
 };
 
 /**

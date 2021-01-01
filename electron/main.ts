@@ -1,7 +1,10 @@
 import { app, BrowserWindow, dialog, Menu } from 'electron'
 import * as path from 'path'
 import * as fs from 'fs'
+
 import * as ipc from './ipc'
+import { fileExportDialog, fileExportHTMLToClipboard, fileExportToClipboard } from './pandoc/export'
+import { Doc } from '../src/appState/AppState'
 
 const { autoUpdater } = require('electron-updater')
 
@@ -41,8 +44,6 @@ const createWindow = (filePath?: string, toImport=false, wasCreatedOnStartup=fal
   win.filePathToLoad = filePath;
   win.isFileToImport = toImport;
   win.setTitle("Untitled");
-
-  // const doc = await ipc.getDoc(win)
 
   windows.filter(w => w.wasCreatedOnStartup && !w.fileIsDirty).forEach(w => w.close())
   windows.push(win);
@@ -179,7 +180,17 @@ const openDialog = async (toImport=false) => {
   }
 }
 
-const windowSend = (name: string, opts?: object) => {
+const invokeWithWinAndDoc = async (fn: (win: BrowserWindow, doc: Doc) => void) => {
+  const win = BrowserWindow.getFocusedWindow()
+  if (win) {
+    const doc = await ipc.getDoc(win)
+    fn(win, doc)
+  } else {
+    throw Error('no window was focused')
+  }
+}
+
+const windowSend = async (name: string, opts?: object) => {
   const win = BrowserWindow.getFocusedWindow();
   if (win) {
     win.webContents.send(name, opts);
@@ -234,22 +245,24 @@ const setMenuQuick = (aWindowIsOpen=true) => {
         }
       , { label: 'Export…'
         , accelerator: 'CmdOrCtrl+Shift+E'
-        , click: () => windowSend('fileExport')
+        , click: () => invokeWithWinAndDoc(fileExportDialog)
         , enabled: aWindowIsOpen
         }
+      /*
       , { label: 'Export like previous'
         , accelerator: 'CmdOrCtrl+E'
-        , click: () => windowSend('fileExportLikePrevious')
+        , click: () => invokeWithWinAndDoc(fileExportLikePrevious)
         , enabled: aWindowIsOpen
         }
+      */
       , { label: 'Export to clipboard'
         , accelerator: 'CmdOrCtrl+Alt+E'
-        , click: () => windowSend('fileExportToClipboard')
+        , click: () => invokeWithWinAndDoc(fileExportToClipboard)
         , enabled: aWindowIsOpen
         }
       , { label: 'Export as rich text to clipboard'
         , accelerator: 'CmdOrCtrl+Alt+Shift+E'
-        , click: () => windowSend('fileExportHTMLToClipboard')
+        , click: () => invokeWithWinAndDoc(fileExportHTMLToClipboard)
         , enabled: aWindowIsOpen
         }
       , { label: 'Import…'
