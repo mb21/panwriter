@@ -5,15 +5,15 @@ import * as fs from 'fs'
 import * as ipc from './ipc'
 import { fileExportDialog, fileExportHTMLToClipboard, fileExportToClipboard } from './pandoc/export'
 import { Doc } from '../src/appState/AppState'
+import { importFile } from './pandoc/import'
+import { saveFile, openFile } from './file'
 
 const { autoUpdater } = require('electron-updater')
 
 
 declare class CustomBrowserWindow extends Electron.BrowserWindow {
   wasCreatedOnStartup?: boolean;
-  fileIsDirty?: boolean;
-  filePathToLoad?: string;
-  isFileToImport?: boolean;
+  dontPreventClose?: boolean;
 }
 
 // Keep a global reference of the windows, if you don't, the windows will
@@ -25,7 +25,7 @@ let recentFiles: string[] = [];
 
 ipc.init()
 
-const createWindow = (filePath?: string, toImport=false, wasCreatedOnStartup=false) => {
+const createWindow = async (filePath?: string, toImport=false, wasCreatedOnStartup=false) => {
   const win: CustomBrowserWindow = new BrowserWindow({
       width: 1000
     , height: 800
@@ -37,22 +37,24 @@ const createWindow = (filePath?: string, toImport=false, wasCreatedOnStartup=fal
       , preload: __dirname + '/preload.js'
       , sandbox: true
       }
-    });
+    })
 
-  win.wasCreatedOnStartup = wasCreatedOnStartup;
-  win.fileIsDirty = false;
-  win.filePathToLoad = filePath;
-  win.isFileToImport = toImport;
-  win.setTitle("Untitled");
+  win.wasCreatedOnStartup = wasCreatedOnStartup
+  win.setTitle('Untitled')
 
-  windows.filter(w => w.wasCreatedOnStartup && !w.fileIsDirty).forEach(w => w.close())
-  windows.push(win);
+  // close auto-created window when first user action is to open/import another file 
+  windows.filter(w => w.wasCreatedOnStartup).forEach(async w => {
+    const { fileDirty } = await ipc.getDoc(w)
+    if (!fileDirty) {
+      w.close()
+    }
+  })
 
-  win.once('ready-to-show', () => {
-    ipc.sendPlatform(win)
-    win.show()
-    setMenu()
-  });
+  windows.push(win)
+
+  const windowReady = new Promise<void>(resolve =>
+    win.once('ready-to-show', resolve)
+  )
 
   const isDev = true;
   if (isDev) {
@@ -67,36 +69,59 @@ const createWindow = (filePath?: string, toImport=false, wasCreatedOnStartup=fal
     win.webContents.openDevTools()
   }
 
-  win.on('close', async (e) => {
+  if (filePath) {
+    const doc = toImport
+      ? await importFile(win, filePath)
+      : await openFile(win, filePath)
+    if (doc) {
+      await windowReady
+      ipc.updateDoc(win, doc)
+    }
+  }
+  await windowReady
+  ipc.sendPlatform(win)
+  win.show()
+  setMenu()
+
+  win.on('close', async e => {
     // this does not intercept a reload
     // see https://github.com/electron/electron/blob/master/docs/api/browser-window.md#event-close
     // and https://github.com/electron/electron/issues/9966
-    if (win.fileIsDirty) {
-      e.preventDefault();
-      const selected = await dialog.showMessageBox(win, {
-          type: "question"
-        , message: "This document has unsaved changes."
-        , buttons: ["Save", "Cancel", "Don't Save"]
-        })
-      switch (selected.response) {
-        case 0:
-          // Save
-          win.webContents.send('fileSave', {closeWindowAfterSave: true});
-          break;
-        case 1:
-          // Cancel
-          break;
-        case 2:
-          // Don't Save
-          win.fileIsDirty = false;
-          win.close()
-          break;
+    if (!win.dontPreventClose) {
+      e.preventDefault()
+      const doc = await ipc.getDoc(win)
+      if (doc.fileDirty) {
+        const selected = await dialog.showMessageBox(win, {
+            type: "question"
+          , message: "This document has unsaved changes."
+          , buttons: ["Save", "Cancel", "Don't Save"]
+          })
+        switch (selected.response) {
+          case 0: {
+            // Save
+            win.dontPreventClose = true
+            saveFile(win, doc, { closeWindowAfterSave: true })
+            break
+          }
+          case 1: {
+            // Cancel
+            break
+          }
+          case 2: {
+            // Don't Save
+            win.dontPreventClose = true
+            win.close()
+            break
+          }
+        }
+      } else {
+        win.dontPreventClose = true
+        win.close()
       }
     }
-    fetchRecentFiles(); // call to localStorage while we still have a window
   })
 
-  win.on('closed',() => {
+  win.on('closed', () => {
     // Dereference the window so it can be garbage collected
     const i = windows.indexOf(win);
     if (i > -1) {
@@ -191,9 +216,9 @@ const invokeWithWinAndDoc = async (fn: (win: BrowserWindow, doc: Doc) => void) =
 }
 
 const windowSend = async (name: string, opts?: object) => {
-  const win = BrowserWindow.getFocusedWindow();
+  const win = BrowserWindow.getFocusedWindow()
   if (win) {
-    win.webContents.send(name, opts);
+    win.webContents.send(name, opts)
   }
 }
 
@@ -230,17 +255,17 @@ const setMenuQuick = (aWindowIsOpen=true) => {
       , {type: 'separator'}
       , { label: 'Save'
         , accelerator: 'CmdOrCtrl+S'
-        , click: () => windowSend('fileSave')
+        , click: () => invokeWithWinAndDoc((win, doc) => saveFile(win, doc))
         , enabled: aWindowIsOpen
         }
       , { label: 'Save As…'
         , accelerator: 'CmdOrCtrl+Shift+S'
-        , click: () => windowSend('fileSave', {saveAsNewFile: true})
+        , click: () => invokeWithWinAndDoc((win, doc) => saveFile(win, doc, { saveAsNewFile: true }))
         , enabled: aWindowIsOpen
         }
       , { label: 'Print / PDF'
         , accelerator: 'CmdOrCtrl+P'
-        , click: () => windowSend('filePrint')
+        , click: () => windowSend('printFile')
         , enabled: aWindowIsOpen
         }
       , { label: 'Export…'

@@ -1,8 +1,10 @@
 import { BrowserWindow, ipcMain } from 'electron'
 import { Doc } from '../src/appState/AppState'
 
-export const init = () => {
+// this file contains the IPC functionality of the main process.
+// for the renderer process's part see electron/preload.ts
 
+export const init = () => {
   ipcMain.on('close', (event) => {
     const win = BrowserWindow.fromWebContents(event.sender)
     win?.close();
@@ -18,11 +20,14 @@ export const init = () => {
     //win.isMaximized() ? win.unmaximize() : win.maximize();
     win?.setFullScreen( !win.isFullScreen() )
   })
-
 }
 
 export const sendPlatform = (win: BrowserWindow) => {
   win.webContents.send('sendPlatform', process.platform)
+}
+
+export const updateDoc = (win: BrowserWindow, doc: Partial<Doc>) => {
+  win.webContents.send('updateDoc', doc)
 }
 
 export const getDoc = async (win: BrowserWindow): Promise<Doc> => {
