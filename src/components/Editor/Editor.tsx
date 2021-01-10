@@ -1,17 +1,14 @@
-import { countColumn } from 'codemirror'
-// import { ipcRenderer } from 'electron'
-import { Controlled as CodeMirror, IInstance } from 'react-codemirror2'
-/*
-import from 'codemirror/addon/dialog/dialog'
-import from 'codemirror/addon/search/search'
-import from 'codemirror/addon/search/searchcursor'
-import from 'codemirror/addon/search/jump-to-line'
-import from 'codemirror/addon/mode/overlay'
-import from 'codemirror/mode/markdown/markdown'
-import from 'codemirror/mode/yaml/yaml'
-import from 'codemirror/mode/yaml-frontmatter/yaml-frontmatter'
-import from 'codemirror/addon/edit/continuelist'
-*/
+import { countColumn, Editor as CMEditor } from 'codemirror'
+import 'codemirror/addon/dialog/dialog'
+import 'codemirror/addon/search/search'
+import 'codemirror/addon/search/searchcursor'
+import 'codemirror/addon/search/jump-to-line'
+import 'codemirror/addon/mode/overlay'
+import 'codemirror/mode/markdown/markdown'
+import 'codemirror/mode/yaml/yaml'
+import 'codemirror/mode/yaml-frontmatter/yaml-frontmatter'
+import 'codemirror/addon/edit/continuelist'
+import { Controlled as CodeMirror } from 'react-codemirror2'
 
 import { AppState } from '../../appState/AppState'
 import { Action }   from '../../appState/asyncReducer'
@@ -58,7 +55,7 @@ const codeMirrorOptions = {
   }
 }
 
-const onEditorDidMount = (editor: IInstance) => {
+const onEditorDidMount = (editor: CMEditor) => {
   editor.focus();
 
   // adapted from https://codemirror.net/demo/indentwrap.html
