@@ -7,6 +7,7 @@ import { fileExportDialog, fileExportHTMLToClipboard, fileExportToClipboard } fr
 import { Doc } from '../src/appState/AppState'
 import { importFile } from './pandoc/import'
 import { saveFile, openFile } from './file'
+import { Command } from './ipc'
 
 const { autoUpdater } = require('electron-updater')
 
@@ -215,10 +216,10 @@ const invokeWithWinAndDoc = async (fn: (win: BrowserWindow, doc: Doc) => void) =
   }
 }
 
-const windowSend = async (name: string, opts?: object) => {
+const windowSend = async (cmd: Command) => {
   const win = BrowserWindow.getFocusedWindow()
   if (win) {
-    win.webContents.send(name, opts)
+    ipc.sendCommand(win, cmd)
   }
 }
 

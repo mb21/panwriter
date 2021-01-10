@@ -25,8 +25,8 @@ const ipcApi = {
     state = s
     dispatch = d
   }
-, once: (channel: string, cb: (...args: any[]) => void) => {
-    ipcRenderer.once(channel, (_e, ...args) => cb(...args))
+, onceOnSendPlatform: (cb: (platform: string) => void) => {
+    ipcRenderer.once('sendPlatform', (_e, p) => cb(p))
   }
 , close:    () => ipcRenderer.send('close')
 , minimize: () => ipcRenderer.send('minimize')

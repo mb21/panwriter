@@ -7,17 +7,17 @@ import { Doc } from '../src/appState/AppState'
 export const init = () => {
   ipcMain.on('close', (event) => {
     const win = BrowserWindow.fromWebContents(event.sender)
-    win?.close();
+    win?.close()
   })
 
   ipcMain.on('minimize', (event) => {
     const win = BrowserWindow.fromWebContents(event.sender)
-    win?.minimize();
+    win?.minimize()
   })
 
   ipcMain.on('maximize', (event) => {
     const win = BrowserWindow.fromWebContents(event.sender)
-    //win.isMaximized() ? win.unmaximize() : win.maximize();
+    // win.isMaximized() ? win.unmaximize() : win.maximize()
     win?.setFullScreen( !win.isFullScreen() )
   })
 }
@@ -30,11 +30,19 @@ export const updateDoc = (win: BrowserWindow, doc: Partial<Doc>) => {
   win.webContents.send('updateDoc', doc)
 }
 
+export type Command = 'printFile'
+  | 'find' | 'findNext' | 'findPrevious'
+  | 'addBold' | 'addItalic' | 'addStrikethrough'
+  | 'splitViewOnlyEditor' | 'splitViewSplit' | 'splitViewOnlyPreview'
+export const sendCommand = (win: BrowserWindow, cmd: Command) => {
+  win.webContents.send(cmd)
+}
+
 export const getDoc = async (win: BrowserWindow): Promise<Doc> => {
   const replyChannel = 'getDoc' + Math.random().toString()
   win.webContents.send('getDoc', replyChannel)
   return new Promise(resolve => {
-    ipcMain.once(replyChannel, (event, doc) => {
+    ipcMain.once(replyChannel, (_event, doc) => {
       resolve(doc)
     })
   })
