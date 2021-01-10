@@ -2,7 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import { App } from './components/App/App'
 
-window.ipcApi?.onceOnSendPlatform(platform => {
+window.ipcApi?.on.sendPlatform(platform => {
   if (platform === 'darwin') {
     document.body.classList.add('_macOS')
   }

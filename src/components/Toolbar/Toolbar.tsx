@@ -27,7 +27,7 @@ export const Toolbar = (props: Props) => {
       <div className='toolbararea'>
         <div className='windowbuttons'>
           { (['close', 'minimize', 'maximize'] as const).map(action =>
-              <div key={action} onClick={() => window.ipcApi?.[action]()}>
+              <div key={action} onClick={() => window.ipcApi?.send[action]()}>
                 <img alt={action} src={macIcons[action]} />
               </div> )}
         </div>

@@ -83,15 +83,15 @@ const onEditorDidMount = (editor: IInstance) => {
 
   registerScrollEditor(editor);
 
-  // ipcRenderer.on('find',         () => editor.execCommand('findPersistent'))
-  // ipcRenderer.on('findNext',     () => editor.execCommand('findPersistentNext'))
-  // ipcRenderer.on('findPrevious', () => editor.execCommand('findPersistentPrev'))
-}
+  window.ipcApi?.on.find(         () => editor.execCommand('findPersistent'))
+  window.ipcApi?.on.findNext(     () => editor.execCommand('findPersistentNext'))
+  window.ipcApi?.on.findPrevious( () => editor.execCommand('findPersistentPrev'))
 
-/*
-exports.replaceSelection = (fn) => {
-  if (editor) {
-    editor.replaceSelection( fn( editor.getSelection() ) );
-  }
+
+  const replaceSelection = (fn: (s: string) => string) =>
+    editor.replaceSelection( fn( editor.getSelection() ) )
+
+  window.ipcApi?.on.addBold(          () => replaceSelection(s => ['**', s, '**'].join('')) )
+  window.ipcApi?.on.addItalic(        () => replaceSelection(s => ['_',  s, '_' ].join('')) )
+  window.ipcApi?.on.addStrikethrough( () => replaceSelection(s => ['~~', s, '~~'].join('')) )
 }
-*/
