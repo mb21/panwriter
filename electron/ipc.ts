@@ -1,5 +1,6 @@
 import { BrowserWindow, ipcMain } from 'electron'
 import { Doc } from '../src/appState/AppState'
+import { PureAction } from '../src/appState/pureReducer'
 
 // this file contains the IPC functionality of the main process.
 // for the renderer process's part see electron/preload.ts
@@ -22,22 +23,6 @@ export const init = () => {
   })
 }
 
-export const sendPlatform = (win: BrowserWindow) => {
-  win.webContents.send('sendPlatform', process.platform)
-}
-
-export const updateDoc = (win: BrowserWindow, doc: Partial<Doc>) => {
-  win.webContents.send('updateDoc', doc)
-}
-
-export type Command = 'printFile'
-  | 'find' | 'findNext' | 'findPrevious'
-  | 'addBold' | 'addItalic' | 'addStrikethrough'
-  | 'splitViewOnlyEditor' | 'splitViewSplit' | 'splitViewOnlyPreview'
-export const sendCommand = (win: BrowserWindow, cmd: Command) => {
-  win.webContents.send(cmd)
-}
-
 export const getDoc = async (win: BrowserWindow): Promise<Doc> => {
   const replyChannel = 'getDoc' + Math.random().toString()
   win.webContents.send('getDoc', replyChannel)
@@ -46,4 +31,20 @@ export const getDoc = async (win: BrowserWindow): Promise<Doc> => {
       resolve(doc)
     })
   })
+}
+
+export const sendMessage = (win: BrowserWindow, msg: PureAction) => {
+  win.webContents.send('dispatch', msg)
+}
+
+export const sendPlatform = (win: BrowserWindow) => {
+  win.webContents.send('sendPlatform', process.platform)
+}
+
+export type Command = 'printFile'
+  | 'find' | 'findNext' | 'findPrevious'
+  | 'addBold' | 'addItalic' | 'addStrikethrough'
+
+export const sendCommand = (win: BrowserWindow, cmd: Command) => {
+  win.webContents.send(cmd)
 }

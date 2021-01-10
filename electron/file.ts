@@ -50,7 +50,10 @@ export const saveFile = async (
       win.setTitle(fileName)
       win.setRepresentedFilename(filePath)
 
-      ipc.updateDoc(win, { fileName, filePath, fileDirty: false })
+      ipc.sendMessage(win, {
+        type: 'updateDoc'
+      , doc: { fileName, filePath, fileDirty: false }
+      })
       if (opts.closeWindowAfterSave) {
         win.close()
       }
@@ -59,6 +62,8 @@ export const saveFile = async (
 }
 
 const showDialog = async (win: BrowserWindow, doc: Doc, saveAsNewFile?: boolean) => {
+  // TODO: should we save the filePath on `win` in the main process
+  // instead of risk it being tampered with in the renderer process?
   let { filePath } = doc
   if (filePath === undefined || saveAsNewFile) {
     const res = await dialog.showSaveDialog(win, {

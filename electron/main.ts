@@ -5,9 +5,9 @@ import * as fs from 'fs'
 import * as ipc from './ipc'
 import { fileExportDialog, fileExportHTMLToClipboard, fileExportToClipboard } from './pandoc/export'
 import { Doc } from '../src/appState/AppState'
+import { PureAction } from '../src/appState/pureReducer'
 import { importFile } from './pandoc/import'
 import { saveFile, openFile } from './file'
-import { Command } from './ipc'
 
 const { autoUpdater } = require('electron-updater')
 
@@ -76,7 +76,7 @@ const createWindow = async (filePath?: string, toImport=false, wasCreatedOnStart
       : await openFile(win, filePath)
     if (doc) {
       await windowReady
-      ipc.updateDoc(win, doc)
+      ipc.sendMessage(win, { type: 'updateDoc', doc })
     }
   }
   await windowReady
@@ -216,10 +216,17 @@ const invokeWithWinAndDoc = async (fn: (win: BrowserWindow, doc: Doc) => void) =
   }
 }
 
-const windowSend = async (cmd: Command) => {
+const windowSendCommand = async (cmd: ipc.Command) => {
   const win = BrowserWindow.getFocusedWindow()
   if (win) {
     ipc.sendCommand(win, cmd)
+  }
+}
+
+const windowSendMessage = async (msg: PureAction) => {
+  const win = BrowserWindow.getFocusedWindow()
+  if (win) {
+    ipc.sendMessage(win, msg)
   }
 }
 
@@ -266,7 +273,7 @@ const setMenuQuick = (aWindowIsOpen=true) => {
         }
       , { label: 'Print / PDF'
         , accelerator: 'CmdOrCtrl+P'
-        , click: () => windowSend('printFile')
+        , click: () => windowSendCommand('printFile')
         , enabled: aWindowIsOpen
         }
       , { label: 'Export…'
@@ -310,17 +317,17 @@ const setMenuQuick = (aWindowIsOpen=true) => {
       , {type: 'separator'}
       , { label: 'Find'
         , accelerator: 'CmdOrCtrl+F'
-        , click: () => windowSend('find')
+        , click: () => windowSendCommand('find')
         , enabled: aWindowIsOpen
         }
       , { label: 'Find Next'
         , accelerator: 'CmdOrCtrl+G'
-        , click: () => windowSend('findNext')
+        , click: () => windowSendCommand('findNext')
         , enabled: aWindowIsOpen
         }
       , { label: 'Find Previous'
         , accelerator: 'CmdOrCtrl+Shift+G'
-        , click: () => windowSend('findPrevious')
+        , click: () => windowSendCommand('findPrevious')
         , enabled: aWindowIsOpen
         }
       ]
@@ -329,16 +336,16 @@ const setMenuQuick = (aWindowIsOpen=true) => {
     , submenu: [
         { label: 'Bold'
         , accelerator: 'CmdOrCtrl+B'
-        , click: () => windowSend('addBold')
+        , click: () => windowSendCommand('addBold')
         , enabled: aWindowIsOpen
         }
       , { label: 'Italic'
         , accelerator: 'CmdOrCtrl+I'
-        , click: () => windowSend('addItalic')
+        , click: () => windowSendCommand('addItalic')
         , enabled: aWindowIsOpen
         }
       , { label: 'Strikethrough'
-        , click: () => windowSend('addStrikethrough')
+        , click: () => windowSendCommand('addStrikethrough')
         , enabled: aWindowIsOpen
         }
       ]
@@ -347,17 +354,17 @@ const setMenuQuick = (aWindowIsOpen=true) => {
     , submenu: [
         { label: 'Show Only Editor'
         , accelerator: 'CmdOrCtrl+1'
-        , click: () => windowSend('splitViewOnlyEditor')
+        , click: () => windowSendMessage({ type: 'setSplit', split: 'onlyEditor' })
         , enabled: aWindowIsOpen
         }
       , { label: 'Show Split View'
         , accelerator: 'CmdOrCtrl+2'
-        , click: () => windowSend('splitViewSplit')
+        , click: () => windowSendMessage({ type: 'setSplit', split: 'split' })
         , enabled: aWindowIsOpen
         }
       , { label: 'Show Only Preview'
         , accelerator: 'CmdOrCtrl+3'
-        , click: () => windowSend('splitViewOnlyPreview')
+        , click: () => windowSendMessage({ type: 'setSplit', split: 'onlyPreview' })
         , enabled: aWindowIsOpen
         }
       , {type: 'separator'}
