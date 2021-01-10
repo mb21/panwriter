@@ -37,6 +37,7 @@ const ipcApi = {
   , find:             (cb: () => void)          => ipcRenderer.on('find',             cb)
   , findNext:         (cb: () => void)          => ipcRenderer.on('findNext',         cb)
   , findPrevious:     (cb: () => void)          => ipcRenderer.on('findPrevious',     cb)
+  , printFile:        (cb: () => void)          => ipcRenderer.on('printFile',        cb)
   , sendPlatform:     (cb: (p: string) => void) => ipcRenderer.once('sendPlatform',   (_e, p) => cb(p))
   }
 }

@@ -1,10 +1,10 @@
 import { forwardRef, useState } from 'react'
+import { printPreview } from '../../renderPreview/scrolling'
 
 import './Preview.css'
 
 interface Props {
   paginated: boolean;
-  printPreview: () => void;
 }
 
 export const Preview = forwardRef((props: Props, ref: React.Ref<HTMLDivElement>) => {
@@ -24,7 +24,7 @@ export const Preview = forwardRef((props: Props, ref: React.Ref<HTMLDivElement>)
         />
       <button className='zoomBtn zoomIn'  onClick={() => setZoom(z => z + 0.125)}>+</button>
       <button className='zoomBtn zoomOut' onClick={() => setZoom(z => z - 0.125)}>-</button>
-      <button className='exportBtn' onClick={props.printPreview}>🖨</button>
+      <button className='exportBtn' onClick={printPreview}>🖨</button>
     </div>
   )
 })

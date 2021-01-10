@@ -34,7 +34,6 @@ export const App = () => {
       <Preview
         ref={state.previewDivRef}
         paginated={state.paginated}
-        printPreview={() => undefined} // TODO
         />
     </div>
   );

@@ -11,6 +11,14 @@ let editor: Editor
   , frameWindow: Window | undefined
   , scrollSyncTimeout: NodeJS.Timeout | undefined // shared between scrollPreview and scrollEditor
 
+export const printPreview = () => {
+  if (frameWindow) {
+    frameWindow.print()
+  }
+}
+
+window.ipcApi?.on.printFile(printPreview)
+
 export const initScroll = (contentWindow: Window | undefined) => {
   resetScrollMaps();
   frameWindow = contentWindow
