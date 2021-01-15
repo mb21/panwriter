@@ -43,6 +43,7 @@ export const pureReducer = (state: AppState, action: PureAction): AppState => {
     case 'setMeta': {
       const { doc } = state
       doc.meta = action.meta
+      // doc.fileDirty = true
       return { ...state, doc }
     }
     case 'updateDoc': {

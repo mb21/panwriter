@@ -1,5 +1,5 @@
 import { AppState, viewSplits } from '../../appState/AppState'
-import { Action } from '../../appState/asyncReducer'
+import { Action }   from '../../appState/Action'
 import { Button } from '../Button'
 
 import macCloseIcon    from './macOS_window_close.svg'
@@ -63,7 +63,7 @@ export const Toolbar = (props: Props) => {
                 <Button
                   key={s}
                   active={s === split}
-                  onClick={() => dispatch({ type: 'setSplit', split: s })}
+                  onClick={() => dispatch({ type: 'setSplitAndRender', split: s, state })}
                   >
                   <img alt={s} src={splitIcons[s]} />
                 </Button> )}

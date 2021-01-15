@@ -5,9 +5,9 @@ import * as fs from 'fs'
 import * as ipc from './ipc'
 import { fileExportDialog, fileExportHTMLToClipboard, fileExportToClipboard } from './pandoc/export'
 import { Doc } from '../src/appState/AppState'
-import { PureAction } from '../src/appState/pureReducer'
 import { importFile } from './pandoc/import'
 import { saveFile, openFile } from './file'
+import { Message } from './preload'
 
 const { autoUpdater } = require('electron-updater')
 
@@ -223,7 +223,7 @@ const windowSendCommand = async (cmd: ipc.Command) => {
   }
 }
 
-const windowSendMessage = async (msg: PureAction) => {
+const windowSendMessage = async (msg: Message) => {
   const win = BrowserWindow.getFocusedWindow()
   if (win) {
     ipc.sendMessage(win, msg)
@@ -354,17 +354,17 @@ const setMenuQuick = (aWindowIsOpen=true) => {
     , submenu: [
         { label: 'Show Only Editor'
         , accelerator: 'CmdOrCtrl+1'
-        , click: () => windowSendMessage({ type: 'setSplit', split: 'onlyEditor' })
+        , click: () => windowSendMessage({ type: 'split', split: 'onlyEditor' })
         , enabled: aWindowIsOpen
         }
       , { label: 'Show Split View'
         , accelerator: 'CmdOrCtrl+2'
-        , click: () => windowSendMessage({ type: 'setSplit', split: 'split' })
+        , click: () => windowSendMessage({ type: 'split', split: 'split' })
         , enabled: aWindowIsOpen
         }
       , { label: 'Show Only Preview'
         , accelerator: 'CmdOrCtrl+3'
-        , click: () => windowSendMessage({ type: 'setSplit', split: 'onlyPreview' })
+        , click: () => windowSendMessage({ type: 'split', split: 'onlyPreview' })
         , enabled: aWindowIsOpen
         }
       , {type: 'separator'}

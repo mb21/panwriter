@@ -1,6 +1,6 @@
 import { BrowserWindow, ipcMain } from 'electron'
 import { Doc } from '../src/appState/AppState'
-import { PureAction } from '../src/appState/pureReducer'
+import { Message } from './preload'
 
 // this file contains the IPC functionality of the main process.
 // for the renderer process's part see electron/preload.ts
@@ -33,7 +33,7 @@ export const getDoc = async (win: BrowserWindow): Promise<Doc> => {
   })
 }
 
-export const sendMessage = (win: BrowserWindow, msg: PureAction) => {
+export const sendMessage = (win: BrowserWindow, msg: Message) => {
   win.webContents.send('dispatch', msg)
 }
 

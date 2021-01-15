@@ -1,9 +1,9 @@
 import { contextBridge, ipcRenderer } from 'electron'
-import { AppState } from '../src/appState/AppState'
-import { PureAction } from '../src/appState/pureReducer'
+import { AppState, Doc, ViewSplit } from '../src/appState/AppState'
+import { Action } from '../src/appState/Action'
 
 export type IpcApi = typeof ipcApi
-type Disp = (a: PureAction) => Promise<void>
+type Disp = (a: Action) => Promise<void>
 
 let state: AppState | undefined = undefined
 let dispatch: Disp | undefined = undefined
@@ -14,9 +14,22 @@ ipcRenderer.on('getDoc', (_e, replyChannel: string) => {
   }
 })
 
-ipcRenderer.on('dispatch', (_e, action: PureAction) => {
-  if (dispatch) {
-    dispatch(action)
+export type Message = {
+  type: 'updateDoc';
+  doc: Partial<Doc>;
+}
+| {
+  type: 'split';
+  split: ViewSplit;
+}
+
+ipcRenderer.on('dispatch', (_e, action: Message) => {
+  if (dispatch && state) {
+    if (action.type === 'split') {
+      dispatch({ type: 'setSplitAndRender', split: action.split, state })
+    } else {
+      dispatch(action)
+    }
   }
 })
 

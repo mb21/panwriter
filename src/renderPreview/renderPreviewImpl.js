@@ -59,20 +59,19 @@ async function insertFrame(src, target, filePath=undefined, sandbox=undefined) {
   frame.setAttribute("src", src);
   frame.setAttribute("style", "width: 100%; height: 100%;");
   target.appendChild(frame);
-  /*
   return new Promise(resolve => {
     const contentWindow = frame.contentWindow
     contentWindow.addEventListener('DOMContentLoaded', () => {
+      /* TODO: uncomment
       if (filePath) {
         injectBaseTag(contentWindow, filePath);
       }
       injectMathLib(contentWindow);
       contentWindow.addEventListener("click", interceptClicks.bind(this, contentWindow));
+      */
       return resolve(frame);
     })
   })
-  */
-  return frame // TODO: remove this line when above is commented out again
 }
 
 async function setupSingleFrame(target, filePath) {

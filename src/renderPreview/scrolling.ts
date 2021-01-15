@@ -34,6 +34,12 @@ export const clearPreview = () => {
   frameWindow = undefined;
 }
 
+export const refreshEditor = () => {
+  if (editor) {
+    editor.refresh()
+  }
+}
+
 export const scrollPreview = throttle(() => {
   if (frameWindow) {
     if (!scrollMap) {

@@ -1,27 +1,11 @@
-// import { ipcRenderer } from 'electron'
-
+import { AppState } from './AppState'
+import { Action } from '../appState/Action'
 import { PureAction } from './pureReducer'
-import { AppState, Doc } from '../appState/AppState'
 import { renderPreview } from '../renderPreview/renderPreview'
+import { refreshEditor } from '../renderPreview/scrolling'
 import { parseYaml, serializeMetaToMd } from '../renderPreview/convertYaml'
 
-export type Action = PureAction | {
-  type: 'setMdAndRender';
-  md: string;
-  state: AppState;
-}
-| {
-  type: 'setMetaAndRender';
-  key: string;
-  value: string;
-  state: AppState;
-}
-| {
-  type: 'closeMetaEditorAndSetMd';
-  doc: Doc;
-}
-
-const convertAndRenderPreview = (state: AppState) => {
+const parseYamlAndRenderPreview = (state: AppState) => {
   const { doc } = state
   state.doc = { ...doc, ...parseYaml(doc.md) }
   renderPreview(state)
@@ -33,8 +17,13 @@ export const asyncReducer = (
 ) => (async (action: Action): Promise<void> => {
   switch (action.type) {
     case 'closeMetaEditorAndSetMd': {
-      // ipcRenderer.send('setWindowDirty')
       const md = serializeMetaToMd(action.doc)
+      return dispatch({ type: 'setMdText', md })
+    }
+    case 'setMdAndRender': {
+      const { md, state } = action
+      state.doc.md = md
+      parseYamlAndRenderPreview(state)
       return dispatch({ type: 'setMdText', md })
     }
     case 'setMetaAndRender': {
@@ -44,13 +33,16 @@ export const asyncReducer = (
       renderPreview(state)
       return dispatch({ type: 'setMeta', meta })
     }
-    case 'setMdAndRender': {
-      // ipcRenderer.send('setWindowDirty')
-      const { md } = action
-      action.state.doc.md = md
-      convertAndRenderPreview(action.state)
-
-      return dispatch({ type: 'setMdText', md })
+    case 'setSplitAndRender': {
+      const { split } = action
+      if (split !== 'onlyEditor') {
+        // for the case when the preview is shown for the first time
+        parseYamlAndRenderPreview({ ...action.state, split })
+      }
+      if (split !== 'onlyPreview') {
+        setTimeout(refreshEditor)
+      }
+      return dispatch({ type: 'setSplit', split })
     }
     default: {
       return dispatch(action)

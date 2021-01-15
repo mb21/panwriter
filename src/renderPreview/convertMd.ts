@@ -10,7 +10,7 @@ const mdItPandoc = markdownItPandoc()
 export const convertMd = (doc: Doc): string => {
   return mdItPandoc
     .use( mdItSourceMapPlugin(1 + getNrOfYamlLines(doc.yaml)) )
-    .render(doc.md)
+    .render(doc.bodyMd)
 }
 
 const mdItSourceMapPlugin = (nrLinesOffset=1) => {

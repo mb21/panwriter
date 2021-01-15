@@ -1,6 +1,6 @@
 import { Fragment } from 'react'
 import { AppState }    from '../../appState/AppState'
-import { Action }      from '../../appState/asyncReducer'
+import { Action }   from '../../appState/Action'
 import { defaultVars } from '../../renderPreview/templates/getCss'
 import { ColorPicker } from '../ColorPicker/ColorPicker'
 

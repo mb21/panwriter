@@ -11,7 +11,7 @@ import 'codemirror/addon/edit/continuelist'
 import { Controlled as CodeMirror } from 'react-codemirror2'
 
 import { AppState } from '../../appState/AppState'
-import { Action }   from '../../appState/asyncReducer'
+import { Action }   from '../../appState/Action'
 import { registerScrollEditor, scrollPreview } from '../../renderPreview/scrolling'
 
 import './Editor.css'
