@@ -45,7 +45,7 @@ const renderNext = (state: AppState) => {
 const render = async (state: AppState): Promise<Window | undefined> => {
   const { doc, paginated, previewDivRef } = state
   doc.html = convertMd(doc)
-  const previewDiv = previewDivRef?.current
+  const previewDiv = previewDivRef.current
   if (previewDiv) {
     if (paginated) {
       return renderPaged(doc, previewDiv)

@@ -5,7 +5,7 @@ export interface AppState {
   metaEditorOpen: boolean;
   split: ViewSplit;
   paginated: boolean;
-  previewDivRef?: RefObject<HTMLDivElement>;
+  previewDivRef: RefObject<HTMLDivElement>;
 }
 
 export interface Doc {
