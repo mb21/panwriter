@@ -1,8 +1,7 @@
-import { createRef, useEffect, useReducer } from 'react'
+import { createRef, useReducer } from 'react'
 
 import { AppState }     from '../../appState/AppState'
-import { asyncReducer } from '../../appState/asyncReducer'
-import { pureReducer }  from '../../appState/pureReducer'
+import { appStateReducer }  from '../../appState/appStateReducer'
 
 import { Editor }       from '../Editor/Editor'
 import { MetaEditor }   from '../MetaEditor/MetaEditor'
@@ -19,8 +18,7 @@ declare global {
 }
 
 export const App = () => {
-  const [state, disp] = useReducer(pureReducer, initialState)
-  const dispatch = asyncReducer(disp)
+  const [state, dispatch] = useReducer(appStateReducer, initialState)
   window.ipcApi?.setStateAndDispatch(state, dispatch)
   return (
     <div className={`app ${state.split.toLowerCase()}`}>

@@ -3,7 +3,7 @@ import { AppState, Doc, ViewSplit } from '../src/appState/AppState'
 import { Action } from '../src/appState/Action'
 
 export type IpcApi = typeof ipcApi
-type Disp = (a: Action) => Promise<void>
+type Disp = (a: Action) => void
 
 let state: AppState | undefined = undefined
 let dispatch: Disp | undefined = undefined
@@ -24,9 +24,9 @@ export type Message = {
 }
 
 ipcRenderer.on('dispatch', (_e, action: Message) => {
-  if (dispatch && state) {
+  if (dispatch) {
     if (action.type === 'split') {
-      dispatch({ type: 'setSplitAndRender', split: action.split, state })
+      dispatch({ type: 'setSplitAndRender', split: action.split })
     } else {
       dispatch(action)
     }

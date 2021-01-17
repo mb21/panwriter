@@ -60,7 +60,7 @@ export const MetaEditor = (props: Props) => {
       e: string | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
     ) => {
       const v = typeof e === 'string' ? e : e.target.value
-      dispatch({ type: 'setMetaAndRender', key, value: onDone ? onDone(v) : v, state })
+      dispatch({ type: 'setMetaAndRender', key, value: onDone ? onDone(v) : v })
     }
     const common = { id: kv.name, placeholder, value, onChange }
     switch(kv.type) {
@@ -77,7 +77,7 @@ export const MetaEditor = (props: Props) => {
       <button
         className='backbtn'
         onClick={() => {
-          dispatch({ type: 'closeMetaEditorAndSetMd', doc })
+          dispatch({ type: 'closeMetaEditorAndSetMd' })
           dispatch({ type: 'toggleMetaEditorOpen' })
         }}
         >

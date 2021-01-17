@@ -1,24 +1,28 @@
-import { AppState, Doc, ViewSplit } from '../appState/AppState'
-import { PureAction } from './pureReducer'
+import { Doc, ViewSplit } from '../appState/AppState'
 
-export type Action = PureAction
-| {
+export type Action = {
   type: 'closeMetaEditorAndSetMd';
-  doc: Doc;
 }
 | {
   type: 'setMdAndRender';
   md: string;
-  state: AppState;
 }
 | {
   type: 'setMetaAndRender';
   key: string;
   value: string;
-  state: AppState;
 }
 | {
   type: 'setSplitAndRender';
   split: ViewSplit;
-  state: AppState;
+}
+| {
+  type: 'toggleMetaEditorOpen';
+}
+| {
+  type: 'togglePaginated';
+}
+| {
+  type: 'updateDoc';
+  doc: Partial<Doc>;
 }
