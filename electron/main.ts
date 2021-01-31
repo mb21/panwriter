@@ -56,7 +56,7 @@ const createWindow = async (filePath?: string, toImport=false, wasCreatedOnStart
     win.once('ready-to-show', resolve)
   )
 
-  const isDev = true; // TODO
+  const isDev = !!process.env.ELECTRON_IS_DEV
   if (isDev) {
     win.loadURL('http://localhost:3000/index.html');
   } else {

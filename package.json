@@ -13,9 +13,9 @@
     "tsc": "tsc",
     "electron": "electron .",
     "electron:tsc": "tsc -p electron",
-    "electron:dev": "concurrently \"BROWSER=none yarn start\" \"wait-on http://localhost:3000 && yarn run electron:tsc -w\" \"wait-on http://localhost:3000 && yarn run electron:tsc -p electron && electron .\"",
-    "electron:build": "yarn build && yarn run electron:tsc && electron-builder",
-    "dist": "electron-builder",
+    "electron:dev": "concurrently \"BROWSER=none yarn start\" \"wait-on http://localhost:3000 && yarn run electron:tsc -w\" \"wait-on http://localhost:3000 && yarn run electron:tsc -p electron && ELECTRON_IS_DEV=1 electron .\"",
+    "electron:build": "yarn build && yarn run electron:tsc",
+    "dist": "yarn run electron:build && electron-builder",
     "dist-all": "electron-builder -mlw",
     "release": "electron-builder -mlw --publish always"
   },
