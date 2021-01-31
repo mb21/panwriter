@@ -4,6 +4,7 @@ import { basename, extname } from 'path'
 import { promisify } from 'util'
 import * as ipc from './ipc'
 import { Doc } from '../src/appState/AppState'
+import { addToRecentFiles } from './recentFiles'
 
 
 export const openFile = async (
@@ -16,6 +17,7 @@ export const openFile = async (
     const md = await promisify(readFile)(filePath, 'utf-8')
     win.setTitle(fileName)
     win.setRepresentedFilename(filePath)
+    addToRecentFiles(filePath)
     return { md, fileName, filePath, fileDirty: false }
   } catch (err) {
     dialog.showMessageBox(win, {
@@ -54,6 +56,9 @@ export const saveFile = async (
         type: 'updateDoc'
       , doc: { fileName, filePath, fileDirty: false }
       })
+
+      addToRecentFiles(filePath)
+
       if (opts.closeWindowAfterSave) {
         win.close()
       }

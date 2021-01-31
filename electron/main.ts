@@ -8,6 +8,7 @@ import { Doc } from '../src/appState/AppState'
 import { importFile } from './pandoc/import'
 import { saveFile, openFile } from './file'
 import { Message } from './preload'
+import { clearRecentFiles, getRecentFiles } from './recentFiles'
 
 const { autoUpdater } = require('electron-updater')
 
@@ -20,9 +21,7 @@ declare class CustomBrowserWindow extends Electron.BrowserWindow {
 // Keep a global reference of the windows, if you don't, the windows will
 // be closed automatically when the JavaScript object is garbage collected.
 const windows: CustomBrowserWindow[] = []
-    , mdExtensions = ['md', 'txt', 'markdown']
-    ;
-let recentFiles: string[] = [];
+const mdExtensions = ['md', 'txt', 'markdown']
 
 ipc.init()
 
@@ -57,7 +56,7 @@ const createWindow = async (filePath?: string, toImport=false, wasCreatedOnStart
     win.once('ready-to-show', resolve)
   )
 
-  const isDev = true;
+  const isDev = true; // TODO
   if (isDev) {
     win.loadURL('http://localhost:3000/index.html');
   } else {
@@ -129,18 +128,18 @@ const createWindow = async (filePath?: string, toImport=false, wasCreatedOnStart
       windows.splice(i, 1);
     }
 
-    setMenuQuick(windows.length > 0);
+    setMenu(windows.length > 0, true);
   })
 
   win.on('minimize', () => {
     if (windows.filter(w => !w.isMinimized()).length === 0) {
       // no non-minimized windows
-      setMenu(false);
+      setMenu(false, true);
     }
   });
 
   win.on('restore', () => {
-    setMenu();
+    setMenu(true, false);
   });
 }
 
@@ -168,7 +167,6 @@ app.on('ready', () => {
     });
   } else if (windows.length === 0) {
     createWindow(undefined, false, true);
-    setMenuQuick();
   }
   autoUpdater.checkForUpdatesAndNotify();
 })
@@ -178,7 +176,7 @@ app.on('window-all-closed', () => {
   // On OS X it is common for applications and their menu bar
   // to stay active until the user quits explicitly with Cmd + Q
   if (process.platform === 'darwin') {
-    setMenuQuick(false);
+    setMenu(false, false);
   } else {
     app.quit()
   }
@@ -230,11 +228,8 @@ const windowSendMessage = async (msg: Message) => {
   }
 }
 
-const setMenu = (aWindowIsOpen=true) => {
-  fetchRecentFiles().then( () => setMenuQuick(aWindowIsOpen) );
-}
-
-const setMenuQuick = (aWindowIsOpen=true) => {
+const setMenu = async (aWindowIsOpen=true, useRecentFilesCache=false) => {
+  const recentFiles = await getRecentFiles(useRecentFilesCache)
   const template: Electron.MenuItemConstructorOptions[] = [
     { label: 'File'
     , submenu: [
@@ -255,7 +250,10 @@ const setMenuQuick = (aWindowIsOpen=true) => {
           }).concat([
               {type: 'separator'}
             , { label: 'Clear Menu'
-              , click: clearRecentFiles
+              , click: () => {
+                  clearRecentFiles()
+                  setMenu(true, true)
+                }
               , enabled: recentFiles.length > 0 && aWindowIsOpen
               }
           ])
@@ -420,24 +418,4 @@ const setMenuQuick = (aWindowIsOpen=true) => {
   }
   var menu = Menu.buildFromTemplate(template);
   Menu.setApplicationMenu(menu);
-}
-
-// fetches recentFiles from the localStorage of a renderer process
-const fetchRecentFiles = async () => {
-  const win = BrowserWindow.getFocusedWindow();
-  if (win) {
-    return win.webContents.executeJavaScript("localStorage.getItem('recentFiles')")
-      .then(res => {
-        recentFiles = JSON.parse(res) || []
-      });
-  }
-}
-
-const clearRecentFiles = () => {
-  const win = BrowserWindow.getFocusedWindow();
-  if (win) {
-    win.webContents.executeJavaScript("localStorage.setItem('recentFiles', '[]')")
-  }
-  recentFiles = []
-  setMenuQuick();
 }
