@@ -45,6 +45,13 @@
     ]
   },
   "build": {
+    "extends": null,
+    "files": [
+      "build/**/*"
+    ],
+    "directories": {
+      "buildResources": "assets"
+    },
     "appId": "com.panwriter.app",
     "fileAssociations": [
       {
