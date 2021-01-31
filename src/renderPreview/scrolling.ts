@@ -1,15 +1,13 @@
-//@ts-nocheck
-
 import { Editor } from 'codemirror'
 import { throttle } from './throttle'
 
 let editor: Editor
   , editorOffset = 0
-  , scrollEditorFn: undefined
+  , scrollEditorFn: ((e: Event) => void) | undefined
   , scrollMap: number[] | undefined
   , reverseScrollMap: number[] | undefined
   , frameWindow: Window | undefined
-  , scrollSyncTimeout: NodeJS.Timeout | undefined // shared between scrollPreview and scrollEditor
+  , scrollSyncTimeout: NodeJS.Timeout | undefined // shared between scrollPreview and scrollEditorFn
 
 export const printPreview = () => {
   if (frameWindow) {
@@ -19,14 +17,12 @@ export const printPreview = () => {
 
 window.ipcApi?.on.printFile(printPreview)
 
-export const initScroll = (contentWindow: Window | undefined) => {
+export const initScroll = (contentWindow: Window) => {
   resetScrollMaps();
   frameWindow = contentWindow
-  if (frameWindow) {
-    frameWindow.addEventListener('resize', resetScrollMaps);
-    if (scrollEditorFn) {
-      frameWindow.addEventListener('scroll', scrollEditorFn);
-    }
+  frameWindow.addEventListener('resize', resetScrollMaps);
+  if (scrollEditorFn) {
+    frameWindow.addEventListener('scroll', scrollEditorFn);
   }
 }
 
@@ -46,7 +42,7 @@ export const scrollPreview = throttle(() => {
       buildScrollMap(editor, editorOffset);
     }
     var scrollTop = Math.round(editor.getScrollInfo().top)
-      , scrollTo = scrollMap[scrollTop]
+      , scrollTo = scrollMap![scrollTop]
       ;
     if (scrollTo !== undefined && frameWindow) {
       frameWindow.scrollTo(0, scrollTo);
@@ -62,15 +58,15 @@ export const registerScrollEditor = (ed: Editor) => {
     : 0
   var editorScrollFrame = document.querySelector('.CodeMirror-scroll')
 
-  scrollEditorFn = throttle( (e) => {
+  scrollEditorFn = throttle( (e: Event) => {
     e.preventDefault();
     if (frameWindow !== undefined) {
       if (!reverseScrollMap) {
         buildScrollMap(editor, editorOffset);
       }
       for (var i=frameWindow.scrollY; i>=0; i--) {
-        if (reverseScrollMap[i] !== undefined) {
-          editorScrollFrame?.scrollTo(0, reverseScrollMap[i])
+        if (reverseScrollMap![i] !== undefined) {
+          editorScrollFrame?.scrollTo(0, reverseScrollMap![i])
           break;
         }
       }
@@ -78,8 +74,16 @@ export const registerScrollEditor = (ed: Editor) => {
   }, 30, scrollSyncTimeout);
 }
 
+/*
+ * Private functions
+ */
 
 const buildScrollMap = (editor: Editor, editorOffset: number) => {
+  if (!frameWindow) {
+    console.error('frameWindow was undefined in buildScrollMap')
+    return
+  }
+
   // scrollMap maps source-editor-line-offsets to preview-element-offsets
   // (offset is the number of vertical pixels from the top)
   scrollMap = [];
@@ -97,13 +101,13 @@ const buildScrollMap = (editor: Editor, editorOffset: number) => {
   });
 
   const paginated = false // TODO
-  var lastEl: Element
+  var lastEl: Element | undefined = undefined
     , selector = paginated ? '.pagedjs_page_content [data-source-line]'
                            : 'body > [data-source-line]'
     ;
-  frameWindow.document.querySelectorAll(selector).forEach(el => {
+  for (const el of frameWindow.document.querySelectorAll(selector)) {
     // for each element in the preview with source annotation
-    var line = parseInt(el.getAttribute('data-source-line'), 10)
+    var line = parseInt(el.getAttribute('data-source-line') || '1', 10)
       , lineOffset = lineOffsets[line]
       , elOffset = Math.round(el.getBoundingClientRect().top + frameWindow.scrollY);
       ;
@@ -116,7 +120,7 @@ const buildScrollMap = (editor: Editor, editorOffset: number) => {
     }
 
     lastEl = el;
-  });
+  }
   if (lastEl) {
     scrollMap[offsetSum] = Math.ceil(lastEl.getBoundingClientRect().bottom + frameWindow.scrollY);
     knownLineOffsets.push(offsetSum);
