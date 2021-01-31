@@ -1,4 +1,4 @@
-import { BrowserWindow, ipcMain } from 'electron'
+import { BrowserWindow, ipcMain, shell } from 'electron'
 import { Doc } from '../src/appState/AppState'
 import { Message } from './preload'
 
@@ -20,6 +20,10 @@ export const init = () => {
     const win = BrowserWindow.fromWebContents(event.sender)
     // win.isMaximized() ? win.unmaximize() : win.maximize()
     win?.setFullScreen( !win.isFullScreen() )
+  })
+
+  ipcMain.on('openLink', (_event, link: string) => {
+    shell.openExternal(link)
   })
 }
 

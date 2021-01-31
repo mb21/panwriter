@@ -3,7 +3,7 @@ import { parseToTemplate, interpolateTemplate, extractDefaultVars } from './temp
 // eslint-disable-next-line import/no-webpack-loader-syntax
 import styles from '!!raw-loader!../../assets/preview.pandoc-styles.css'
 
-/*
+/* TODO:
 import { getDataDirFileName } from './Exporter'
 import { promisify } from 'util'
 
@@ -19,7 +19,6 @@ const defaultStaticCssLink: any = undefined
 
 let link: string
   , docType: string | undefined
-  ;
 const template = parseToTemplate(styles)
 
 export const defaultVars = extractDefaultVars(template)
@@ -33,16 +32,16 @@ export const getCss = async (doc: Doc) => {
     const fileName = getDataDirFileName(newDocType, '.css')
     try {
         await promisify(fs.access)(fileName)
-        link = fileName;
+        link = fileName
     } catch (err) {
-      link = defaultStaticCssLink;
+      link = defaultStaticCssLink
     }
-    linkIsChanged = true;
+    linkIsChanged = true
   }
-  docType = newDocType;
+  docType = newDocType
 
   const cssStr = interpolateTemplate(template, meta);
-  return [cssStr, link, linkIsChanged]
+  return [cssStr, link, linkIsChanged] as const
 }
 
 const toDocType = (meta: any): string | undefined =>

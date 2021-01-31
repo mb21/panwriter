@@ -42,6 +42,7 @@ const ipcApi = {
     close:            () => ipcRenderer.send('close')
   , minimize:         () => ipcRenderer.send('minimize')
   , maximize:         () => ipcRenderer.send('maximize')
+  , openLink:         (link: string) => ipcRenderer.send('openLink', link)
   }
 , on: {
     addBold:          (cb: () => void)          => ipcRenderer.on('addBold',          cb)
