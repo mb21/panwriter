@@ -3,10 +3,11 @@
   "productName": "PanWriter",
   "version": "0.7.2",
   "description": "Markdown editor with pandoc integration and paginated preview",
+  "homepage": ".",
   "main": "build/electron/main.js",
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "INLINE_RUNTIME_CHUNK=false react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "eslint src",
@@ -36,12 +37,10 @@
   },
   "browserslist": {
     "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
+      "chrome 87"
     ],
     "development": [
-      "last 1 chrome version"
+      "chrome 87"
     ]
   },
   "build": {

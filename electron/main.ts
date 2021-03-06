@@ -58,11 +58,10 @@ const createWindow = async (filePath?: string, toImport=false, wasCreatedOnStart
 
   const isDev = !!process.env.ELECTRON_IS_DEV
   if (isDev) {
-    win.loadURL('http://localhost:3000/index.html');
+    win.loadURL('http://localhost:3000/index.html')
   } else {
-    // i.e. 'build/index.html'
-    win.loadURL(`file://${__dirname}/../index.html`);
-    // we used to have: win.loadFile('public/index.html')
+    // win.loadFile('build/index.html')
+    win.loadURL(`file://${__dirname}/../index.html`)
   }
 
   if (isDev) {
