@@ -13,6 +13,8 @@ import { clearRecentFiles, getRecentFiles } from './recentFiles'
 const { autoUpdater } = require('electron-updater')
 require('fix-path')() // needed to execute pandoc on macOS prod build
 
+let appWillQuit = false
+
 
 declare class CustomBrowserWindow extends Electron.BrowserWindow {
   wasCreatedOnStartup?: boolean;
@@ -89,6 +91,13 @@ const createWindow = async (filePath?: string, toImport=false, wasCreatedOnStart
     // and https://github.com/electron/electron/issues/9966
     if (!win.dontPreventClose) {
       e.preventDefault()
+      const close = () => {
+        win.dontPreventClose = true
+        win.close()
+        if (appWillQuit) {
+          app.quit()
+        }
+      }
       const doc = await ipc.getDoc(win)
       if (doc.fileDirty) {
         const selected = await dialog.showMessageBox(win, {
@@ -100,23 +109,23 @@ const createWindow = async (filePath?: string, toImport=false, wasCreatedOnStart
           case 0: {
             // Save
             win.dontPreventClose = true
-            saveFile(win, doc, { closeWindowAfterSave: true })
+            await saveFile(win, doc)
+            close()
             break
           }
           case 1: {
             // Cancel
+            appWillQuit = false
             break
           }
           case 2: {
             // Don't Save
-            win.dontPreventClose = true
-            win.close()
+            close()
             break
           }
         }
       } else {
-        win.dontPreventClose = true
-        win.close()
+        close()
       }
     }
   })
@@ -170,6 +179,10 @@ app.on('ready', () => {
   }
   autoUpdater.checkForUpdatesAndNotify();
 })
+
+app.on('before-quit', e => {
+  appWillQuit = true
+});
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {

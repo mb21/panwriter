@@ -32,7 +32,7 @@ export const openFile = async (
 export const saveFile = async (
   win: BrowserWindow
 , doc: Doc
-, opts: {saveAsNewFile?: boolean; closeWindowAfterSave?: boolean} = {}
+, opts: {saveAsNewFile?: boolean} = {}
 ) => {
   const filePath = await showDialog(win, doc, opts.saveAsNewFile)
 
@@ -40,30 +40,26 @@ export const saveFile = async (
     return
   }
 
-  writeFile(filePath, doc.md, err => {
-    if (err) {
-      dialog.showMessageBox(win, {
-        type: 'error'
-      , message: 'Could not save file'
-      , detail: err.message
-      })
-    } else {
-      const fileName = pathToName(filePath)
-      win.setTitle(fileName)
-      win.setRepresentedFilename(filePath)
+  try {
+    await promisify(writeFile)(filePath, doc.md)
 
-      ipc.sendMessage(win, {
-        type: 'updateDoc'
-      , doc: { fileName, filePath, fileDirty: false }
-      })
+    const fileName = pathToName(filePath)
+    win.setTitle(fileName)
+    win.setRepresentedFilename(filePath)
 
-      addToRecentFiles(filePath)
+    ipc.sendMessage(win, {
+      type: 'updateDoc'
+    , doc: { fileName, filePath, fileDirty: false }
+    })
 
-      if (opts.closeWindowAfterSave) {
-        win.close()
-      }
-    }
-  })
+    addToRecentFiles(filePath)
+  } catch (err) {
+    dialog.showMessageBox(win, {
+      type: 'error'
+    , message: 'Could not save file'
+    , detail: err.message
+    })
+  }
 }
 
 const showDialog = async (win: BrowserWindow, doc: Doc, saveAsNewFile?: boolean) => {
