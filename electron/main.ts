@@ -11,6 +11,7 @@ import { Message } from './preload'
 import { clearRecentFiles, getRecentFiles } from './recentFiles'
 
 const { autoUpdater } = require('electron-updater')
+require('fix-path')() // needed to execute pandoc on macOS prod build
 
 
 declare class CustomBrowserWindow extends Electron.BrowserWindow {
