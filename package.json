@@ -77,16 +77,17 @@
       }
     ],
     "mac": {
-      "icon": "build/icons/icon.png"
+      "icon": "icons/icon.png"
     },
     "win": {
-      "icon": "build/icons/icon.ico"
+      "icon": "icons/icon.ico"
     },
     "nsis": {
       "allowToChangeInstallationDirectory": true,
       "oneClick": false
     },
     "linux": {
+      "icon": "icons/icon.png",
       "desktop": {
         "Name": "PanWriter",
         "Comment": "Markdown editor with pandoc integration and paginated preview"
