@@ -36,13 +36,14 @@ const interceptClicks = (contentWindow: Window, e: MouseEvent) => {
     const { href, hash } = target
     const hrefStart = href.substr(0, 7)
     if (hrefStart === "file://" && hash) {
-      // TODO: this seems to currently not work since it's http://localhost:3000 at least in dev
       // probably in-document navigation by hash
+      // this currently does not work in dev mode since hrefStart === http://localhost:3000, but works in prod build
+      // Note that you need to add ids to link to manually in markdown, like `# myTitle {#myId}`
       const element = contentWindow.document.querySelector(hash)
       if (element) {
         element.scrollIntoView()
       }
-    } else if(hrefStart === "http://" || hrefStart === "https:/") {
+    } else if (hrefStart === "http://" || hrefStart === "https:/") {
       // external link
       window.ipcApi?.send.openLink(href)
     }
