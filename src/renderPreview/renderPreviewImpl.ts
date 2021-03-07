@@ -1,8 +1,6 @@
 import { Doc } from '../appState/AppState'
 import { getCss } from './templates/getCss'
 
-const appPath = 'TODO' // TODO
-
 let singleFrame: HTMLIFrameElement | undefined
   , singleFrameLinkEl: HTMLLinkElement | undefined
   , frame1: HTMLIFrameElement | undefined
@@ -211,18 +209,6 @@ export const renderPaged = async (doc: Doc, previewDiv: HTMLDivElement): Promise
     }
     frameHead.appendChild( createStyleEl(cssStr) )
     frameHead.appendChild(pagedjsStyleEl);
-
-    (frameWindow as any).PagedConfig = {
-      auto: false
-    };
-
-    await new Promise(resolve => {
-      const s = document.createElement('script')
-      s.src = appPath + '/node_modules/pagedjs/dist/paged.polyfill.js'
-      s.async = false
-      s.addEventListener('load', resolve)
-      frameBody.appendChild(s)
-    })
 
     // wait for images etc. to have loaded
     await new Promise(resolve => {

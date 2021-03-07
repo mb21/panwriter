@@ -46,7 +46,9 @@ export const appStateReducer = (state: AppState, action: Action): AppState => {
       return { ...state, metaEditorOpen: !state.metaEditorOpen }
     }
     case 'togglePaginated': {
-      return { ...state, paginated: !state.paginated }
+      const newState = { ...state, paginated: !state.paginated }
+      renderPreview(newState)
+      return newState
     }
     case 'updateDoc': {
       const doc = { ...state.doc, ...action.doc }
