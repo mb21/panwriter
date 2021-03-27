@@ -16,15 +16,12 @@ const injectBaseTag = (contentWindow: Window, filePath?: string) => {
   base.setAttribute("href", "file://" + cwd + path.sep);
   contentWindow.document.head.append(base);
 }
-
-const injectMathLib = (contentWindow: Window) => {
-  [ appPath + '/node_modules/katex/dist/katex.min.css'
-  , appPath + '/node_modules/markdown-it-texmath/css/texmath.css'
-  ].forEach(href => {
-    contentWindow.document.head.appendChild( createLinkEl(href) )
-  })
-}
 */
+
+const injectMathCss = (contentWindow: Window) =>
+  [ './katex/katex.min.css', './katex/texmath.css'].forEach(href =>
+    contentWindow.document.head.appendChild( createLinkEl(href) )
+  )
 
 const interceptClicks = (contentWindow: Window, e: MouseEvent) => {
   e.preventDefault()
@@ -69,8 +66,8 @@ async function insertFrame(
       if (filePath) {
         injectBaseTag(contentWindow, filePath)
       }
-      injectMathLib(contentWindow)
       */
+      injectMathCss(contentWindow)
       contentWindow.addEventListener('click', e => interceptClicks(contentWindow, e))
       return resolve(frame);
     })
@@ -200,7 +197,7 @@ export const renderPaged = async (doc: Doc, previewDiv: HTMLDivElement): Promise
     frameBody.innerHTML = content
 
     // repopulate styles
-    // injectMathLib(frameWindow) // TODO: uncomment
+    // injectMathCss(frameWindow) // TODO: uncomment
     if (link) {
       frameHead.appendChild( createLinkEl(link) )
     }
