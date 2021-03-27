@@ -1,5 +1,7 @@
 import { Doc } from '../appState/AppState'
 import { getCss } from './templates/getCss'
+//@ts-ignore
+import dirname from 'path-dirname'
 
 let singleFrame: HTMLIFrameElement | undefined
   , singleFrameLinkEl: HTMLLinkElement | undefined
@@ -7,16 +9,16 @@ let singleFrame: HTMLIFrameElement | undefined
   , frame2: HTMLIFrameElement | undefined
   ;
 
-/*
-const injectBaseTag = (contentWindow: Window, filePath?: string) => {
-  // so relative image URLs etc. are found
-  const cwd = path.dirname(filePath)
-      , base = document.createElement('base')
-      ;
-  base.setAttribute("href", "file://" + cwd + path.sep);
-  contentWindow.document.head.append(base);
+/** injects a HTML `<base>` tag to mkae relative image URLs etc. work */
+const injectBaseTag = (contentWindow: Window | null, filePath?: string) => {
+  if (!contentWindow || !filePath || contentWindow.document.getElementsByTagName('base').length > 0) {
+    return
+  }
+  const cwd = dirname(filePath)
+  const base = document.createElement('base')
+  base.setAttribute('href', `file://${cwd}/`)
+  contentWindow.document.head.append(base)
 }
-*/
 
 const injectMathCss = (contentWindow: Window) =>
   [ './katex/katex.min.css', './katex/texmath.css'].forEach(href =>
@@ -49,12 +51,11 @@ const interceptClicks = (contentWindow: Window, e: MouseEvent) => {
 async function insertFrame(
   src: string
 , target: HTMLElement
-, filePath?: string
-, sandbox?: string
+, noScriptsInFrame: boolean
 ): Promise<HTMLIFrameElement> {
   const frame = document.createElement('iframe')
-  if (sandbox !== undefined) {
-    frame.setAttribute('sandbox', sandbox)
+  if (noScriptsInFrame) {
+    frame.setAttribute('sandbox', 'allow-same-origin')
   }
   frame.setAttribute('src', src)
   frame.setAttribute('style', 'width: 100%; height: 100%;')
@@ -62,11 +63,6 @@ async function insertFrame(
   return new Promise(resolve => {
     const contentWindow = frame.contentWindow
     contentWindow?.addEventListener('DOMContentLoaded', () => {
-      /* TODO: uncomment
-      if (filePath) {
-        injectBaseTag(contentWindow, filePath)
-      }
-      */
       injectMathCss(contentWindow)
       contentWindow.addEventListener('click', e => interceptClicks(contentWindow, e))
       return resolve(frame);
@@ -74,9 +70,9 @@ async function insertFrame(
   })
 }
 
-async function setupSingleFrame(target: HTMLElement, filePath?: string) {
+async function setupSingleFrame(target: HTMLElement) {
   if (!singleFrame) {
-    singleFrame = await insertFrame('previewFrame.html', target, filePath)
+    singleFrame = await insertFrame('previewFrame.html', target, true)
   }
   if (frame1) {
     frame1.remove();
@@ -91,8 +87,10 @@ async function setupSingleFrame(target: HTMLElement, filePath?: string) {
 
 const setupSwapFrames = async (target: HTMLElement, filePath?: string) => {
   if (!frame1 || !frame2) {
-    frame1 = await insertFrame('previewFramePaged.html', target, filePath)
-    frame2 = await insertFrame('previewFramePaged.html', target, filePath)
+    frame1 = await insertFrame('previewFramePaged.html', target, false)
+    frame2 = await insertFrame('previewFramePaged.html', target, false)
+    injectBaseTag(frame1.contentWindow, filePath)
+    injectBaseTag(frame2.contentWindow, filePath)
   }
   if (singleFrame) {
     singleFrame.remove();
@@ -128,7 +126,7 @@ const renderAndSwap = async (
 
 
 export const renderPlain = async (doc: Doc, previewDiv: HTMLDivElement): Promise<Window> => {
-  const { contentWindow } = await setupSingleFrame(previewDiv, doc.filePath);
+  const { contentWindow } = await setupSingleFrame(previewDiv);
   const [cssStr, link, linkIsChanged] = await getCss(doc)
       , content = [
           '<style>', cssStr, '</style>'
@@ -143,6 +141,8 @@ export const renderPlain = async (doc: Doc, previewDiv: HTMLDivElement): Promise
   if (!contentWindow) {
     throw Error('contentWindow was undefined in renderPlain')
   }
+
+  injectBaseTag(contentWindow, doc.filePath)
 
   if (singleFrameLinkEl === undefined && link) {
     singleFrameLinkEl = createLinkEl(link)

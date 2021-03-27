@@ -117,6 +117,7 @@
     "markdown-it-sup": "^1.0.0",
     "markdown-it-texmath": "^0.8.0",
     "pagedjs": "0.1.43",
+    "path-dirname": "^1.0.2",
     "react": "^17.0.1",
     "react-codemirror2": "^7.2.1",
     "react-color": "^2.19.3",
