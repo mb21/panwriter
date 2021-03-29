@@ -7,9 +7,11 @@ PanWriter is a distraction-free markdown editor with two unique features:
 1. Tight integration with pandoc for import/export to/from plenty of file formats (including HTML, docx, LaTeX and EPUB).
 2. Preview pane that can show pages – including page breaks etc. Layout adjustments are immediately reflected in the preview.
 
-![](screenshot.png)
-
 **[Download PanWriter](https://github.com/mb21/panwriter/releases)**
+
+You also have to [install pandoc](https://pandoc.org/installing.html) to export to most formats.
+
+![](screenshot.png)
 
 PanWriter is very usable, but also very much a work in progress, as there are still a few rough edges (see [TODOs below](#todos)). Feedback, suggestions and contributions very much welcome! Please open an issue to start a conversation.
 
