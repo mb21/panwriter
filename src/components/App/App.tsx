@@ -1,4 +1,4 @@
-import { createRef, useReducer } from 'react'
+import { createRef, useEffect, useReducer } from 'react'
 
 import { AppState }     from '../../appState/AppState'
 import { appStateReducer }  from '../../appState/appStateReducer'
@@ -8,6 +8,7 @@ import { MetaEditor }   from '../MetaEditor/MetaEditor'
 import { Preview }      from '../Preview/Preview'
 import { Toolbar }      from '../Toolbar/Toolbar'
 import { IpcApi } from '../../../electron/preload'
+import { renderPreview } from '../../renderPreview/renderPreview'
 
 import './App.css'
 
@@ -20,6 +21,14 @@ declare global {
 export const App = () => {
   const [state, dispatch] = useReducer(appStateReducer, initialState)
   window.ipcApi?.setStateAndDispatch(state, dispatch)
+
+  useEffect(() => {
+    if (state.split !== 'onlyEditor') {
+      renderPreview(state)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.doc, state.split, state.paginated])
+
   return (
     <div className={`app ${state.split.toLowerCase()}`}>
       <Toolbar state={state} dispatch={dispatch} />
