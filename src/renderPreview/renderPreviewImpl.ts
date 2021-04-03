@@ -197,7 +197,7 @@ export const renderPaged = async (doc: Doc, previewDiv: HTMLDivElement): Promise
     frameBody.innerHTML = content
 
     // repopulate styles
-    // injectMathCss(frameWindow) // TODO: uncomment
+    injectMathCss(frameWindow)
     if (link) {
       frameHead.appendChild( createLinkEl(link) )
     }
