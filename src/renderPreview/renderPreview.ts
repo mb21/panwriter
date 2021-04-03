@@ -5,7 +5,7 @@ import { clearPreview, initScroll } from './scrolling'
 
 let renderInProgress = false
   , needsRerender = false
-  ;
+  , stateBuffer: AppState
 
 /**
  * Converts md to html (eventually setting `state.doc.html`) and
@@ -13,32 +13,31 @@ let renderInProgress = false
  * Throttles when a render is still in progress.
  */
 export const renderPreview = (state: AppState): void => {
-  needsRerender = true;
+  needsRerender = true
   if (state.split === 'onlyEditor') {
     clearPreview()
   } else {
     renderNext(state)
   }
-};
+}
 
 /**
  * buffers the latest text change and renders when previous rendering is done
  */
 const renderNext = (state: AppState) => {
+  stateBuffer = state
   if (needsRerender && !renderInProgress) {
-    renderInProgress = true;
+    renderInProgress = true
     render(state)
-      .catch( function(e) {
-        console.warn('renderer crashed', e.message, e.stack);
-      })
+      .catch(e => console.warn('renderer crashed:', e.message, e.stack))
       .then(contentWindow => {
-        renderInProgress = false;
+        renderInProgress = false
         if (contentWindow) {
-          initScroll(contentWindow, state.paginated);
+          initScroll(contentWindow, state.paginated)
         }
-        renderNext(state);
-      });
-    needsRerender = false;
+        renderNext(stateBuffer)
+      })
+    needsRerender = false
   }
 }
 
