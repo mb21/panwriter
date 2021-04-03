@@ -2,7 +2,6 @@ import { Doc } from '../appState/AppState'
 import { getCss } from './templates/getCss'
 
 let singleFrame: HTMLIFrameElement | undefined
-  , singleFrameLinkEl: HTMLLinkElement | undefined
   , frame1: HTMLIFrameElement | undefined
   , frame2: HTMLIFrameElement | undefined
   ;
@@ -83,10 +82,6 @@ const setupSwapFrames = async (target: HTMLElement) => {
     singleFrame.remove();
     singleFrame = undefined
   }
-  if (singleFrameLinkEl) {
-    singleFrameLinkEl.remove();
-    singleFrameLinkEl = undefined;
-  }
   return [frame1, frame2] as const
 }
 
@@ -113,24 +108,13 @@ const renderAndSwap = async (
 
 export const renderPlain = async (doc: Doc, previewDiv: HTMLDivElement): Promise<Window> => {
   const { contentWindow } = await setupSingleFrame(previewDiv);
-  const [cssStr, link, linkIsChanged] = await getCss(doc)
-      , content = [
-          '<style>', cssStr, '</style>'
+  const content = [
+          '<style>', getCss(doc), '</style>'
         , doc.meta['header-includes']
         , doc.html
         ].join('')
-  if (linkIsChanged && singleFrameLinkEl) {
-    singleFrameLinkEl.remove()
-    singleFrameLinkEl = undefined;
-  }
-
   if (!contentWindow) {
     throw Error('contentWindow was undefined in renderPlain')
-  }
-
-  if (singleFrameLinkEl === undefined && link) {
-    singleFrameLinkEl = createLinkEl(link)
-    contentWindow.document.head.appendChild(singleFrameLinkEl)
   }
   contentWindow.document.body.innerHTML = content
   return contentWindow
@@ -167,7 +151,7 @@ const pagedjsStyleEl = createStyleEl(`
 export const renderPaged = async (doc: Doc, previewDiv: HTMLDivElement): Promise<Window> => {
   return renderAndSwap(previewDiv, async frameWindow => {
 
-    const [cssStr, link] = await getCss(doc)
+    const cssStr     = getCss(doc)
         , metaHtml   = doc.meta['header-includes']
         , content    = doc.html
         , frameHead  = frameWindow.document.head
@@ -182,9 +166,6 @@ export const renderPaged = async (doc: Doc, previewDiv: HTMLDivElement): Promise
 
     // repopulate styles
     injectMathCss(frameWindow)
-    if (link) {
-      frameHead.appendChild( createLinkEl(link) )
-    }
     if (typeof metaHtml === 'string') {
       frameHead.insertAdjacentHTML('beforeend', metaHtml)
     }

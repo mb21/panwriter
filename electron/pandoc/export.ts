@@ -15,7 +15,9 @@ interface ExportOptions {
 
 type Out = any // TODO
 
-// var previousExportConfig;
+// var previousExportConfig; TODO
+
+export const dataDir = [app.getPath('appData'), 'PanWriterUserData', ''].join(sep)
 
 export const fileExportDialog = async (win: BrowserWindow, doc: Doc) => {
   const spawnOpts: SpawnOptionsWithoutStdio = {}
@@ -233,14 +235,9 @@ const defaultMeta = async (type: string): Promise<[Meta, string[]]> => {
 
 // reads file from data directory, throws exception when not found
 const readDataDirFile = async (type: string, suffix: string) => {
-  const fileName = getDataDirFileName(type, suffix);
-  const str = await promisify(readFile)(fileName, 'utf8');
+  const fileName = dataDir + type + suffix
+  const str = await promisify(readFile)(fileName, 'utf8')
   return [str, fileName]
-}
-
-const getDataDirFileName = (type: string, suffix: string) => {
-  const dataDir = [app.getPath('appData'), 'PanWriterUserData', ''].join(sep)
-  return dataDir + type + suffix;
 }
 
 // constructs commandline arguments from object
