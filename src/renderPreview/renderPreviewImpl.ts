@@ -1,24 +1,11 @@
 import { Doc } from '../appState/AppState'
 import { getCss } from './templates/getCss'
-//@ts-ignore
-import dirname from 'path-dirname'
 
 let singleFrame: HTMLIFrameElement | undefined
   , singleFrameLinkEl: HTMLLinkElement | undefined
   , frame1: HTMLIFrameElement | undefined
   , frame2: HTMLIFrameElement | undefined
   ;
-
-/** injects a HTML `<base>` tag to mkae relative image URLs etc. work */
-const injectBaseTag = (contentWindow: Window | null, filePath?: string) => {
-  if (!contentWindow || !filePath || contentWindow.document.getElementsByTagName('base').length > 0) {
-    return
-  }
-  const cwd = dirname(filePath)
-  const base = document.createElement('base')
-  base.setAttribute('href', `file://${cwd}/`)
-  contentWindow.document.head.append(base)
-}
 
 const injectMathCss = (contentWindow: Window) =>
   [ './katex/katex.min.css', './katex/texmath.css'].forEach(href =>
@@ -87,12 +74,10 @@ async function setupSingleFrame(target: HTMLElement) {
   return singleFrame
 }
 
-const setupSwapFrames = async (target: HTMLElement, filePath?: string) => {
+const setupSwapFrames = async (target: HTMLElement) => {
   if (!frame1 || !frame2) {
     frame1 = await insertFrame('previewFramePaged.html', target, false)
     frame2 = await insertFrame('previewFramePaged.html', target, false)
-    injectBaseTag(frame1.contentWindow, filePath)
-    injectBaseTag(frame2.contentWindow, filePath)
   }
   if (singleFrame) {
     singleFrame.remove();
@@ -107,10 +92,9 @@ const setupSwapFrames = async (target: HTMLElement, filePath?: string) => {
 
 const renderAndSwap = async (
   previewDiv: HTMLDivElement
-, filePath: string | undefined
 , renderFn: (w: Window) => Promise<Window>
 ): Promise<Window> => {
-  const [f1, f2] = await setupSwapFrames(previewDiv, filePath)
+  const [f1, f2] = await setupSwapFrames(previewDiv)
   if (!f1.contentWindow) {
     throw Error('f1.contentWindow was null in renderAndSwap')
   }
@@ -143,8 +127,6 @@ export const renderPlain = async (doc: Doc, previewDiv: HTMLDivElement): Promise
   if (!contentWindow) {
     throw Error('contentWindow was undefined in renderPlain')
   }
-
-  injectBaseTag(contentWindow, doc.filePath)
 
   if (singleFrameLinkEl === undefined && link) {
     singleFrameLinkEl = createLinkEl(link)
@@ -183,7 +165,7 @@ const pagedjsStyleEl = createStyleEl(`
 `);
 
 export const renderPaged = async (doc: Doc, previewDiv: HTMLDivElement): Promise<Window> => {
-  return renderAndSwap(previewDiv, doc.filePath, async frameWindow => {
+  return renderAndSwap(previewDiv, async frameWindow => {
 
     const [cssStr, link] = await getCss(doc)
         , metaHtml   = doc.meta['header-includes']

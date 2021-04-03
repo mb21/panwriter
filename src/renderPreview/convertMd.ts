@@ -1,13 +1,28 @@
 
 //@ts-ignore
 import markdownItPandoc from 'markdown-it-pandoc'
+//@ts-ignore
+import dirname from 'path-dirname'
 import { Doc } from '../appState/AppState'
 
 const mdItPandoc = markdownItPandoc()
-
+const defaultImageRender = mdItPandoc.renderer.rules.image
 
 // takes a markdown str, renders it to preview and to Document.setHTML
 export const convertMd = (doc: Doc): string => {
+
+  if (doc.filePath) {
+    // rewrite image src attributes
+    mdItPandoc.renderer.rules.image = (tokens: any[], idx: number, options: unknown, env: unknown, self: unknown) => {
+      const token = tokens[idx]
+      const aIndex = token.attrIndex('src')
+      const srcTuple = token.attrs[aIndex]
+      const src = srcTuple[1]
+      srcTuple[1] = `file://${dirname(doc.filePath)}/${src}`
+      return defaultImageRender(tokens, idx, options, env, self)
+    }
+  }
+
   return mdItPandoc
     .use( mdItSourceMapPlugin(1 + getNrOfYamlLines(doc.yaml)) )
     .render(doc.bodyMd)
