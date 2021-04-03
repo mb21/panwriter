@@ -57,6 +57,10 @@ div.CodeMirror {
   border-left: 1px solid var(--cursor-color);
 }
 
+.CodeMirror div.CodeMirror-selected {
+  background: var(--input-border-color);
+}
+
 .cm-s-paper .cm-keyword      { color: var(--highlight-font-color); }
 .cm-s-paper .cm-atom         { color: var(--highlight-font-color); }
 .cm-s-paper .cm-variable     { color: var(--font-color); }
