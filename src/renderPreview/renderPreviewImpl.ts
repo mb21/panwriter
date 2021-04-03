@@ -207,6 +207,18 @@ export const renderPaged = async (doc: Doc, previewDiv: HTMLDivElement): Promise
     frameHead.appendChild( createStyleEl(cssStr) )
     frameHead.appendChild(pagedjsStyleEl);
 
+    (frameWindow as any).PagedConfig = {
+      auto: false
+    };
+
+    await new Promise(resolve => {
+      const s = document.createElement('script')
+      s.src = './paged.polyfill.js'
+      s.async = false
+      s.addEventListener('load', resolve)
+      frameBody.appendChild(s)
+    })
+
     // wait for images etc. to have loaded
     await new Promise(resolve => {
       if (frameWindow.document.readyState === 'complete') {
