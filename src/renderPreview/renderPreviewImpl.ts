@@ -99,14 +99,14 @@ const renderAndSwap = async (
     throw Error('f1.contentWindow was null in renderAndSwap')
   }
   return renderFn(f1.contentWindow).then(() => {
-    if (!f2.contentWindow) {
-      throw Error('f2.contentWindow was null in renderAndSwap')
+    if (!f1.contentWindow || !f2.contentWindow) {
+      throw Error(`contentWindow was null in renderAndSwap ${f1.contentWindow} ${f2.contentWindow}`)
     }
     f1.contentWindow?.scrollTo(0, f2.contentWindow.scrollY || 0)
     f1.style.top = '0'
     f2.style.top = '-1000vh'; // `display: none` would break pagedjs
     [frame2, frame1] = [frame1, frame2]
-    return f2.contentWindow
+    return f1.contentWindow
   })
 }
 

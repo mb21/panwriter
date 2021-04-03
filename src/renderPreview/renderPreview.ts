@@ -34,7 +34,7 @@ const renderNext = (state: AppState) => {
       .then(contentWindow => {
         renderInProgress = false;
         if (contentWindow) {
-          initScroll(contentWindow);
+          initScroll(contentWindow, state.paginated);
         }
         renderNext(state);
       });

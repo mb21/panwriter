@@ -8,6 +8,7 @@ let editor: Editor
   , reverseScrollMap: number[] | undefined
   , frameWindow: Window | undefined
   , scrollSyncTimeout: NodeJS.Timeout | undefined // shared between scrollPreview and scrollEditorFn
+  , paginated = false
 
 export const printPreview = () => {
   if (frameWindow) {
@@ -17,7 +18,8 @@ export const printPreview = () => {
 
 window.ipcApi?.on.printFile(printPreview)
 
-export const initScroll = (contentWindow: Window) => {
+export const initScroll = (contentWindow: Window, isPaginated: boolean) => {
+  paginated = isPaginated
   resetScrollMaps();
   frameWindow = contentWindow
   frameWindow.addEventListener('resize', resetScrollMaps);
@@ -100,7 +102,6 @@ const buildScrollMap = (editor: Editor, editorOffset: number) => {
     lineOffsets.push(offsetSum);
   });
 
-  const paginated = false // TODO
   var lastEl: Element | undefined = undefined
     , selector = paginated ? '.pagedjs_page_content [data-source-line]'
                            : 'body > [data-source-line]'
