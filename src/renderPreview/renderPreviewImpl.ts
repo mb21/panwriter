@@ -55,6 +55,8 @@ async function insertFrame(
 ): Promise<HTMLIFrameElement> {
   const frame = document.createElement('iframe')
   if (noScriptsInFrame) {
+    // adding a sandbox attribute prevents script execution. but we still set the frame to have same-origin as parent,
+    // in order to write the text to be previewed into the frame directly instead of with window.postMessage
     frame.setAttribute('sandbox', 'allow-same-origin')
   }
   frame.setAttribute('src', src)
