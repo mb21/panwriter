@@ -3,7 +3,7 @@ import * as path from 'path'
 import * as fs from 'fs'
 
 import * as ipc from './ipc'
-import { fileExportDialog, fileExportHTMLToClipboard, fileExportToClipboard } from './pandoc/export'
+import { fileExportDialog, fileExportHTMLToClipboard, fileExportLikePrevious, fileExportToClipboard } from './pandoc/export'
 import { Doc } from '../src/appState/AppState'
 import { importFile } from './pandoc/import'
 import { saveFile, openFile } from './file'
@@ -292,13 +292,11 @@ const setMenu = async (aWindowIsOpen=true, useRecentFilesCache=false) => {
         , click: () => invokeWithWinAndDoc(fileExportDialog)
         , enabled: aWindowIsOpen
         }
-      /*
       , { label: 'Export like previous'
         , accelerator: 'CmdOrCtrl+E'
         , click: () => invokeWithWinAndDoc(fileExportLikePrevious)
         , enabled: aWindowIsOpen
         }
-      */
       , { label: 'Export to clipboard'
         , accelerator: 'CmdOrCtrl+Alt+E'
         , click: () => invokeWithWinAndDoc(fileExportToClipboard)

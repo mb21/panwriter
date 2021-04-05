@@ -21,11 +21,13 @@ interface Out {
   [key: string]: undefined | JSON;
 }
 
-// var previousExportConfig; TODO
+declare class CustomBrowserWindow extends Electron.BrowserWindow {
+  previousExportConfig?: ExportOptions;
+}
 
 export const dataDir = [app.getPath('appData'), 'PanWriterUserData', ''].join(sep)
 
-export const fileExportDialog = async (win: BrowserWindow, doc: Doc) => {
+export const fileExportDialog = async (win: CustomBrowserWindow, doc: Doc) => {
   const spawnOpts: SpawnOptionsWithoutStdio = {}
   const inputPath = doc.filePath
 
@@ -48,20 +50,17 @@ export const fileExportDialog = async (win: BrowserWindow, doc: Doc) => {
     , spawnOpts
     };
     await fileExport(win, doc, exp)
-    // previousExportConfig = exp;
+    win.previousExportConfig = exp
   }
-};
+}
 
-
-/*
-ipcRenderer.on('fileExportLikePrevious', () => {
-  if (previousExportConfig) {
-    fileExport(win, doc, previousExportConfig);
+export const fileExportLikePrevious = (win: CustomBrowserWindow, doc: Doc) => {
+  if (win.previousExportConfig) {
+    fileExport(win, doc, win.previousExportConfig)
   } else {
-    fileExportDialog();
+    fileExportDialog(win, doc)
   }
-});
-*/
+}
 
 export const fileExportToClipboard = (win: BrowserWindow, doc: Doc) => {
   const { meta }  = doc
