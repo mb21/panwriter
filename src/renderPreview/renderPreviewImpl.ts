@@ -42,8 +42,9 @@ async function insertFrame(
   const frame = document.createElement('iframe')
   if (noScriptsInFrame) {
     // adding a sandbox attribute prevents script execution. but we still set the frame to have same-origin as parent,
-    // in order to write the text to be previewed into the frame directly instead of with window.postMessage
-    frame.setAttribute('sandbox', 'allow-same-origin')
+    // in order to write the text to be previewed into the frame directly instead of the slower window.postMessage.
+    // we need allow-modals for window.print()
+    frame.setAttribute('sandbox', 'allow-same-origin allow-modals')
   }
   frame.setAttribute('src', src)
   frame.setAttribute('style', 'width: 100%; height: 100%;')
