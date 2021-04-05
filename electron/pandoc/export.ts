@@ -13,7 +13,13 @@ interface ExportOptions {
   toClipboardHTML?: boolean;
 }
 
-type Out = any // TODO
+interface Out {
+  metadata?: Meta;
+  output?: string;
+  to?: string;
+  standalone?: boolean;
+  [key: string]: undefined | JSON;
+}
 
 // var previousExportConfig; TODO
 
@@ -177,7 +183,7 @@ const mergeAndValidate = (docMeta: Meta, extMeta: Meta, outputPath?: string, toC
   } else if (toClipboardFormat) {
     toFormat = toClipboardFormat;
   } else {
-    return
+    return {}
   }
 
   const jsonToObj = (m: JSON): Meta =>
@@ -248,10 +254,12 @@ const toArgs = (out: Out) => {
     const val = out[opt];
     if ( Array.isArray(val) ) {
       val.forEach(v => {
-        args.push('--' + opt);
-        args.push(v);
+        if (typeof v === 'string') {
+          args.push('--' + opt);
+          args.push(v);
+        }
       });
-    } else if (typeof val === 'object') {
+    } else if (val && typeof val === 'object') {
       Object.keys(val).forEach(k => {
         args.push('--' + opt);
         args.push(k + '=' + val[k]);
