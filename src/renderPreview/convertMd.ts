@@ -1,4 +1,3 @@
-
 //@ts-ignore
 import markdownItPandoc from 'markdown-it-pandoc'
 //@ts-ignore
@@ -8,7 +7,9 @@ import { Doc } from '../appState/AppState'
 const mdItPandoc = markdownItPandoc()
 const defaultImageRender = mdItPandoc.renderer.rules.image
 
-// takes a markdown str, renders it to preview and to Document.setHTML
+/**
+ * converts the markdown in `doc` to HTML
+ */
 export const convertMd = (doc: Doc): string => {
 
   if (doc.filePath) {

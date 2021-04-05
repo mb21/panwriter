@@ -1,4 +1,4 @@
-import { Meta } from "../../appState/AppState";
+import { Meta } from '../../appState/AppState'
 
 type Template = Array<string | { varName: string; default: string }>;
 
