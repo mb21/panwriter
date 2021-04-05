@@ -1,6 +1,6 @@
-/* pandoc's default CSS with nested if blocks etc. removed
- * and `mainfont` and `monobackgroundcolor` defaults changed
- * and dark mode added
+/* pandoc's default CSS with nested if blocks etc. removed (see panwriter's templates.ts),
+ * `mainfont` and `monobackgroundcolor` defaults changed,
+ * as well as dark-mode and -webkit-print-color-adjust added.
  */
 
 html {
@@ -154,6 +154,11 @@ header {
     border-color: #d3d3d3;
   }
 }
+* {
+  /* force printing of CSS backgrounds like we use e.g. for code blocks */
+  -webkit-print-color-adjust: exact;
+}
+
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
 span.underline{text-decoration: underline;}
