@@ -1,4 +1,4 @@
-<img src="build/icons/icon.png" align="right" width="128">
+<img src="icons/icon.png" align="right" width="128">
 
 # PanWriter
 
@@ -23,7 +23,7 @@ Select `File -> 'Print / PDF'` and `PDF -> 'Save as PDF'` in the print dialog (e
 
 This will export exactly what’s shown in the preview, and not use pandoc at all.
 
-You can change the styling of the preview and immediately see the changes. (You can later save your CSS as a theme, see [Document types](#document-types--themes) below.)
+You can change the styling of the preview and immediately see the changes.
 
 ![](screenshot-css.png)
 
@@ -83,13 +83,11 @@ If the directory does not exist, you can create it.
 
 ### Default CSS and YAML
 
-PanWriter will look for a `default.css` file in the user data directory, to load CSS for the preview. If that file is not found, it will use sensible defaults.
-
 If you put a `default.yaml` file in the data directory, PanWriter will merge this with the YAML in your input file (to determine the command-line arguments to call pandoc with) and add the `--metadata-file` option. The YAML should be in the same format as above.
 
 ### Document types / themes
 
-You can e.g. put `type: letter` in the YAML of your input document. In that case, PanWriter will look for `letter.yaml` and `letter.css` instead of `default.yaml` and `default.css` in the user data directory.
+You can e.g. put `type: letter` in the YAML of your input document. In that case, PanWriter will look for `letter.yaml` instead of `default.yaml` in the user data directory.
 
 ### Markdown syntax
 

@@ -1,0 +1,124 @@
+:root {
+  /* about system-font: https://www.smashingmagazine.com/2015/11/using-system-ui-fonts-practical-guide/ */
+  --system-font: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  --mono-font: Menlo, Monaco, 'Lucida Console', Consolas, monospace;
+
+  --background-color: rgb(247, 247, 247);
+  --overlay-background-color: rgb(247, 247, 247);
+  --underlay-background-color: rgb(128, 128, 128);
+  --overlay-transparent-background-color: rgba(230, 230, 230, 0.749);
+  --button-active-color: rgb(236, 236, 236);
+  --button-active-onhover-color: rgb(211, 211, 211);
+  --font-color: rgb(26, 26, 26);
+  --highlight-font-color:rgb(136, 136, 136);
+  --filename-font-color: rgb(101, 101, 101);
+  --edited-font-color: rgb(136, 136, 136);
+  --cursor-color: black;
+  --input-background-color: white;
+  --input-border-color: rgb(233, 233, 233);
+  --input-border-bottom-color: rgb(199, 199, 199);
+  --separator-color: rgb(211, 211, 211);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background-color: rgb(27, 27, 27);
+    --overlay-background-color: rgb(44, 44, 44);
+    --underlay-background-color: rgb(128, 128, 128);  /* TODO */
+    --overlay-transparent-background-color: rgba(44, 44, 44, 0.749);
+    --button-active-color: rgb(62, 62, 62);
+    --button-active-onhover-color: rgb(82, 82, 82);
+    --font-color: rgb(211, 211, 211);
+    --highlight-font-color:rgb(112, 112, 112);
+    --filename-font-color: rgb(196, 196, 196);
+    --edited-font-color: rgb(102, 102, 102);
+    --cursor-color: white;
+    --input-background-color: rgb(45, 45, 45);
+    --input-border-color: rgb(53, 53, 53);
+    --input-border-bottom-color: rgb(76, 76, 76);
+    --separator-color: rgb(1, 1, 1);
+  }
+}
+
+html, body {
+  margin: 0;
+}
+
+button {
+  -webkit-user-select: none;
+}
+button:active, button:focus,
+input:active, input:focus {
+  outline: none;
+}
+input,
+textarea,
+select {
+  font-size: 12px;
+  font-family: var(--system-font);
+  color: var(--font-color);
+  background-color: var(--input-background-color);
+  border: 1px solid var(--input-border-color);
+  border-bottom: 1px solid var(--input-border-bottom-color);
+  padding: 3px 3px 1px 3px;
+  margin-bottom: 3px;
+}
+textarea:focus,
+select:focus {
+  outline: none;
+}
+
+.app {
+  display: flex;
+  height: 100vh;
+}
+.app > * {
+  width: 100vw;
+}
+.app.split > .editor,
+.app.split > .preview {
+  width: 50vw;
+}
+.app.onlypreview > .editor {
+  display: none;
+}
+.app.onlyeditor > .preview {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  /* small window and split view */
+  .app.split .CodeMirror {
+    font-size: 15px;
+  }
+  .app.split .CodeMirror-lines {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+}
+@media (max-width: 500px) {
+  /* even smaller window */
+  div.CodeMirror {
+    font-size: 15px;
+  }
+  div.CodeMirror-lines {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+}
+
+@media (min-width: 1000px) {
+  /* large screen */
+  .app.onlyeditor .CodeMirror {
+    font-size: 19px;
+  }
+}
+
+
+.react-codemirror2 {
+  background-color: var(--background-color);
+}
+
+/* Hide text editor when metaEditor is open */
+.metaeditor + .react-codemirror2 {
+  display: none;
+}

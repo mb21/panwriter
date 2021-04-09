@@ -1,0 +1,47 @@
+.preview {
+  overflow: hidden;
+  position: relative;
+  border-left: 1px solid var(--separator-color);
+}
+.preview.paginated > .previewDiv {
+  background-color: var(--underlay-background-color);
+}
+.preview iframe {
+  border: 0;
+  position: absolute;
+}
+.preview > button {
+  width:  36px;
+  height: 36px;
+  border-radius: 18px;
+  box-shadow: 0 1px #0000000a;
+  transition: opacity 0.2s ease-out;
+  opacity: 0;
+}
+.preview > button:active {
+  background: var(--button-active-color);
+}
+.preview:hover > button {
+  transition: opacity 0.12s ease-in;
+  opacity: 1;
+}
+.zoomBtn, .exportBtn {
+  position: absolute;
+  bottom: 10px;
+  right:  10px;
+  font-size: 27px;
+  color: var(--filename-font-color);
+  background: var(--background-color);
+  border: 0;
+  cursor: pointer;
+  line-height: 1;
+  display: block;
+}
+.zoomIn {
+  bottom: 55px;
+}
+.exportBtn {
+  bottom: 100px;
+  font-family: sans-serif;
+  font-size: 20px;
+}

@@ -1,0 +1,95 @@
+@import './codemirror.css'; /* https://github.com/codemirror/CodeMirror/blob/master/lib/codemirror.css */
+
+.CodeMirror {
+  font-family: var(--mono-font);
+  color: var(--font-color);
+  font-size: 17px;
+  line-height: 1.8em;
+}
+div.CodeMirror {
+  height: 100vh;
+  background-color: var(--background-color);
+}
+
+/* Make editor resize to fit its content
+ * see https://codemirror.net/doc/manual.html#styling
+ * and https://codemirror.net/demo/resize.html
+ */
+.CodeMirror-scroll {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+.CodeMirror-lines { /* div holding all the text lines */
+  padding: 60px 50px 50px 50px;
+  max-width: 40em;
+  margin: 0 auto;
+}
+
+.CodeMirror-sizer {
+  overflow: hidden;
+}
+
+.CodeMirror-vscrollbar:focus {
+  outline: 0;
+}
+
+.CodeMirror-dialog {
+  font-family: var(--system-font);
+  font-size: 13px;
+  width: 100%;
+  padding: 2px 50px;
+  box-sizing: border-box;
+  background: var(--overlay-transparent-background-color);
+  z-index: 10;
+  position: fixed;
+  bottom: 0;
+}
+.CodeMirror-search-field {
+  font-size: 13px;
+  width: 200px !important;
+  margin-left: 15px;
+}
+.CodeMirror-search-hint {
+  display: none;
+}
+
+.CodeMirror div.CodeMirror-cursor {
+  border-left: 1px solid var(--cursor-color);
+}
+
+.CodeMirror div.CodeMirror-selected {
+  background: var(--input-border-color);
+}
+
+.cm-s-paper .cm-keyword      { color: var(--highlight-font-color); }
+.cm-s-paper .cm-atom         { color: var(--highlight-font-color); }
+.cm-s-paper .cm-variable     { color: var(--font-color); }
+.cm-s-paper .cm-variable-2   { color: var(--font-color); }
+.cm-s-paper .cm-variable-3   { color: var(--font-color); }
+.cm-s-paper .cm-property     { color: var(--font-color); }
+.cm-s-paper .cm-operator     { color: var(--font-color); }
+.cm-s-paper .cm-comment      { color: var(--highlight-font-color); }
+.cm-s-paper .cm-meta         { color: var(--highlight-font-color); }
+.cm-s-paper .cm-qualifier    { color: var(--highlight-font-color); }
+.cm-s-paper .cm-builtin      { color: var(--highlight-font-color); }
+.cm-s-paper .cm-quote        { color: var(--highlight-font-color); }
+.cm-s-paper .cm-hr           { color: var(--highlight-font-color); }
+.cm-s-paper .cm-def          { color: var(--highlight-font-color); }
+.cm-s-paper .cm-image-marker { color: var(--highlight-font-color); }
+
+/* HTML stuff
+.cm-s-paper .cm-bracket    { color: var(--highlight-font-color); }
+.cm-s-paper .cm-tag        { color: var(--highlight-font-color); }
+.cm-s-paper .cm-attribute  { color: var(--highlight-font-color); }
+.cm-s-paper .cm-string     { color: var(--highlight-font-color); }
+.cm-s-paper .cm-string-2   { color: var(--highlight-font-color); }
+*/
+
+.cm-s-paper .cm-link {
+  color: var(--highlight-font-color);
+  text-decoration: none;
+}
+.cm-s-paper .cm-url {
+  color: var(--highlight-font-color);
+  text-decoration: underline;
+}
