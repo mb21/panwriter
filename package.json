@@ -19,7 +19,8 @@
     "electron:build": "yarn build && yarn run electron:tsc",
     "dist": "yarn run electron:build && electron-builder",
     "dist-all": "electron-builder -mlw",
-    "release": "electron-builder -mlw --publish always"
+    "release": "electron-builder -mlw --publish always",
+    "website:build": "BUILD_PATH=try PUBLIC_URL='/try' INLINE_RUNTIME_CHUNK=false react-scripts build"
   },
   "repository": "https://github.com/mb21/panwriter",
   "keywords": [
@@ -123,7 +124,7 @@
     "react-codemirror2": "^7.2.1",
     "react-color": "^2.19.3",
     "react-dom": "^17.0.1",
-    "react-scripts": "4.0.1"
+    "react-scripts": "4.0.2"
   },
   "devDependencies": {
     "@types/codemirror": "^0.0.102",

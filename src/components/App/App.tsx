@@ -10,6 +10,9 @@ import { Toolbar }      from '../Toolbar/Toolbar'
 import { IpcApi } from '../../../electron/preload'
 import { renderPreview } from '../../renderPreview/renderPreview'
 
+// eslint-disable-next-line import/no-webpack-loader-syntax
+import websiteText from '!!raw-loader!../../website.md'
+
 import './App.css'
 
 declare global {
@@ -28,6 +31,13 @@ export const App = () => {
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.doc, state.split, state.paginated])
+
+  useEffect(() => {
+    if (!window.ipcApi) {
+      // website-mode
+      dispatch({ type: 'setSplitAndRender', split: 'split' })
+    }
+  }, [])
 
   return (
     <div className={`app ${state.split.toLowerCase()}`}>
@@ -48,7 +58,7 @@ export const App = () => {
 
 const initialState: AppState = {
   doc: {
-    md: ''
+    md: window.ipcApi ? '' : websiteText
   , yaml: ''
   , bodyMd: ''
   , meta: {}

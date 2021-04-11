@@ -28,7 +28,11 @@ const interceptClicks = (contentWindow: Window, e: MouseEvent) => {
       }
     } else if (hrefStart === "http://" || hrefStart === "https:/") {
       // external link
-      window.ipcApi?.send.openLink(href)
+      if (window.ipcApi) {
+        window.ipcApi.send.openLink(href)
+      } else {
+        window.open(href, '_blank')
+      }
     }
   }
   return false
