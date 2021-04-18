@@ -100,7 +100,7 @@ const fileExport = async (win: BrowserWindow, doc: Doc, exp: ExportOptions) => {
 
   const cmd  = 'pandoc'
   const args = fileArg.concat( toArgs(out) )
-  const cmdDebug = cmd + ' ' + args.join(' ')
+  const cmdDebug = cmd + ' ' + args.map(a => a.includes(' ') ? `'${a}'` : a).join(' ')
   let receivedError = false
 
   try {
