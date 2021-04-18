@@ -19,7 +19,9 @@ export const convertMd = (doc: Doc): string => {
       const aIndex = token.attrIndex('src')
       const srcTuple = token.attrs[aIndex]
       const src = srcTuple[1]
-      srcTuple[1] = `file://${dirname(doc.filePath)}/${src}`
+      if (src.indexOf('http://') === -1 && src.indexOf('https://') === -1) {
+        srcTuple[1] = `file://${dirname(doc.filePath)}/${src}`
+      }
       return defaultImageRender(tokens, idx, options, env, self)
     }
   }
