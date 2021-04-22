@@ -95,7 +95,6 @@
       },
       "category": "Utility",
       "target": [
-        "snap",
         "AppImage"
       ]
     }
