@@ -152,41 +152,54 @@ const createWindow = async (filePath?: string, toImport=false, wasCreatedOnStart
   });
 }
 
-// macOS only, on file-drag etc.
-// see https://electronjs.org/docs/all#event-open-file-macos
-// and https://www.electron.build/configuration/configuration#PlatformSpecificBuildOptions-fileAssociations
-app.on('open-file', (e, filePath) => {
-  e.preventDefault();
-  const toImport = mdExtensions.indexOf( path.extname(filePath).substr(1) ) < 0;
-  app.whenReady().then(() => createWindow(filePath, toImport));
-})
+(() => {
+  let initialFilePath: string | undefined = undefined
+  let initialFileIsToImport = false
+  let appIsReady = false
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-app.on('ready', () => {
-  const args = process.argv.slice(1)
-  if (args.length > 0 && app.isPackaged) {
-    args.forEach(arg => {
-      fs.realpath(arg, (err, fileName) => {
-        if (!err) {
-          createWindow(fileName);
-        }
+  // macOS only event (on file-drag etc.), fires before 'ready' event
+  // see https://github.com/electron/electron/blob/master/docs/api/app.md#event-open-file-macos
+  // and https://www.electron.build/configuration/configuration#PlatformSpecificBuildOptions-fileAssociations
+  app.on('open-file', (e, filePath) => {
+    e.preventDefault()
+    const toImport = mdExtensions.indexOf( path.extname(filePath).substr(1) ) < 0
+    if (appIsReady) {
+      createWindow(filePath, toImport, false)
+    } else {
+      initialFilePath = filePath
+      initialFileIsToImport = toImport
+    }
+  })
+
+  // This method will be called when Electron has finished
+  // initialization and is ready to create browser windows.
+  // Some APIs can only be used after this event occurs.
+  app.on('ready', () => {
+    appIsReady = true
+    const args = process.argv.slice(1)
+    if (args.length > 0 && app.isPackaged) {
+      args.forEach(arg => {
+        fs.realpath(arg, (err, fileName) => {
+          if (!err) {
+            createWindow(fileName)
+          }
+        });
       });
-    });
-  } else if (windows.length === 0) {
-    createWindow(undefined, false, true);
-  }
-  autoUpdater.checkForUpdatesAndNotify();
-})
+    } else if (windows.length === 0) {
+      const emptyStartupWindow = !(initialFilePath || initialFileIsToImport)
+      createWindow(initialFilePath, initialFileIsToImport, emptyStartupWindow)
+    }
+    autoUpdater.checkForUpdatesAndNotify()
+  })
+})()
 
 app.on('before-quit', e => {
   appWillQuit = true
-});
+})
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
-  // On OS X it is common for applications and their menu bar
+  // On macOS it is common for applications and their menu bar
   // to stay active until the user quits explicitly with Cmd + Q
   if (process.platform === 'darwin') {
     setMenu(false, false);
@@ -196,7 +209,7 @@ app.on('window-all-closed', () => {
 })
 
 app.on('activate', () => {
-  // On OS X it's common to re-create a window in the app when the
+  // On macOS it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   if (windows.length === 0) {
     createWindow()
