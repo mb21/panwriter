@@ -34,7 +34,7 @@ export const appStateReducer = (state: AppState, action: Action): AppState => {
     case 'setSplitAndRender': {
       const { split } = action
       let { doc } = state
-      if (split !== 'onlyEditor') {
+      if (split !== 'onlyEditor' && Object.keys(doc.meta).length === 0) {
         // for the case when the preview is shown for the first time
         doc = { ...doc, ...parseYaml(doc.md) }
       }
