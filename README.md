@@ -85,6 +85,17 @@ If the directory does not exist, you can create it.
 
 If you put a `default.yaml` file in the data directory, PanWriter will merge this with the YAML in your input file (to determine the command-line arguments to call pandoc with) and add the `--metadata-file` option. The YAML should be in the same format as above.
 
+To include CSS in your `default.yaml`, you can also use the same format as in-document metadata, for example:
+
+```yaml
+header-includes: |-
+  <style>
+  blockquote {
+    font-style: italic;
+  }
+  </style>
+```
+
 ### Document types / themes
 
 You can e.g. put `type: letter` in the YAML of your input document. In that case, PanWriter will look for `letter.yaml` instead of `default.yaml` in the user data directory.

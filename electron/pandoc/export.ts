@@ -1,10 +1,8 @@
 import { spawn, SpawnOptionsWithoutStdio } from 'child_process'
-import { app, BrowserWindow, clipboard, dialog } from 'electron'
-import { readFile } from 'fs'
-import * as jsYaml from 'js-yaml'
-import { basename, dirname, extname, sep } from 'path'
-import { promisify } from 'util'
+import { BrowserWindow, clipboard, dialog } from 'electron'
+import { basename, dirname, extname } from 'path'
 import { Doc, JSON, Meta } from '../../src/appState/AppState'
+import { readDataDirFile } from '../dataDir';
 
 interface ExportOptions {
   outputPath?: string;
@@ -24,8 +22,6 @@ interface Out {
 declare class CustomBrowserWindow extends Electron.BrowserWindow {
   previousExportConfig?: ExportOptions;
 }
-
-export const dataDir = [app.getPath('appData'), 'PanWriterUserData', ''].join(sep)
 
 export const fileExportDialog = async (win: CustomBrowserWindow, doc: Doc) => {
   const spawnOpts: SpawnOptionsWithoutStdio = {}
@@ -95,11 +91,11 @@ const fileExport = async (win: BrowserWindow, doc: Doc, exp: ExportOptions) => {
   const type = typeof docMeta.type === 'string'
     ? docMeta.type
     : 'default'
-  const [extMeta, fileArg] = await defaultMeta(type)
-  const out = mergeAndValidate(docMeta, extMeta, exp.outputPath, exp.toClipboardFormat)
+  const [extMeta, fileName] = await readDataDirFile(type + '.yaml')
+  const out = mergeAndValidate(docMeta, extMeta || {}, exp.outputPath, exp.toClipboardFormat)
 
   const cmd  = 'pandoc'
-  const args = fileArg.concat( toArgs(out) )
+  const args = (extMeta ? ['--metadata-file', fileName] : []).concat( toArgs(out) )
   const cmdDebug = cmd + ' ' + args.map(a => a.includes(' ') ? `'${a}'` : a).join(' ')
   let receivedError = false
 
@@ -222,27 +218,6 @@ const mergeAndValidate = (docMeta: Meta, extMeta: Meta, outputPath?: string, toC
   }
 
   return out;
-}
-
-/**
- * reads the right default yaml file
- */
-const defaultMeta = async (type: string): Promise<[Meta, string[]]> => {
-  try {
-    const [str, fileName] = await readDataDirFile(type, '.yaml');
-    const yaml = jsYaml.safeLoad(str)
-    return [ typeof yaml === 'object' ? (yaml as Meta) : {}, ['--metadata-file', fileName] ]
-  } catch(e) {
-    console.warn("Error loading or parsing YAML file." + e.message);
-    return [ {}, [] ];
-  }
-}
-
-// reads file from data directory, throws exception when not found
-const readDataDirFile = async (type: string, suffix: string) => {
-  const fileName = dataDir + type + suffix
-  const str = await promisify(readFile)(fileName, 'utf8')
-  return [str, fileName]
 }
 
 // constructs commandline arguments from object

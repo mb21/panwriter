@@ -114,7 +114,7 @@ const renderAndSwap = async (
 export const renderPlain = async (doc: Doc, previewDiv: HTMLDivElement): Promise<Window> => {
   const { contentWindow } = await setupSingleFrame(previewDiv);
   const content = [
-          '<style>', getCss(doc), '</style>'
+          '<style>', await getCss(doc), '</style>'
         , doc.meta['header-includes']
         , doc.html
         ].join('')
@@ -156,7 +156,7 @@ const pagedjsStyleEl = createStyleEl(`
 export const renderPaged = async (doc: Doc, previewDiv: HTMLDivElement): Promise<Window> => {
   return renderAndSwap(previewDiv, async frameWindow => {
 
-    const cssStr     = getCss(doc)
+    const cssStr     = await getCss(doc)
         , metaHtml   = doc.meta['header-includes']
         , content    = doc.html
         , frameHead  = frameWindow.document.head

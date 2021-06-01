@@ -1,7 +1,7 @@
 import { Fragment } from 'react'
 import { AppState }    from '../../appState/AppState'
 import { Action }   from '../../appState/Action'
-import { defaultVars } from '../../renderPreview/templates/getCss'
+import { defaultVars, stripSurroundingStyleTags } from '../../renderPreview/templates/getCss'
 import { ColorPicker } from '../ColorPicker/ColorPicker'
 
 import back from './back.svg'
@@ -164,7 +164,7 @@ const layoutKvs: Kv[] = [{
   name: 'header-includes'
 , label: 'Include CSS'
 , type: 'textarea'
-, onLoad: s => s.startsWith('<style>\n') && s.endsWith('\n</style>') ? s.slice(8, -9) : s
+, onLoad: stripSurroundingStyleTags
 , onDone: s => `<style>\n${s}\n</style>`
 , placeholder: `blockquote {
   font-style: italic;

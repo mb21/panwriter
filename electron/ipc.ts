@@ -1,5 +1,6 @@
 import { BrowserWindow, ipcMain, shell } from 'electron'
 import { Doc } from '../src/appState/AppState'
+import { readDataDirFile } from './dataDir'
 import { Message } from './preload'
 
 // this file contains the IPC functionality of the main process.
@@ -24,6 +25,11 @@ export const init = () => {
 
   ipcMain.on('openLink', (_event, link: string) => {
     shell.openExternal(link)
+  })
+
+  ipcMain.handle('readDataDirFile', async (_event, fileName: string) => {
+    const [ meta ] = await readDataDirFile(fileName)
+    return meta
   })
 }
 

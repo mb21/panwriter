@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron'
-import { AppState, Doc, ViewSplit } from '../src/appState/AppState'
+import { AppState, Doc, Meta, ViewSplit } from '../src/appState/AppState'
 import { Action } from '../src/appState/Action'
 
 export type IpcApi = typeof ipcApi
@@ -33,6 +33,9 @@ ipcRenderer.on('dispatch', (_e, action: Message) => {
   }
 })
 
+const readDataDirFile = async (fileName: string): Promise<Meta | undefined> =>
+  ipcRenderer.invoke('readDataDirFile', fileName)
+
 const ipcApi = {
   setStateAndDispatch: (s: AppState, d: Disp) => {
     state = s
@@ -54,6 +57,7 @@ const ipcApi = {
   , printFile:        (cb: () => void)          => ipcRenderer.on('printFile',        cb)
   , sendPlatform:     (cb: (p: string) => void) => ipcRenderer.once('sendPlatform',   (_e, p) => cb(p))
   }
+, readDataDirFile
 }
 
 contextBridge.exposeInMainWorld('ipcApi', ipcApi)
