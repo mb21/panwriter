@@ -127,23 +127,19 @@ Unfortunately, still no browser fully implements the CSS specs for paged media (
 
 ## Develop
 
-Install [yarn](https://yarnpkg.com/), then:
+Install git and [yarn](https://yarnpkg.com/), then:
 
-    ## Download source code
     git clone git@github.com:mb21/panwriter.git
     cd panwriter
-
-    ## Install npm dependencies, PureScript compiler, etc
     yarn install
 
-    ## Build the PureScript project
-    yarn build
-
     ## To run the app in development mode:
-    yarn start
+    yarn run electron:dev
 
     ## To build distributable app package (goes to ./dist):
     yarn dist
+
+Check out the `package.json` for more scripts to run.
 
 ### TODOs
 
