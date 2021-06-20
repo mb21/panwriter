@@ -9,7 +9,7 @@ export const defaultVars = extractDefaultVars(template)
 
 let headerIncludes = ''
 let docType: string | undefined
-const getHeaderIncludesCss = async (doc: Doc): Promise<string> => {
+const headerIncludesCssFromDataDirFile = async (doc: Doc): Promise<string> => {
   let newDocType = doc.meta.type
   if (typeof newDocType !== 'string') {
     newDocType = 'default'
@@ -27,7 +27,7 @@ const getHeaderIncludesCss = async (doc: Doc): Promise<string> => {
 }
 
 export const getCss = async (doc: Doc): Promise<string> =>
-  interpolateTemplate(template, doc.meta) + (await getHeaderIncludesCss(doc))
+  interpolateTemplate(template, doc.meta) + (await headerIncludesCssFromDataDirFile(doc))
 
 export const stripSurroundingStyleTags = (s: string): string =>
   s.startsWith('<style>\n') && s.endsWith('\n</style>') ? s.slice(8, -9) : s

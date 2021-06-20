@@ -171,10 +171,10 @@ export const renderPaged = async (doc: Doc, previewDiv: HTMLDivElement): Promise
 
     // repopulate styles
     injectMathCss(frameWindow)
+    frameHead.appendChild( createStyleEl(cssStr) )
     if (typeof metaHtml === 'string') {
       frameHead.insertAdjacentHTML('beforeend', metaHtml)
     }
-    frameHead.appendChild( createStyleEl(cssStr) )
     frameHead.appendChild(pagedjsStyleEl);
 
     (frameWindow as any).PagedConfig = {
