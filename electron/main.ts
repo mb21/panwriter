@@ -9,6 +9,7 @@ import { importFile } from './pandoc/import'
 import { saveFile, openFile } from './file'
 import { Message } from './preload'
 import { clearRecentFiles, getRecentFiles } from './recentFiles'
+import { pandocPreferences } from './settings';
 
 const { autoUpdater } = require('electron-updater')
 require('fix-path')() // needed to execute pandoc on macOS prod build
@@ -189,7 +190,9 @@ const createWindow = async (filePath?: string, toImport=false, wasCreatedOnStart
       const emptyStartupWindow = !(initialFilePath || initialFileIsToImport)
       createWindow(initialFilePath, initialFileIsToImport, emptyStartupWindow)
     }
-    autoUpdater.checkForUpdatesAndNotify()
+    if(pandocPreferences.value('main.autoUpdate') != 'false') {
+      autoUpdater.checkForUpdatesAndNotify()
+    }
   })
 })()
 
@@ -252,6 +255,11 @@ const windowSendMessage = async (msg: Message) => {
   if (win) {
     ipc.sendMessage(win, msg)
   }
+}
+
+const openPreferences = () => {
+  // Show the preferences window on demand.
+  pandocPreferences.show();
 }
 
 const setMenu = async (aWindowIsOpen=true, useRecentFilesCache=false) => {
@@ -323,6 +331,14 @@ const setMenu = async (aWindowIsOpen=true, useRecentFilesCache=false) => {
       , { label: 'Import…'
         , accelerator: 'CmdOrCtrl+I'
         , click: () => openDialog(true)
+        }
+      , {type: 'separator'}
+      , { label: 'Preferences'
+        , accelerator: 'CmdOrCtrl+P'
+        , click: () => openPreferences()
+        }
+      , { label: 'Close window'
+        , click: () => closeWindow()
         }
       ]
     }

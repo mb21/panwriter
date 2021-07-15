@@ -1,10 +1,17 @@
 import { readFile } from 'fs/promises'
 import * as jsYaml from 'js-yaml'
-import { app } from 'electron'
 import { basename, sep } from 'path'
 import { Meta } from '../src/appState/AppState'
+import { pandocPreferences } from './settings';
 
-export const dataDir = [app.getPath('appData'), 'PanWriterUserData', ''].join(sep)
+export function getDataDir() {
+  let dataDir : string = pandocPreferences.value('main.userDataDir');
+  if(dataDir.endsWith(sep)) {
+    return dataDir;
+  } else {
+    return [dataDir, ''].join(sep);
+  }
+}
 
 /**
  * reads the right default yaml file
@@ -13,7 +20,7 @@ export const dataDir = [app.getPath('appData'), 'PanWriterUserData', ''].join(se
 export const readDataDirFile = async (fileName: string): Promise<[Meta | undefined, string]> => {
   try {
     // make sure only PanWriterUserData directory can be accessed
-    fileName = dataDir + basename(fileName)
+    fileName = getDataDir() + basename(fileName)
 
     const str = await readFile(fileName, 'utf8')
     const yaml = jsYaml.safeLoad(str)
