@@ -1,10 +1,11 @@
-//@ts-ignore
+import markdownIt, { Options } from 'markdown-it'
+import Renderer from 'markdown-it/lib/renderer'
 import markdownItPandoc from 'markdown-it-pandoc'
 //@ts-ignore
 import dirname from 'path-dirname'
 import { Doc } from '../appState/AppState'
 
-const mdItPandoc = markdownItPandoc()
+const mdItPandoc = markdownItPandoc(markdownIt())
 const defaultImageRender = mdItPandoc.renderer.rules.image
 
 /**
@@ -12,9 +13,9 @@ const defaultImageRender = mdItPandoc.renderer.rules.image
  */
 export const convertMd = (doc: Doc): string => {
 
-  if (doc.filePath) {
+  if (doc.filePath && defaultImageRender) {
     // rewrite image src attributes
-    mdItPandoc.renderer.rules.image = (tokens: any[], idx: number, options: unknown, env: unknown, self: unknown) => {
+    mdItPandoc.renderer.rules.image = (tokens: any[], idx: number, options: Options, env: unknown, self: Renderer ) => {
       const token = tokens[idx]
       const aIndex = token.attrIndex('src')
       const srcTuple = token.attrs[aIndex]
