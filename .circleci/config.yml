@@ -8,9 +8,8 @@ jobs:
       - run:
           name: "Build"
           command: |
-            npm i
-            npm run build
-            npm run dist -- -l --publish=never
+            yarn install
+            yarn run electron:build
 #      - run:
 #          name: "Publish to Store"
 #          command: |
