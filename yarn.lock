@@ -8780,10 +8780,10 @@ markdown-it-implicit-figures@^0.9.0:
   resolved "https://registry.yarnpkg.com/markdown-it-implicit-figures/-/markdown-it-implicit-figures-0.9.0.tgz#21bf562ab4fd177828febb5e24eda571cf9d1a58"
   integrity sha512-ykLQZmhy8QnNEm6NgImIrr+/QMe7gSnHgLhNAjz9GGCNdSLR7C/SLFNwGdUZq7vK3a0myWiOYE0tpaZuB0rWWw==
 
-markdown-it-pandoc@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/markdown-it-pandoc/-/markdown-it-pandoc-2.0.0.tgz#1b2e1629e5071a34fe86a0590efe5520636f6b0b"
-  integrity sha512-iwdbO9MA3qHdA92d/dsbMgwAV4TWqxmap1WyF8BkQ95M3uLCgzteZLhGZa40a6r0ABAvk7iopYeSP10hsUHYZQ==
+markdown-it-pandoc@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/markdown-it-pandoc/-/markdown-it-pandoc-2.1.0.tgz#8dfa6c907db877d10c487c07ba0a9b5001d105d4"
+  integrity sha512-t/ZTfYhDZkqsq4Iqwza4oYbwYOaDmSsdqbKvTsVtHUCa6rbj44RCxqY2c8kxVchzyLkx15kwG913uY/lxlX7ZQ==
 
 markdown-it-sub@^1.0.0:
   version "1.0.0"
@@ -8794,6 +8794,11 @@ markdown-it-sup@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/markdown-it-sup/-/markdown-it-sup-1.0.0.tgz#cb9c9ff91a5255ac08f3fd3d63286e15df0a1fc3"
   integrity sha1-y5yf+RpSVawI8/09YyhuFd8KH8M=
+
+markdown-it-task-lists@^2.1.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/markdown-it-task-lists/-/markdown-it-task-lists-2.1.1.tgz#f68f4d2ac2bad5a2c373ba93081a1a6848417088"
+  integrity sha512-TxFAc76Jnhb2OUu+n3yz9RMu4CwGfaT788br6HhEDlvWfdeJcLUsxk1Hgw2yJio0OXsxv7pyIPmvECY7bMbluA==
 
 markdown-it-texmath@^0.8.0:
   version "0.8.0"
