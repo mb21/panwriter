@@ -77,7 +77,7 @@ const createWindow = async (filePath?: string, toImport=false, wasCreatedOnStart
       : await openFile(win, filePath)
     if (doc) {
       await windowReady
-      ipc.sendMessage(win, { type: 'updateDoc', doc })
+      ipc.sendMessage(win, { type: 'initDoc', doc })
     }
   }
   await windowReady

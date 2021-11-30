@@ -16,7 +16,7 @@ export const importFile = async (
   ]
   const cwd  = dirname(inputPath)
   const cmdDebug = cmd + ' ' + args.join(' ')
-  return new Promise<Partial<Doc>>((resolve, reject) => {
+  return new Promise<Pick<Doc, 'md' | 'fileDirty'>>((resolve, reject) => {
 
     const pandoc = spawn(cmd, args, {cwd})
 

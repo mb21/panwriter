@@ -10,7 +10,7 @@ import { addToRecentFiles } from './recentFiles'
 export const openFile = async (
   win: BrowserWindow
 , filePath: string
-): Promise<Partial<Doc> | undefined> => {
+): Promise<Pick<Doc, 'md' | 'fileName' | 'filePath' | 'fileDirty'> | undefined> => {
   const fileName = pathToName(filePath)
 
   try {

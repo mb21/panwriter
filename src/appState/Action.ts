@@ -4,6 +4,10 @@ export type Action = {
   type: 'closeMetaEditorAndSetMd';
 }
 | {
+  type: 'initDoc';
+  doc: Pick<Doc, 'md' | 'fileName' | 'filePath' | 'fileDirty'>;
+}
+| {
   type: 'setMdAndRender';
   md: string;
 }

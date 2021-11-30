@@ -15,12 +15,16 @@ ipcRenderer.on('getDoc', (_e, replyChannel: string) => {
 })
 
 export type Message = {
-  type: 'updateDoc';
-  doc: Partial<Doc>;
+  type: 'initDoc';
+  doc: Pick<Doc, 'md' | 'fileName' | 'filePath' | 'fileDirty'>;
 }
 | {
   type: 'split';
   split: ViewSplit;
+}
+| {
+  type: 'updateDoc';
+  doc: Partial<Doc>;
 }
 
 ipcRenderer.on('dispatch', (_e, action: Message) => {

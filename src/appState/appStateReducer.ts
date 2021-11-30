@@ -14,6 +14,11 @@ export const appStateReducer = (state: AppState, action: Action): AppState => {
       }
       return { ...state, doc }
     }
+    case 'initDoc': {
+      const { md } = action.doc
+      const doc = { ...state.doc, ...action.doc, ...parseYaml(md) }
+      return { ...state, doc }
+    }
     case 'setMdAndRender': {
       const { md } = action
       const doc = {
