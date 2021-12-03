@@ -16,7 +16,7 @@ export const readDataDirFile = async (fileName: string): Promise<[Meta | undefin
     fileName = dataDir + basename(fileName)
 
     const str = await readFile(fileName, 'utf8')
-    const yaml = jsYaml.safeLoad(str)
+    const yaml = jsYaml.load(str)
     return [
       typeof yaml === 'object' ? (yaml as Meta) : {},
       fileName

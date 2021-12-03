@@ -110,7 +110,7 @@
     "codemirror": "^5.61.0",
     "electron-updater": "^4.3.5",
     "fix-path": "^3.0.0",
-    "js-yaml": "^3.14.0",
+    "js-yaml": "^4.1.0",
     "katex": "^0.13.0",
     "markdown-it": "^12.0.2",
     "markdown-it-attrs": "^3.0.3",
@@ -135,7 +135,7 @@
   },
   "devDependencies": {
     "@types/codemirror": "^0.0.102",
-    "@types/js-yaml": "^3.12.5",
+    "@types/js-yaml": "^4.0.5",
     "@types/markdown-it": "^12.0.3",
     "@types/react": "^16.9.53",
     "@types/react-color": "^3.0.4",

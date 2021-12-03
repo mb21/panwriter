@@ -13,7 +13,7 @@ export const parseYaml = (md: string) => {
   try {
     yaml = results?.[2]
     if (yaml) {
-      const metaObj = jsYaml.safeLoad(yaml, {schema: jsYaml.JSON_SCHEMA})
+      const metaObj = jsYaml.load(yaml, {schema: jsYaml.JSON_SCHEMA})
       if (typeof metaObj === 'object' && !(metaObj instanceof Array) ) {
         yamlStr = yaml
         bodyMd = results?.[3] || ''
@@ -31,7 +31,7 @@ export const parseYaml = (md: string) => {
 export const serializeMetaToMd = (doc: Doc): string => {
   const { meta, bodyMd } = doc
   const yamlStr = Object.keys(meta).length > 0
-    ? jsYaml.safeDump(meta, {skipInvalid: true})
+    ? jsYaml.dump(meta, {skipInvalid: true})
     : ''
   return (yamlStr ? '---\n' + yamlStr + '---\n\n' : '') + bodyMd.trim()
 }
