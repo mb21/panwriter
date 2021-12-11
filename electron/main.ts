@@ -189,7 +189,12 @@ const createWindow = async (filePath?: string, toImport=false, wasCreatedOnStart
       const emptyStartupWindow = !(initialFilePath || initialFileIsToImport)
       createWindow(initialFilePath, initialFileIsToImport, emptyStartupWindow)
     }
-    autoUpdater.checkForUpdatesAndNotify()
+    try {
+      autoUpdater.allowPrerelease = false
+      autoUpdater.checkForUpdatesAndNotify()
+    } catch (e) {
+      console.warn('autoUpdater failed', e)
+    }
   })
 })()
 
