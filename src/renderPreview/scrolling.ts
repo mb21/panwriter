@@ -13,6 +13,8 @@ let editor: Editor
 export const printPreview = () => {
   if (frameWindow) {
     frameWindow.print()
+  } else {
+    alert('To print, please open a preview view first (e.g. View -> Show Split View)')
   }
 }
 

@@ -1,5 +1,5 @@
 import { AppState } from './AppState'
-import { refreshEditor } from '../renderPreview/scrolling'
+import { clearPreview, refreshEditor } from '../renderPreview/scrolling'
 import { parseYaml, serializeMetaToMd } from '../renderPreview/convertYaml'
 import { Action } from './Action'
 
@@ -42,6 +42,9 @@ export const appStateReducer = (state: AppState, action: Action): AppState => {
       if (split !== 'onlyEditor' && Object.keys(doc.meta).length === 0) {
         // for the case when the preview is shown for the first time
         doc = { ...doc, ...parseYaml(doc.md) }
+      }
+      if (split === 'onlyEditor') {
+        clearPreview()
       }
       if (split !== 'onlyPreview') {
         setTimeout(refreshEditor)
