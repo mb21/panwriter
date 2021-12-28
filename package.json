@@ -126,12 +126,11 @@
     "markdown-it-task-lists": "^2.1.1",
     "markdown-it-texmath": "^0.8.0",
     "pagedjs": "0.1.43",
-    "path-dirname": "^1.0.2",
     "react": "^17.0.1",
     "react-codemirror2": "^7.2.1",
     "react-color": "^2.19.3",
     "react-dom": "^17.0.1",
-    "react-scripts": "4.0.3"
+    "react-scripts": "5.0.0"
   },
   "devDependencies": {
     "@types/codemirror": "^0.0.102",
