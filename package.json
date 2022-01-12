@@ -121,7 +121,7 @@
     "fix-path": "^3.0.0",
     "js-yaml": "^4.1.0",
     "katex": "^0.13.0",
-    "markdown-it": "^12.0.2",
+    "markdown-it": "^12.3.2",
     "markdown-it-attrs": "^4.1.0",
     "markdown-it-bracketed-spans": "^1.0.1",
     "markdown-it-container": "^3.0.0",
