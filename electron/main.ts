@@ -9,6 +9,7 @@ import { importFile } from './pandoc/import'
 import { saveFile, openFile } from './file'
 import { Message } from './preload'
 import { clearRecentFiles, getRecentFiles } from './recentFiles'
+import { loadSettings } from './settings'
 
 const { autoUpdater } = require('electron-updater')
 require('fix-path')() // needed to execute pandoc on macOS prod build
@@ -71,13 +72,18 @@ const createWindow = async (filePath?: string, toImport=false, wasCreatedOnStart
     win.webContents.openDevTools()
   }
 
+  const settingsPromise = loadSettings()
+
   if (filePath) {
     const doc = toImport
       ? await importFile(win, filePath)
       : await openFile(win, filePath)
+    const settings = await settingsPromise
     if (doc) {
       await windowReady
-      ipc.sendMessage(win, { type: 'initDoc', doc })
+      ipc.sendMessage(win, { type: 'initDoc', doc, settings })
+    } else {
+      ipc.sendMessage(win, { type: 'loadSettings', settings })
     }
   }
   await windowReady

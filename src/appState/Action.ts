@@ -1,4 +1,4 @@
-import { Doc, ViewSplit } from '../appState/AppState'
+import { Doc, Settings, ViewSplit } from '../appState/AppState'
 
 export type Action = {
   type: 'closeMetaEditorAndSetMd';
@@ -6,6 +6,11 @@ export type Action = {
 | {
   type: 'initDoc';
   doc: Pick<Doc, 'md' | 'fileName' | 'filePath' | 'fileDirty'>;
+  settings: Settings;
+}
+| {
+  type: 'loadSettings';
+  settings: Settings;
 }
 | {
   type: 'setMdAndRender';

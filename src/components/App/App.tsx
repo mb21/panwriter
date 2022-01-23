@@ -68,6 +68,7 @@ const initialState: AppState = {
   , fileDirty: false
   }
 , metaEditorOpen: false
+, settings: defaultSettings
 , split: 'onlyEditor'
 , paginated: false
 , previewDivRef: createRef()
