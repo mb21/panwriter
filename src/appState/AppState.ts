@@ -41,3 +41,8 @@ export interface Settings {
   editorIncludes?: string;
   pandocExecPath: string;
 }
+
+export const defaultSettings: Settings = {
+  autoUpdateApp: true,
+  pandocExecPath: ''
+}
