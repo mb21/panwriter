@@ -79,6 +79,7 @@
     ],
     "mac": {
       "icon": "icons/icon.png",
+      "defaultArch": "universal",
       "target": [
         {
           "target": "dmg",
