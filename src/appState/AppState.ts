@@ -38,7 +38,6 @@ export type ViewSplit = typeof viewSplits[number]
 
 export interface Settings {
   autoUpdateApp: boolean;
-  editorIncludes?: string;
 }
 
 export const defaultSettings: Settings = {

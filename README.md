@@ -83,16 +83,10 @@ If the directory does not exist, you can create it.
 
 ### Settings
 
-If you put a `settings.yaml` file in the data directory, PanWriter will read it on startup. Possible fields are:
+If you put a `settings.yaml` file in the data directory, PanWriter will read it on startup. Possible fields are currently only:
 
 ```yaml
 autoUpdateApp: true
-editorIncludes:  |-
-  <style>
-  body {
-    font-family: Arial;
-  }
-  </style>
 ```
 
 ### Default CSS and YAML
