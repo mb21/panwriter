@@ -39,10 +39,8 @@ export type ViewSplit = typeof viewSplits[number]
 export interface Settings {
   autoUpdateApp: boolean;
   editorIncludes?: string;
-  pandocExecPath: string;
 }
 
 export const defaultSettings: Settings = {
-  autoUpdateApp: true,
-  pandocExecPath: ''
+  autoUpdateApp: true
 }

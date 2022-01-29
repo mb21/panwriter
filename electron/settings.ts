@@ -7,10 +7,9 @@ export const loadSettings = async (): Promise<Settings> => {
 }
 
 const parseSettings = (data: Record<string, unknown> = {}): Settings => {
-  const { autoUpdateApp, editorIncludes, pandocExecPath } = data
+  const { autoUpdateApp, editorIncludes } = data
   return {
     autoUpdateApp: autoUpdateApp === undefined ? defaultSettings.autoUpdateApp : !!autoUpdateApp,
-    editorIncludes: typeof editorIncludes === 'string' ? editorIncludes : defaultSettings.editorIncludes,
-    pandocExecPath: typeof pandocExecPath === 'string' ? pandocExecPath : defaultSettings.pandocExecPath
+    editorIncludes: typeof editorIncludes === 'string' ? editorIncludes : defaultSettings.editorIncludes
   }
 }

@@ -93,7 +93,6 @@ editorIncludes:  |-
     font-family: Arial;
   }
   </style>
-pandocExecPath: '/usr/bin/'
 ```
 
 ### Default CSS and YAML
