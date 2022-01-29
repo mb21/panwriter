@@ -81,6 +81,14 @@ You can place certain files in the PanWriter user directory, which [should be](h
 
 If the directory does not exist, you can create it.
 
+### Settings
+
+If you put a `settings.yaml` file in the data directory, PanWriter will read it on startup. Possible fields are currently only:
+
+```yaml
+autoUpdateApp: true
+```
+
 ### Default CSS and YAML
 
 If you put a `default.yaml` file in the data directory, PanWriter will merge this with the YAML in your input file (to determine the command-line arguments to call pandoc with) and add the `--metadata-file` option. The YAML should be in the same format as above.

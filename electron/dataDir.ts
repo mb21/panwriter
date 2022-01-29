@@ -8,6 +8,7 @@ export const dataDir = [app.getPath('appData'), 'PanWriterUserData', ''].join(se
 
 /**
  * reads the right default yaml file
+ *
  * make sure this function is safe to expose in `preload.ts`
  */
 export const readDataDirFile = async (fileName: string): Promise<[Meta | undefined, string]> => {

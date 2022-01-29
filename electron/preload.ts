@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron'
-import { AppState, Doc, Meta, ViewSplit } from '../src/appState/AppState'
+import { AppState, Doc, Meta, Settings, ViewSplit } from '../src/appState/AppState'
 import { Action } from '../src/appState/Action'
 
 export type IpcApi = typeof ipcApi
@@ -17,6 +17,11 @@ ipcRenderer.on('getDoc', (_e, replyChannel: string) => {
 export type Message = {
   type: 'initDoc';
   doc: Pick<Doc, 'md' | 'fileName' | 'filePath' | 'fileDirty'>;
+  settings: Settings;
+}
+| {
+  type: 'loadSettings';
+  settings: Settings;
 }
 | {
   type: 'split';

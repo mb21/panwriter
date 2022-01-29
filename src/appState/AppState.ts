@@ -3,6 +3,7 @@ import { RefObject } from 'react'
 export interface AppState {
   doc: Doc;
   metaEditorOpen: boolean;
+  settings: Settings
   split: ViewSplit;
   paginated: boolean;
   previewDivRef: RefObject<HTMLDivElement>;
@@ -34,3 +35,11 @@ export type JSON = string | number | boolean | null | Meta[] | { [key: string]: 
 
 export const viewSplits = ['onlyEditor', 'split', 'onlyPreview'] as const
 export type ViewSplit = typeof viewSplits[number]
+
+export interface Settings {
+  autoUpdateApp: boolean;
+}
+
+export const defaultSettings: Settings = {
+  autoUpdateApp: true
+}

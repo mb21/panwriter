@@ -1,6 +1,6 @@
 import { createRef, useEffect, useReducer } from 'react'
 
-import { AppState }     from '../../appState/AppState'
+import { defaultSettings, AppState }     from '../../appState/AppState'
 import { appStateReducer }  from '../../appState/appStateReducer'
 
 import { Editor }       from '../Editor/Editor'
@@ -68,6 +68,7 @@ const initialState: AppState = {
   , fileDirty: false
   }
 , metaEditorOpen: false
+, settings: defaultSettings
 , split: 'onlyEditor'
 , paginated: false
 , previewDivRef: createRef()

@@ -9,11 +9,13 @@ import { importFile } from './pandoc/import'
 import { saveFile, openFile } from './file'
 import { Message } from './preload'
 import { clearRecentFiles, getRecentFiles } from './recentFiles'
+import { loadSettings } from './settings'
 
 const { autoUpdater } = require('electron-updater')
 require('fix-path')() // needed to execute pandoc on macOS prod build
 
 let appWillQuit = false
+const settingsPromise = loadSettings()
 
 
 declare class CustomBrowserWindow extends Electron.BrowserWindow {
@@ -75,9 +77,12 @@ const createWindow = async (filePath?: string, toImport=false, wasCreatedOnStart
     const doc = toImport
       ? await importFile(win, filePath)
       : await openFile(win, filePath)
+    const settings = await settingsPromise
     if (doc) {
       await windowReady
-      ipc.sendMessage(win, { type: 'initDoc', doc })
+      ipc.sendMessage(win, { type: 'initDoc', doc, settings })
+    } else {
+      ipc.sendMessage(win, { type: 'loadSettings', settings })
     }
   }
   await windowReady
@@ -174,7 +179,7 @@ const createWindow = async (filePath?: string, toImport=false, wasCreatedOnStart
   // This method will be called when Electron has finished
   // initialization and is ready to create browser windows.
   // Some APIs can only be used after this event occurs.
-  app.on('ready', () => {
+  app.on('ready', async () => {
     appIsReady = true
     const args = process.argv.slice(1)
     if (args.length > 0 && app.isPackaged) {
@@ -190,8 +195,11 @@ const createWindow = async (filePath?: string, toImport=false, wasCreatedOnStart
       createWindow(initialFilePath, initialFileIsToImport, emptyStartupWindow)
     }
     try {
-      autoUpdater.allowPrerelease = false
-      autoUpdater.checkForUpdatesAndNotify()
+      const settings = await settingsPromise
+      if (settings.autoUpdateApp) {
+        autoUpdater.allowPrerelease = false
+        autoUpdater.checkForUpdatesAndNotify()
+      }
     } catch (e) {
       console.warn('autoUpdater failed', e)
     }
