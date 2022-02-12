@@ -1,15 +1,3 @@
-![](https://github.com/mb21/panwriter/raw/master/icons/icon.png){width=128 align=right}
-
-# PanWriter
-
-PanWriter is available on macOS, Windows and Linux.
-
-- [Download](https://github.com/mb21/panwriter/releases/){#download}
-- [Try online](/try/){#try}
-
-You also have to [install pandoc](https://pandoc.org/installing.html) to export to most formats.
-
-
 ## Distraction-free writing environment
 
 Focus on the content of your text. No fiddling around in menus or getting distracted by buttons. No selecting fonts and layouting before your text is actually written. Instead, you can write text in [Markdown](https://commonmark.org/help/) – a convention on how to write plain text files. Basically, it's like you would write an Email.
@@ -46,4 +34,4 @@ It's not a good idea to start layouting before you've finished the hard work of 
 
 ## Free and Open Source
 
-PanWriter is free and open source software. Visit [PanWriter on GitHub](https://github.com/mb21/panwriter) to read the README, and please open an issue if you have a question or would like to give feedback.
+PanWriter is free and open source software. Visit [PanWriter on GitHub](https://github.com/mb21/panwriter#panwriter) and please open an issue if you have a question or would like to give feedback.
