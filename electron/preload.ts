@@ -41,6 +41,8 @@ ipcRenderer.on('dispatch', (_e, action: Message) => {
     }
   }
 })
+const chooseFormat = async (fmt: string): Promise<boolean> =>
+  ipcRenderer.invoke('chooseFormat', fmt)
 
 const readDataDirFile = async (fileName: string): Promise<Meta | undefined> =>
   ipcRenderer.invoke('readDataDirFile', fileName)
@@ -54,7 +56,7 @@ const ipcApi = {
     close:            () => ipcRenderer.send('close')
   , minimize:         () => ipcRenderer.send('minimize')
   , maximize:         () => ipcRenderer.send('maximize')
-  , openLink:         (link: string) => ipcRenderer.send('openLink', link)
+  , openLink:         (lnk: string) => { if (typeof lnk === 'string') ipcRenderer.send('openLink', lnk) }
   }
 , on: {
     addBold:          (cb: () => void)          => ipcRenderer.on('addBold',          cb)
@@ -66,6 +68,7 @@ const ipcApi = {
   , printFile:        (cb: () => void)          => ipcRenderer.on('printFile',        cb)
   , sendPlatform:     (cb: (p: string) => void) => ipcRenderer.once('sendPlatform',   (_e, p) => cb(p))
   }
+, chooseFormat
 , readDataDirFile
 }
 

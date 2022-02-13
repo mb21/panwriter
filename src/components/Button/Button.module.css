@@ -1,0 +1,41 @@
+.primary, .secondary {
+  border: 0;
+  border-radius: 5px;
+  padding: 8px;
+  font-family: var(--system-font);
+
+  --primary-color: white;
+  --primary-bg: linear-gradient(rgb(73, 143, 247), rgb(51, 120, 246));
+  --primary-bg-active: linear-gradient(rgb(57, 123, 227), rgb(41, 101, 227));
+  --secondary-color: rgb(69, 69, 69);
+  --secondary-bg: rgb(202, 202, 202);
+  --secondary-bg-active: rgb(190, 190, 190);
+}
+
+@media (prefers-color-scheme: dark) {
+  .primary, .secondary {
+    --primary-color: rgb(238, 238, 238);
+    --primary-bg: linear-gradient(rgb(57, 121, 222), rgb(50, 108, 197));
+    --primary-bg-active: linear-gradient(rgb(78, 158, 236), rgb(70, 144, 223));
+    --secondary-color: rgb(238, 238, 238);
+    --secondary-bg: rgb(98, 98, 98);
+    --secondary-bg-active: rgb(132, 132, 132);
+  }
+}
+
+
+.primary {
+  color: var(--primary-color);
+  background: var(--primary-bg);
+}
+.primary:active {
+  background: var(--primary-bg-active);
+}
+
+.secondary {
+  color: var(--secondary-color);
+  background: var(--secondary-bg);
+}
+.secondary:active {
+  background: var(--secondary-bg-active);
+}

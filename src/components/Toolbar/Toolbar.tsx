@@ -1,6 +1,6 @@
 import { AppState, viewSplits } from '../../appState/AppState'
 import { Action }   from '../../appState/Action'
-import { Button } from '../Button'
+import { Button } from '../Button/Button'
 
 import macCloseIcon    from './macOS_window_close.svg'
 import macMaximizeIcon from './macOS_window_maximize.svg'
