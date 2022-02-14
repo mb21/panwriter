@@ -23,7 +23,7 @@ export const openFile = async (
     dialog.showMessageBox(win, {
       type: 'error'
     , message: 'Could not open file'
-    , detail: err.message
+    , detail: (err as Error).message
     })
     win.close()
   }
@@ -57,7 +57,7 @@ export const saveFile = async (
     dialog.showMessageBox(win, {
       type: 'error'
     , message: 'Could not save file'
-    , detail: err.message
+    , detail: (err as Error).message
     })
   }
 }

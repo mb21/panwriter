@@ -23,7 +23,7 @@ export const readDataDirFile = async (fileName: string): Promise<[Meta | undefin
       fileName
     ]
   } catch(e) {
-    console.warn("Error loading or parsing YAML file." + e.message)
+    console.warn("Error loading or parsing YAML file." + (e as Error).message)
     return [ undefined, fileName ]
   }
 }

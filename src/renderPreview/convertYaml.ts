@@ -23,7 +23,7 @@ export const parseYaml = (md: string) => {
       }
     }
   } catch(e) {
-    console.warn("Could not parse YAML", e.message)
+    console.warn("Could not parse YAML", (e as Error).message)
   }
   return { yaml: yamlStr, bodyMd, meta }
 }
