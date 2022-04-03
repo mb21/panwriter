@@ -50,7 +50,7 @@ Check out the `package.json` for more scripts to run.
   - add [page-break syntax](https://github.com/jgm/pandoc/issues/1934#issuecomment-274327751)
   - [Variable substitution in body](https://github.com/jgm/pandoc/issues/1950#issuecomment-427671251)
   - read out `type` metadata and if it references a css file, put the path into the `css` metadata variable
-- GUI popup on file import: at least allow to set `-f`, `-t`, `--track-changes` and `--extract-media` pandoc options.
+- GUI popup on file import: at least allow to set `-f` (lots of formats use .xml suffix), `-t`, (especially extensions: `--list-extensions` for each format?!), `-t`, `--track-changes` and `--extract-media` pandoc options.
 - Unify PanWriter custom document type and pandoc template concepts?
 - Rename `type` metadata key to `doctype`?
 

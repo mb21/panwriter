@@ -1,0 +1,32 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background-color: var(--bg);
+  height: 100vh;
+
+  --bg: rgba(230, 230, 230);
+}
+@media (prefers-color-scheme: dark) {
+  .root {
+    --bg: rgb(37,37,37);
+  }
+}
+
+.root select, .root button {
+  margin: 1em;
+}
+
+.text {
+  margin: 1em;
+  text-align: center;
+  font-weight: bold;
+  font-size: 15px;
+  font-family: var(--system-font);
+  color: var(--font-color);
+}
+
+.tick {
+  display: block;
+  margin: 0 auto;
+}

@@ -2,6 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import { App } from './components/App/App'
 import { ModalChooseFormat } from './components/ModalChooseFormat/ModalChooseFormat'
+import { ModalImport } from './components/ModalImport/ModalImport'
 
 window.ipcApi?.on.sendPlatform(platform => {
   if (platform === 'darwin') {
@@ -15,7 +16,9 @@ ReactDOM.render(
   <React.StrictMode>
     { modal === 'chooseFormat'
       ? <ModalChooseFormat />
-      : <App />}
+      : (modal === 'import'
+        ? <ModalImport />
+        : <App />)}
   </React.StrictMode>,
   document.getElementById('root')
 );
