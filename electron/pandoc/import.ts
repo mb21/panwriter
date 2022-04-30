@@ -1,15 +1,30 @@
-// TODO: GUI popup for import options, at least for:
-// -f, -t, --track-changes and --extract-media
-
 import { spawn } from 'child_process'
-import { BrowserWindow, dialog } from 'electron'
-import { dirname } from 'path'
-import { Doc } from '../../src/appState/AppState'
+import { BrowserWindow, dialog, ipcMain } from 'electron'
+import { dirname, extname } from 'path'
 
-export const importFile = async (
-  win: BrowserWindow
-, inputPath: string
-) => {
+import { showModalWindow } from './modal'
+import { Doc } from '../../src/appState/AppState'
+import { ImportOpts } from '../../src/options'
+
+export const importFile = async (win: BrowserWindow, inputPath: string) => {
+  const ext = extname(inputPath)
+  if (ext === 'docx' || ext === 'xml') {
+    showModalWindow(win, 'importFile', { detectedFormat: ext })
+    ipcMain.handleOnce('importFile', async (_event, importOpts: ImportOpts | 'closingWindow') => {
+      if (importOpts === 'closingWindow') {
+        // we fire this event so the ipcMain.handleOnce stops listening
+        return
+      } else {
+        // TODO: parse or validate importOpts?
+        runImportFile(win, inputPath, importOpts)
+      }
+    })
+  } else {
+    runImportFile(win, inputPath)
+  }
+}
+
+const runImportFile = async (win: BrowserWindow, inputPath: string, importOpts?: ImportOpts) => {
   const cmd  = 'pandoc'
   const args = [ inputPath, '--wrap=none'
   , '-t', 'markdown-raw_html-raw_tex-header_attributes-fancy_lists-simple_tables-multiline_tables'

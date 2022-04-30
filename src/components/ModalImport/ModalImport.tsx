@@ -1,41 +1,65 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useReducer } from 'react'
+
+import { ImportOpts } from '../../options'
 import { Button } from '../Button/Button'
 
 import styles from './ModalImport.module.css'
 
+type Action = {
+  type: 'setFromFormat';
+  fromFormat: string;
+}
+
+const reducer = (state: ImportOpts, action: Action): ImportOpts => {
+  switch (action.type) {
+    case 'setFromFormat': {
+      const { fromFormat } = action
+      return { ...state, fromFormat }
+    }
+  }
+}
+
+const initialOpts: ImportOpts = {
+  fromFormat: new URLSearchParams(document.location.search).get('detectedFormat') || 'docx'
+}
+
+const submit = async (importOpts: ImportOpts) => {
+  await window.ipcApi?.importFile(importOpts)
+  window.close()
+}
+
+const cancel = () => {
+  window.ipcApi?.importFile('closingWindow')
+  window.close()
+}
+
 export const ModalImport = () => {
-  const [format, setFormat] = useState()
-
-  const submit = async (format: string) => {
-    await window.ipcApi?.importFile(format)
-    window.close()
-  }
-
-  const cancel = () => {
-    window.ipcApi?.importFile('closingWindow')
-    window.close()
-  }
+  const [importOpts, dispatch] = useReducer(reducer, initialOpts)
 
   useEffect(() => {
     const keyHandler = (e: KeyboardEvent) => {
       if (e.key === 'Enter') {
-        submit(format)
+        submit(importOpts)
       } else if (e.key === 'Escape') {
         cancel()
       }
     }
     document.body.addEventListener('keydown', keyHandler)
     return () => document.body.removeEventListener('keydown', keyHandler)
-  }, [format])
+  }, [importOpts])
 
   return (
     <div className={styles.root}>
-      <p className={styles.text}>To which format do you want to export to clipboard?</p>
-      <select autoFocus value={format} onChange={e => setFormat(e.target.value)}>
-        { formats.map(({name, value}) =>
-            <option value={value} key={value}>{name}</option>) }
+      <p className={styles.text}>Which format do you want to import from?</p>
+      <select
+        autoFocus
+        value={importOpts.fromFormat}
+        onChange={e => dispatch({type: 'setFromFormat', fromFormat: e.target.value })}
+        >
+        {formats.map(({name, value}) =>
+          <option value={value} key={value}>{name}</option>) }
       </select>
-      <Button onClick={() => submit(format)} variant='primary'>Export</Button>
+      <Button onClick={() => submit(importOpts)} variant='primary'>Import</Button>
       <Button onClick={() => cancel()} variant='secondary'>Cancel</Button>
     </div>
   )

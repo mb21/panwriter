@@ -4,12 +4,12 @@ import * as fs from 'fs'
 
 import * as ipc from './ipc'
 import { fileExportDialog, fileExportHTMLToClipboard, fileExportLikePrevious, fileExportToClipboard } from './pandoc/export'
-import { Doc } from '../src/appState/AppState'
 import { importFile } from './pandoc/import'
 import { saveFile, openFile } from './file'
 import { Message } from './preload'
 import { clearRecentFiles, getRecentFiles } from './recentFiles'
 import { loadSettings } from './settings'
+import { Doc } from '../src/appState/AppState'
 
 const { autoUpdater } = require('electron-updater')
 require('fix-path')() // needed to execute pandoc on macOS prod build

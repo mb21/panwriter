@@ -1,5 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import { AppState, Doc, Meta, Settings, ViewSplit } from '../src/appState/AppState'
+import { ImportOpts } from '../src/options'
 import { Action } from '../src/appState/Action'
 
 export type IpcApi = typeof ipcApi
@@ -44,6 +45,9 @@ ipcRenderer.on('dispatch', (_e, action: Message) => {
 const chooseFormat = async (fmt: string): Promise<boolean> =>
   ipcRenderer.invoke('chooseFormat', fmt)
 
+const importFile = async (importOpts: ImportOpts | 'closingWindow'): Promise<boolean> =>
+  ipcRenderer.invoke('importFile', importOpts)
+
 const readDataDirFile = async (fileName: string): Promise<Meta | undefined> =>
   ipcRenderer.invoke('readDataDirFile', fileName)
 
@@ -69,6 +73,7 @@ const ipcApi = {
   , sendPlatform:     (cb: (p: string) => void) => ipcRenderer.once('sendPlatform',   (_e, p) => cb(p))
   }
 , chooseFormat
+, importFile
 , readDataDirFile
 }
 
