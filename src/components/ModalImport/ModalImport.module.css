@@ -17,15 +17,6 @@
   margin: 1em;
 }
 
-.text {
-  margin: 1em;
-  text-align: center;
-  font-weight: bold;
-  font-size: 15px;
-  font-family: var(--system-font);
-  color: var(--font-color);
-}
-
 .tick {
   display: block;
   margin: 0 auto;
