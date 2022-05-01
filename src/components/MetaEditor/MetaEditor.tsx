@@ -1,76 +1,23 @@
-import { Fragment } from 'react'
 import { AppState }    from '../../appState/AppState'
 import { Action }   from '../../appState/Action'
 import { defaultVars, stripSurroundingStyleTags } from '../../renderPreview/templates/getCss'
-import { ColorPicker } from '../ColorPicker/ColorPicker'
 
 import back from './back.svg'
 import './MetaEditor.css'
-
-type Kv = String | Textarea | Number | Select | Color;
-
-interface BaseKv {
-  name: string;
-  label: string;
-  placeholder?: string;
-  onLoad?: (v: string) => string;
-  onDone?: (v: string) => string;
-}
-
-interface String extends BaseKv {
-  type: 'string';
-}
-interface Textarea extends BaseKv {
-  type: 'textarea';
-}
-interface Number extends BaseKv {
-  type: 'number';
-  step: number;
-}
-interface Select extends BaseKv {
-  type: 'select';
-  options: string[];
-}
-interface Color extends BaseKv {
-  type: 'color';
-}
+import { EditorKv, Kv } from '../EditorKv/EditorKv'
 
 interface Props {
   state: AppState;
   dispatch: React.Dispatch<Action>;
 }
 
+
 export const MetaEditor = (props: Props) => {
   const { state, dispatch } = props
-  const { doc } = state
-  const renderKv = (kv: Kv) =>
-    <Fragment key={kv.name}>
-      <label htmlFor={kv.name}>
-        { kv.label }:
-      </label>
-      { renderInput(kv) }
-    </Fragment>
+  const { meta } = state.doc
 
-  const renderInput = (kv: Kv): JSX.Element => {
-    const { onLoad, onDone, placeholder } = kv
-    const key = kv.name
-    const val = doc.meta[key]?.toString() || defaultVars[key] || ''
-    const value = onLoad ? onLoad(val) : val
-    const onChange = (
-      e: string | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
-    ) => {
-      const v = typeof e === 'string' ? e : e.target.value
-      dispatch({ type: 'setMetaAndRender', key, value: onDone ? onDone(v) : v })
-    }
-    const common = { id: kv.name, placeholder, value, onChange }
-    switch(kv.type) {
-      case 'string':   return <input    {...common} type='text' />
-      case 'textarea': return <textarea {...common} />
-      case 'number':   return <input    {...common}  type='number' step={kv.step} />
-      case 'select':   return <select   {...common}>{kv.options.map(renderOption)}</select>
-      case 'color':    return <ColorPicker {...common} />
-    }
-  }
+  const setKv = (key: string, value: string) =>
+    dispatch({ type: 'setMetaAndRender', key, value })
 
   return (
     <div className='metaeditor'>
@@ -86,22 +33,31 @@ export const MetaEditor = (props: Props) => {
       <div className='content'>
         <h4>Document metadata</h4>
         <div className='kvs'>
-          { metaKvs.map(renderKv) }
+          {metaKvs.map(kv =>
+            <EditorKv
+              key={kv.name}
+              kv={kv}
+              value={meta[kv.name]?.toString() || defaultVars[kv.name] || ''}
+              setKv={setKv}
+            />)}
         </div>
         <h4>Layout</h4>
         <p className='darkmodewarning'>
           Previewing custom colors in dark mode is not supported.
         </p>
         <div className='kvs'>
-          { layoutKvs.map(renderKv) }
+          {layoutKvs.map(kv =>
+            <EditorKv
+              key={kv.name}
+              kv={kv}
+              value={meta[kv.name]?.toString() || defaultVars[kv.name] || ''}
+              setKv={setKv}
+            />)}
         </div>
       </div>
     </div>
   )
 }
-
-const renderOption = (o: string) =>
-  <option key={o} value={o || 'System font, sans-serif'}>{o}</option>
 
 const metaKvs: Kv[] = [{
   name: 'title'
@@ -127,10 +83,10 @@ const layoutKvs: Kv[] = [{
 , label: 'Font'
 , type: 'select'
 , options: [
-    ''
-  , 'Georgia, serif'
-  , 'Helvetica, Arial, sans-serif'
-  , 'Palatino, Palatino Linotype, serif'
+    { label: 'System font, sans-serif', value: '' }
+  , { label: 'Georgia, serif', value: 'Georgia, serif' }
+  , { label: 'Helvetica, Arial, sans-serif', value: 'Helvetica, Arial, sans-serif' }
+  , { label: 'Palatino, Palatino Linotype, serif', value: 'Palatino, Palatino Linotype, serif' }
   ]
 }, {
   name: 'fontsize'
