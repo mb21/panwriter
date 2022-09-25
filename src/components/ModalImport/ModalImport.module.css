@@ -4,6 +4,7 @@
   justify-content: center;
   background-color: var(--bg);
   height: 100vh;
+  padding: 1em;
 
   --bg: rgba(230, 230, 230);
 }
@@ -13,8 +14,8 @@
   }
 }
 
-.root select, .root button {
-  margin: 1em;
+.root button {
+  margin-top: 1em;
 }
 
 .tick {

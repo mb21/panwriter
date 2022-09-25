@@ -7,7 +7,7 @@ interface Props {
   setKv: (key: string, value: string) => void;
 }
 
-export type Kv = String | Textarea | Number | Select | Color;
+export type Kv = String | Textarea | Number | Select | Checkbox | Color;
 
 interface BaseKv {
   name: string;
@@ -30,6 +30,9 @@ interface Number extends BaseKv {
 interface Select extends BaseKv {
   type: 'select';
   options: Option[];
+}
+interface Checkbox extends BaseKv {
+  type: 'checkbox';
 }
 interface Color extends BaseKv {
   type: 'color';
@@ -60,7 +63,7 @@ const renderInput = (props: Props): JSX.Element => {
   const onChange = (
     e: string | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
-    const v = typeof e === 'string' ? e : e.target.value
+    const v = typeof e === 'string' ? e : toVal(e.target)
     setKv(kv.name, onDone ? onDone(v) : v)
   }
 
@@ -70,6 +73,7 @@ const renderInput = (props: Props): JSX.Element => {
     case 'textarea': return <textarea {...common} />
     case 'number':   return <input    {...common}  type='number' step={kv.step} />
     case 'select':   return <select   {...common}>{kv.options.map(renderOption)}</select>
+    case 'checkbox': return <input    {...common} type='checkbox' />
     case 'color':    return <ColorPicker {...common} />
   }
 }
@@ -77,3 +81,7 @@ const renderInput = (props: Props): JSX.Element => {
 const renderOption = ({ label, value }: Option) =>
   <option key={value} value={value}>{label}</option>
 
+const toVal = (target: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement) =>
+  target.type === 'checkbox'
+    ? (target as HTMLInputElement).checked ? 'true' : ''
+    : target.value

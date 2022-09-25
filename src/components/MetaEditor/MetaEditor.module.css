@@ -1,7 +1,5 @@
-.metaeditor {
-  font-family: var(--system-font);
+.root {
   background-color: var(--background-color);
-  color: var(--font-color);
   height: 100vh;
   padding: 50px 20px;
   box-sizing: border-box;
@@ -9,42 +7,48 @@
   position: relative;
 }
 
-.metaeditor .backbtn {
+.backbtn {
   position: absolute;
   border: 0;
   padding: 0;
   background: none;
 }
 
-.metaeditor .content {
+.content {
+  font-family: var(--system-font);
+  color: var(--font-color);
   padding-top: 40px;
+}
+
+.root .content {
   max-width: 50vw;
   margin: 0 auto;
 }
-.metaeditor h4 {
+
+.content h4 {
   font-size: 12px;
   margin: 2em 0 1em 0;
 }
 
-.metaeditor .kvs {
+.kvs {
   display: grid;
   grid-template-columns: 100px 1fr;
 }
-.metaeditor label {
+.content label {
   font-size: 12px;
   padding: 3px 10px 0 0;
 }
 
-.metaeditor textarea {
+.content textarea {
   resize: vertical;
   min-height: 7em;
   font-family: var(--mono-font);
 }
 @media (prefers-color-scheme: light) {
-  .metaeditor .darkmodewarning {
+  .darkmodewarning {
     display: none;
   }
 }
-.metaeditor .darkmodewarning {
+.darkmodewarning {
   font-size: 12px;
 }

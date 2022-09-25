@@ -4,9 +4,13 @@ export interface ImportOpts {
   fromFormat: string | 'docx' | 'xml';
   fromOpts: {
     'track-changes': 'accept' | 'reject' | 'all';
-    'extract-media': boolean;
+    'extract-media': 'true' | '';
   };
-  toExtensions: Record<string, boolean>;
+  // toExtensions: Record<string, boolean>;
+}
+
+export const parseImportOpts = (opts: unknown): ImportOpts => {
+  return opts as any // TODO
 }
 
 export const fromOptsKvs: Kv[] = [{

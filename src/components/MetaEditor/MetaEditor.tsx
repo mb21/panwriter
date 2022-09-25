@@ -1,10 +1,10 @@
 import { AppState }    from '../../appState/AppState'
 import { Action }   from '../../appState/Action'
 import { defaultVars, stripSurroundingStyleTags } from '../../renderPreview/templates/getCss'
+import { EditorKv, Kv } from '../EditorKv/EditorKv'
 
 import back from './back.svg'
-import './MetaEditor.css'
-import { EditorKv, Kv } from '../EditorKv/EditorKv'
+import styles from './MetaEditor.module.css'
 
 interface Props {
   state: AppState;
@@ -20,9 +20,9 @@ export const MetaEditor = (props: Props) => {
     dispatch({ type: 'setMetaAndRender', key, value })
 
   return (
-    <div className='metaeditor'>
+    <div className={styles.root}>
       <button
-        className='backbtn'
+        className={styles.backbtn}
         onClick={() => {
           dispatch({ type: 'closeMetaEditorAndSetMd' })
           dispatch({ type: 'toggleMetaEditorOpen' })
@@ -30,9 +30,9 @@ export const MetaEditor = (props: Props) => {
         >
         <img alt='back' src={back} draggable={false} />
       </button>
-      <div className='content'>
+      <div className={styles.content}>
         <h4>Document metadata</h4>
-        <div className='kvs'>
+        <div className={styles.kvs}>
           {metaKvs.map(kv =>
             <EditorKv
               key={kv.name}
@@ -42,10 +42,10 @@ export const MetaEditor = (props: Props) => {
             />)}
         </div>
         <h4>Layout</h4>
-        <p className='darkmodewarning'>
+        <p className={styles.darkmodewarning}>
           Previewing custom colors in dark mode is not supported.
         </p>
-        <div className='kvs'>
+        <div className={styles.kvs}>
           {layoutKvs.map(kv =>
             <EditorKv
               key={kv.name}

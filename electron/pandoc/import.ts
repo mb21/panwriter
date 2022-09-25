@@ -4,7 +4,7 @@ import { dirname, extname } from 'path'
 
 import { showModalWindow } from './modal'
 import { Doc } from '../../src/appState/AppState'
-import { ImportOpts } from '../../src/options'
+import { ImportOpts, parseImportOpts } from '../../src/options'
 
 export const importFile = async (win: BrowserWindow, inputPath: string) => {
   const ext = extname(inputPath)
@@ -15,8 +15,7 @@ export const importFile = async (win: BrowserWindow, inputPath: string) => {
         // we fire this event so the ipcMain.handleOnce stops listening
         return
       } else {
-        // TODO: parse or validate importOpts?
-        runImportFile(win, inputPath, importOpts)
+        runImportFile(win, inputPath, parseImportOpts(importOpts))
       }
     })
   } else {
