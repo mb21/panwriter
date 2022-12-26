@@ -33,6 +33,8 @@ ipc.init()
 const createWindow = async (filePath?: string, toImport=false, wasCreatedOnStartup=false) => {
   const win: CustomBrowserWindow = new BrowserWindow({
       width: 1000
+    , minWidth: 500
+    , minHeight: 400
     , height: 800
     , frame: process.platform !== 'darwin'
     , show: false
