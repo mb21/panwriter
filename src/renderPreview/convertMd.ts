@@ -57,8 +57,10 @@ const getNrOfYamlLines = (yaml: string): number => {
   }
 }
 
-const dirname = (path: string): string =>
-  pathToURLpath(path).substring(0, path.lastIndexOf('/') + 1)
+const dirname = (path: string): string => {
+  const urlPath = pathToURLpath(path)
+  return urlPath.substring(0, urlPath.lastIndexOf('/'))
+}
 
 /**
  * Convert a POSIX or Windows file path to a path in a `file://` scheme URL
