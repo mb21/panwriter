@@ -226,7 +226,7 @@ const mergeAndValidate = (docMeta: Meta, extMeta: Meta, outputPath?: string, toC
     out.metadata = {};
   }
   if (docMeta.mainfont === undefined) {
-    out.metadata.mainfont = '-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif';
+    out.metadata.mainfont = extMeta.mainfont || '-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif';
   }
   if (docMeta.monobackgroundcolor === undefined) {
     out.metadata.monobackgroundcolor = '#f0f0f0';
