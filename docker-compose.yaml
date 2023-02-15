@@ -1,0 +1,33 @@
+version: "3.5"
+
+x-default: &defaults
+  image: panwriter:0.8.5
+  volumes:
+    - type: bind
+      source: src
+      target: /home/panwriter/src
+    - type: bind
+      source: electron
+      target: /home/panwriter/electron
+    - type: bind
+      source: dist
+      target: /home/panwriter/dist
+
+services:
+  panwriter:
+    <<: *defaults
+    build:
+      context: .
+    restart: "never"
+    command: [ /bin/bash ]
+    tty: true
+
+  panserver:
+    <<: *defaults
+    restart: "unless-stopped"
+    command: [ yarn, electron:dev ]
+    ports:
+      - target: 3000
+        published: 3000
+        protocol: tcp
+        mode: host

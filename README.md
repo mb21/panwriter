@@ -34,6 +34,44 @@ Install git and [yarn](https://yarnpkg.com/), then:
 
 Check out the `package.json` for more scripts to run.
 
+### Using Docker Compose
+
+Install Docker and Docker Compose for your system, then:
+
+    git clone git@github.com:mb21/panwriter.git
+    cd panwriter
+    docker compose build
+    mkdir dist
+
+This will prepare a docker image, which can be used for development.
+
+#### Start an interactive bash shell
+
+    docker compose run --rm -it panwriter
+
+The directories
+
+- `src`
+- `electron`
+- `dist`
+
+are bound into the container.
+So any change you make to the source with your preferred editor
+will be available in the container where you then can run the
+development server or build the application.
+
+#### useful commands
+
+Build for
+
+    docker compose run panwriter yarn dist        # Linux
+    docker compose run panwriter yarn dist -w     # Windows
+    docker compose run panwriter yarn dist -m zip # Mac OS
+
+Start development server
+
+    docker compose up panserver
+
 ### TODOs
 
 - Preview:
