@@ -225,11 +225,13 @@ const mergeAndValidate = (docMeta: Meta, extMeta: Meta, outputPath?: string, toC
   if (typeof out.metadata !== 'object') {
     out.metadata = {};
   }
-  if (docMeta.mainfont === undefined) {
-    out.metadata.mainfont = '-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif';
-  }
-  if (docMeta.monobackgroundcolor === undefined) {
-    out.metadata.monobackgroundcolor = '#f0f0f0';
+  if (toFormat === 'html') {
+    if (docMeta.mainfont === undefined) {
+      out.metadata.mainfont = '-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif';
+    }
+    if (docMeta.monobackgroundcolor === undefined) {
+      out.metadata.monobackgroundcolor = '#f0f0f0';
+    }
   }
 
   if (outputPath) {
