@@ -20,7 +20,7 @@ Feedback, suggestions and contributions very much welcome! Please open an issue 
 
 ## Develop
 
-Install git and [yarn](https://yarnpkg.com/), then:
+Install git (if you haven't already) and [install Volta](https://docs.volta.sh/guide/getting-started) (which will make the correct Node.js and Yarn versions availlable in the project directory), then:
 
     git clone git@github.com:mb21/panwriter.git
     cd panwriter
