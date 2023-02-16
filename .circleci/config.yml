@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: electronuserland/builder
+      - image: electronuserland/builder:16
     steps:
       - checkout
       - run:
