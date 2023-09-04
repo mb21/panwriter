@@ -54,7 +54,9 @@ See the [pandoc user's guide](http://pandoc.org/MANUAL.html) for available optio
 There are two exceptions to the rule that the key in the `output` YAML is the file extension:
 
 1. When exporting to a `.tex` file, the key should be named `latex`.
-2. When exporting to a `.pdf` file, the key for PanWriter to look up in the `output` YAML can be specified with the `pdf-format` key (see example above). Default is also `latex`, but you can also use `context`, `html`, `ms`, `beamer`, `revealjs`, etc.  In fact, you could set it to anything, if you had a corresponding key in the `output` YAML with a `to:` field. See also [Creating a PDF with pandoc](http://pandoc.org/MANUAL.html#creating-a-pdf).
+2. When exporting to a `.pdf` file, the key for PanWriter to look up in the `output` YAML can be specified with the `pdf-format` key (see example above). Default is also `latex`, but you can also use `context`, `html`, `ms`, `beamer`, etc.  See also [Creating a PDF with pandoc](http://pandoc.org/MANUAL.html#creating-a-pdf).
+
+Note how in the example above, we use `to: epub2`, to overwrite pandoc's default format for the `.epub` file extensions. The same approach can be used for other ambiguous file extensions like `.html` (e.g. `to: html4`, `to: revealjs`, etc.).
 
 ## User Data Directory
 
