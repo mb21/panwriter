@@ -10,7 +10,6 @@
   font-size: 13px;
   grid-template-rows: 38px;
   overflow: hidden;
-  -webkit-app-region: drag;
   background: var(--overlay-background-color);
   border-bottom: 1px solid var(--separator-color);
   transition: opacity 0.2s ease-out;
@@ -21,6 +20,7 @@
   align-items: center;
 }
 .toolbar:hover > .toolbararea {
+  -webkit-app-region: drag;
   transition: opacity 0.12s ease-in;
   opacity: 1;
 }

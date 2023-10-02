@@ -6,8 +6,8 @@
   "homepage": ".",
   "main": "build/electron/main.js",
   "scripts": {
-    "start": "react-scripts start",
-    "build": "INLINE_RUNTIME_CHUNK=false react-scripts build",
+    "start": "react-scripts --openssl-legacy-provider start",
+    "build": "INLINE_RUNTIME_CHUNK=false react-scripts --openssl-legacy-provider build",
     "postinstall": "cp node_modules/pagedjs/dist/paged.polyfill.js public && cp -r node_modules/katex/dist/ public/katex && cp node_modules/markdown-it-texmath/css/texmath.css public/katex",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
@@ -15,9 +15,9 @@
     "tsc": "tsc",
     "electron": "electron .",
     "electron:tsc": "tsc -p electron",
-    "electron:dev": "concurrently \"BROWSER=none yarn start\" \"wait-on http://localhost:3000 && yarn run electron:tsc -w\" \"wait-on http://localhost:3000 && yarn run electron:tsc -p electron && ELECTRON_IS_DEV=1 electron .\"",
-    "electron:build": "yarn build && yarn run electron:tsc",
-    "dist": "yarn run electron:build && electron-builder",
+    "electron:dev": "concurrently \"BROWSER=none npm start\" \"wait-on http://127.0.0.1:3000 && npm run electron:tsc -w\" \"wait-on http://127.0.0.1:3000 && npm run electron:tsc -p electron && ELECTRON_IS_DEV=1 electron .\"",
+    "electron:build": "npm run build && npm run electron:tsc",
+    "dist": "npm run electron:build && electron-builder",
     "dist-all": "electron-builder -mlw",
     "release": "electron-builder -mlw --publish always",
     "website:build": "BUILD_PATH=try PUBLIC_URL='/try' INLINE_RUNTIME_CHUNK=false react-scripts build"
@@ -136,11 +136,11 @@
     "markdown-it-task-lists": "^2.1.1",
     "markdown-it-texmath": "^0.8.0",
     "pagedjs": "0.1.43",
-    "react": "^17.0.1",
+    "react": "^18.2.0",
     "react-codemirror2": "^7.2.1",
     "react-color": "^2.19.3",
-    "react-dom": "^17.0.1",
-    "react-scripts": "5.0.0"
+    "react-dom": "^18.2.0",
+    "react-scripts": "^5.0.1"
   },
   "devDependencies": {
     "@types/codemirror": "^0.0.102",
@@ -149,14 +149,14 @@
     "@types/react": "^16.9.53",
     "@types/react-color": "^3.0.4",
     "@types/react-dom": "^16.9.8",
-    "concurrently": "^6.4.0",
-    "electron": "^22.0.0",
-    "electron-builder": "^23.6.0",
+    "concurrently": "^8.2.1",
+    "electron": "^26.2.4",
+    "electron-builder": "^24.6.4",
     "raw-loader": "^4.0.2",
     "typescript": "^4.5.5",
-    "wait-on": "^6.0.0"
+    "wait-on": "^7.0.1"
   },
   "volta": {
-    "node": "16.19.0"
+    "node": "18.17.1"
   }
 }
