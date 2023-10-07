@@ -2,14 +2,14 @@ version: 2
 jobs:
   build:
     docker:
-      - image: electronuserland/builder:16
+      - image: electronuserland/builder:18
     steps:
       - checkout
       - run:
           name: "Build"
           command: |
-            yarn install
-            yarn run electron:build
+            npm ci --legacy-peer-deps
+            npm run electron:build
 workflows:
   version: 2
   build_and_deploy:

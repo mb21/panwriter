@@ -20,17 +20,17 @@ Feedback, suggestions and contributions very much welcome! Please open an issue 
 
 ## Develop
 
-Install git (if you haven't already) and [install Volta](https://docs.volta.sh/guide/getting-started) (which will make the correct Node.js and Yarn versions availlable in the project directory), then:
+Install git (if you haven't already) and [install Volta](https://docs.volta.sh/guide/getting-started) (which will make the correct Node.js and npm versions availlable in the project directory), then:
 
     git clone git@github.com:mb21/panwriter.git
     cd panwriter
-    yarn install
+    npm ci
 
     ## To run the app in development mode:
-    yarn run electron:dev
+    npm run electron:dev
 
     ## To build distributable app package (goes to ./dist):
-    yarn dist
+    npm dist
 
 Check out the `package.json` for more scripts to run.
 
