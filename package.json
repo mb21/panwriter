@@ -15,7 +15,7 @@
     "tsc": "tsc",
     "electron": "electron .",
     "electron:tsc": "tsc -p electron",
-    "electron:dev": "concurrently \"BROWSER=none npm start\" \"wait-on http://127.0.0.1:3000 && npm run electron:tsc -w\" \"wait-on http://127.0.0.1:3000 && npm run electron:tsc -p electron && ELECTRON_IS_DEV=1 electron .\"",
+    "electron:dev": "concurrently \"BROWSER=none npm start\" \"wait-on http://127.0.0.1:3000 && npm run electron:tsc && ELECTRON_IS_DEV=1 electron .\"",
     "electron:build": "npm run build && npm run electron:tsc",
     "dist": "npm run electron:build && electron-builder",
     "dist-all": "electron-builder -mlw",
