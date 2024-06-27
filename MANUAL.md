@@ -64,7 +64,7 @@ You can place certain files in the PanWriter user directory, which [should be](h
 
 - macOS: `/Users/your-user-name/Library/Application Support/PanWriterUserData`
 - Linux: `~/.config/PanWriterUserData`
-- Windows: `C:\Users\your-user-name\AppData\Local\PanWriterUserData`
+- Windows: `%APPDATA%`, which in Windows 10/11 is `C:\Users\your-user-name\AppData\Roaming\PanWriterUserData`
 
 If the directory does not exist, you can create it.
 
