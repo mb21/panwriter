@@ -87,6 +87,12 @@ To include CSS in your `default.yaml`, you can also use the same format as in-do
       }
       </style>
 
+Note that when exporting via pandoc, [pandoc's template](https://pandoc.org/MANUAL.html#templates) with its own [document-css](https://pandoc.org/MANUAL.html#variables-for-html) is applied as well. You can turn it off by adding the following to your YAML metadata:
+
+```
+document-css: false
+```
+
 ## Document types / themes
 
 You can e.g. put `type: letter` in the YAML of your input document. In that case, PanWriter will look for `letter.yaml` instead of `default.yaml` in the user data directory.
