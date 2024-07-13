@@ -38,11 +38,27 @@ export const fileExportDialog = async (win: CustomBrowserWindow, doc: Doc) => {
   const res = await dialog.showSaveDialog(win, {
     defaultPath: defaultPath
   , buttonLabel: 'Export'
-  , filters: exportFormats
+  , filters: process.platform === 'linux'
+      ? undefined // due to https://github.com/electron/electron/issues/21935
+      : exportFormats
   })
 
   const outputPath = res.filePath
   if (outputPath){
+    if (!validExtensions.includes(extname(outputPath).slice(1))) {
+      const selected = await dialog.showMessageBox(win, {
+        type:    'warning'
+      , message: 'Unknown file extension'
+      , detail:  `File extension (i.e. export format) should likely be one of:
+${validExtensions.join(', ')}.`
+      , buttons: ['Try anyway', 'Cancel']
+      })
+      if (selected.response === 1) {
+        // Cancel
+        return
+      }
+    }
+
     const exp = {
       outputPath
     , spawnOpts
@@ -319,3 +335,8 @@ const exportFormats = [
 , { name: 'Plain text (txt)',                  extensions: ['txt'] }
 , { name: 'Other format',                      extensions: ['*'] }
 ]
+
+const validExtensions = exportFormats.flatMap(format => {
+  const { extensions } = format
+  return extensions[0] === '*' ? [] : extensions
+})
