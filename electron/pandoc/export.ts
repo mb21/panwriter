@@ -285,6 +285,7 @@ const toArgs = (out: Out) => {
 // we rely on the extension to detect target format
 // see https://github.com/electron/electron/issues/15254
 // list based on https://github.com/jgm/pandoc/blob/master/README.md
+// and https://github.com/jgm/pandoc/blob/main/src/Text/Pandoc/Format.hs#L171
 const exportFormats = [
   { name: 'HTML (html)',                       extensions: ['html'] }
 , { name: 'Word (docx)',                       extensions: ['docx'] }
@@ -296,7 +297,7 @@ const exportFormats = [
 , { name: 'OpenOffice/LibreOffice (odt)',      extensions: ['odt'] }
 , { name: 'RTF (rtf)',                         extensions: ['rtf'] }
 , { name: 'EPUB (epub)',                       extensions: ['epub'] }
-, { name: 'DocBook XML (docbook)',             extensions: ['docbook'] }
+, { name: 'DocBook XML (docbook)',             extensions: ['db'] }
 , { name: 'JATS XML (jats)',                   extensions: ['jats'] }
 , { name: 'Text Encoding Initiative (tei)',    extensions: ['tei'] }
 , { name: 'OPML (opml)',                       extensions: ['opml'] }
@@ -306,13 +307,15 @@ const exportFormats = [
 , { name: 'Textile (textile)',                 extensions: ['textile'] }
 , { name: 'Jira/Confluence (jira)',            extensions: ['jira'] }
 , { name: 'DokuWiki (dokuwiki)',               extensions: ['dokuwiki'] }
-, { name: 'MediaWiki (mediawiki)',             extensions: ['mediawiki'] }
+, { name: 'MediaWiki (mediawiki)',             extensions: ['wiki'] }
 , { name: 'Muse (muse)',                       extensions: ['muse'] }
-, { name: 'ZimWiki (zimwiki)',                 extensions: ['zimwiki'] }
 , { name: 'AsciiDoc (asciidoc)',               extensions: ['asciidoc'] }
 , { name: 'Emacs Org mode (org)',              extensions: ['org'] }
 , { name: 'reStructuredText (rst)',            extensions: ['rst'] }
+, { name: 'Djot (djot)',                       extensions: ['dj'] }
 , { name: 'Markdown (md)',                     extensions: ['md'] }
+, { name: 'Markua (markua)',                   extensions: ['markua'] }
+, { name: 'Typst (typst)',                     extensions: ['typ'] }
 , { name: 'Plain text (txt)',                  extensions: ['txt'] }
 , { name: 'Other format',                      extensions: ['*'] }
 ]
