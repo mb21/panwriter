@@ -112,7 +112,10 @@
       },
       "category": "Utility",
       "target": [
-        "AppImage"
+        {
+          "target": "AppImage",
+          "arch": ["x64", "arm64"]
+        }
       ]
     }
   },
