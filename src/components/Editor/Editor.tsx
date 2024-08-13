@@ -1,20 +1,17 @@
-import { countColumn, Editor as CMEditor } from 'codemirror'
-import 'codemirror/addon/dialog/dialog'
-import 'codemirror/addon/search/search'
-import 'codemirror/addon/search/searchcursor'
-import 'codemirror/addon/search/jump-to-line'
-import 'codemirror/addon/mode/overlay'
-import 'codemirror/mode/markdown/markdown'
-import 'codemirror/mode/yaml/yaml'
-import 'codemirror/mode/yaml-frontmatter/yaml-frontmatter'
-import 'codemirror/addon/edit/continuelist'
-import { Controlled as CodeMirror } from 'react-codemirror2'
+import { indentWithTab } from '@codemirror/commands'
+import { markdown, markdownLanguage } from '@codemirror/lang-markdown'
+import { yamlFrontmatter } from '@codemirror/lang-yaml'
+import { HighlightStyle, indentUnit, syntaxHighlighting } from '@codemirror/language'
+import { EditorState, Extension } from '@codemirror/state'
+import { EditorView, keymap } from '@codemirror/view'
+import { tags } from '@lezer/highlight'
 
 import { AppState } from '../../appState/AppState'
 import { Action }   from '../../appState/Action'
 import { registerScrollEditor, scrollPreview } from '../../renderPreview/scrolling'
 
 import './Editor.css'
+import { useEffect, useRef } from 'react'
 
 interface Props {
   state: AppState;
@@ -23,60 +20,60 @@ interface Props {
 
 export const Editor = (props: Props) => {
   const { state, dispatch } = props
-  return (
-    <CodeMirror
-      onBeforeChange={ (_ed, _diff, md) =>
+  const editorDiv = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const extensions: Extension[] = [
+      yamlFrontmatter({
+        content: markdown({
+          base: markdownLanguage,
+        })
+      }),
+      syntaxHighlighting(myHighlightStyle),
+      EditorView.lineWrapping,
+      indentUnit.of('    '), // four spaces because of how numbered lists work in CommonMark
+      keymap.of([indentWithTab]),
+      EditorView.updateListener.of(update => {
+        const md = update.state.doc.toString()
         dispatch({ type: 'setMdAndRender', md })
-      }
-      onScroll={scrollPreview}
-      editorDidMount={onEditorDidMount}
-      value={state.doc.md}
-      autoCursor={true}
-      options={codeMirrorOptions}
-      />
-  )
+      }),
+    ]
+
+    const view = new EditorView({
+      parent: editorDiv.current!,
+      state: EditorState.create({
+        doc: state.doc.md,
+        extensions,
+      }),
+    })
+
+    return () => view.destroy()
+  }, [editorDiv]);
+
+  return <div ref={editorDiv} />
 }
 
-const codeMirrorOptions = {
-  mode: {
-    name: 'yaml-frontmatter'
-  , base: 'markdown'
-  }
-, theme: 'paper'
-, indentUnit: 4 // because of how numbered lists behave in CommonMark
-, tabSize: 4
-, lineNumbers: false
-, lineWrapping: true
-, autofocus: true
-, extraKeys: {
-    Enter: 'newlineAndIndentContinueMarkdownList'
-  , Tab: 'indentMore'
-  , 'Shift-Tab': 'indentLess'
-  }
-}
+// to debug, use:
+// import { defaultHighlightStyle } from '@codemirror/language'
+// const extensions = [ syntaxHighlighting(defaultHighlightStyle),
+// console.log(defaultHighlightStyle.specs, defaultHighlightStyle.specs[7].tag.toString())
+const myHighlightStyle = HighlightStyle.define([
+  { tag: tags.definition(tags.propertyName), color: 'var(--highlight-font-color)' },
+  { tag: tags.emphasis, fontStyle: 'italic' },
+  { tag: tags.heading, color: 'var(--font-color) !important', fontWeight: 'bold' },
+  { tag: tags.labelName, color: 'var(--highlight-font-color)' },
+  { tag: tags.meta, color: 'var(--highlight-font-color)' },
+  { tag: tags.strikethrough, textDecorationLine: 'line-through' },
+  { tag: tags.strong, fontWeight: 'bold' },
+  { tag: tags.url, color: 'var(--highlight-font-color)' },
+])
 
+
+/*
 const onEditorDidMount = (editor: CMEditor) => {
   editor.focus();
 
-  // adapted from https://codemirror.net/demo/indentwrap.html
-  const charWidth = editor.defaultCharWidth()
-  const basePadding = 4
-  // matches markdown list `-`, `+`, `*`, `1.`, `1)` and blockquote `>` markers:
-  // eslint-disable-next-line no-useless-escape
-  const listRe = /^(([-|\+|\*|\>]|\d+[\.|\)])\s+)(.*)/
-
-  editor.on('renderLine', (cm, line, elt) => {
-    const txt = line.text
-    const matches = txt.trim().match(listRe)
-    if (matches && matches[1]) {
-      const extraIndent = matches[1].length
-      const columnCount = countColumn(txt, null, cm.getOption('tabSize') || 4)
-      const off = (columnCount + extraIndent) * charWidth
-      elt.style.textIndent = '-' + off + 'px';
-      elt.style.paddingLeft = (basePadding + off) + 'px';
-    }
-  });
-  editor.refresh();
+  // https://codemirror.net/demo/indentwrap.html
 
   registerScrollEditor(editor);
 
@@ -92,3 +89,4 @@ const onEditorDidMount = (editor: CMEditor) => {
   window.ipcApi?.on.addItalic(        () => replaceSelection(s => ['_',  s, '_' ].join('')) )
   window.ipcApi?.on.addStrikethrough( () => replaceSelection(s => ['~~', s, '~~'].join('')) )
 }
+*/
