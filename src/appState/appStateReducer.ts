@@ -26,13 +26,17 @@ export const appStateReducer = (state: AppState, action: Action): AppState => {
     }
     case 'setMdAndRender': {
       const { md } = action
-      const doc = {
-        ...state.doc,
-        ...parseYaml(md),
-        md,
-        fileDirty: true
+      if (md === state.doc.md) {
+        return state
+      } else {
+        const doc = {
+          ...state.doc,
+          ...parseYaml(md),
+          md,
+          fileDirty: true
+        }
+        return { ...state, doc }
       }
-      return { ...state, doc }
     }
     case 'setMetaAndRender': {
       const { key, value } = action
