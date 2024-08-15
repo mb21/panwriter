@@ -20,7 +20,9 @@ interface Props {
 
 export const Editor = (props: Props) => {
   const { state, dispatch } = props
-  const editorDiv = useRef<HTMLDivElement>(null);
+  const { md } = state.doc
+  const editorDiv = useRef<HTMLDivElement>(null)
+  const editorView = useRef<EditorView | null>(null)
 
   useEffect(() => {
     const extensions: Extension[] = [
@@ -39,16 +41,25 @@ export const Editor = (props: Props) => {
       }),
     ]
 
-    const view = new EditorView({
+    editorView.current = new EditorView({
       parent: editorDiv.current!,
       state: EditorState.create({
-        doc: state.doc.md,
         extensions,
       }),
     })
 
-    return () => view.destroy()
-  }, [editorDiv]);
+    return () => editorView.current?.destroy()
+  }, [editorDiv])
+
+  useEffect(() => {
+    if (md !== editorView.current?.state.doc.toString()) {
+      editorView.current?.dispatch({ changes: {
+        from: 0,
+        to: editorView.current.state.doc.length,
+        insert: md,
+      }})
+    }
+  }, [md])
 
   return <div ref={editorDiv} />
 }
