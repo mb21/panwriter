@@ -11,7 +11,8 @@ Read the **[MANUAL](https://www.panwriter.com/MANUAL.html)** for more info.
 
 **[Download PanWriter](https://www.panwriter.com)**
 
-You also have to [install pandoc](https://pandoc.org/installing.html) to export to most formats.
+- You also have to [install pandoc](https://pandoc.org/installing.html) to export to most formats.
+- If you're on macOS, see this [thread on how to bypass the security warning](https://github.com/mb21/panwriter/issues/33#issuecomment-2354944902).
 
 ![](screenshot.png)
 
