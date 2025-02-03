@@ -90,6 +90,6 @@ const formats = [
 , { name: 'AsciiDoc (asciidoc)',               value: 'asciidoc' }
 , { name: 'Emacs Org mode (org)',              value: 'org' }
 , { name: 'reStructuredText (rst)',            value: 'rst' }
-, { name: 'Markdown (md)',                     value: 'md' }
+, { name: 'Markdown (markdown)',               value: 'markdown' }
 , { name: 'Plain text (txt)',                  value: 'txt' }
 ]
