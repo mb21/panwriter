@@ -114,13 +114,19 @@
       "target": [
         {
           "target": "AppImage",
-          "arch": ["x64", "arm64"]
+          "arch": [
+            "x64",
+            "arm64"
+          ]
         }
       ]
     }
   },
   "dependencies": {
-    "codemirror": "^5.61.0",
+    "@codemirror/lang-markdown": "^6.2.5",
+    "@codemirror/lang-yaml": "^6.1.1",
+    "@codemirror/language": "^6.10.2",
+    "codemirror": "^6.0.1",
     "electron-updater": "^4.6.1",
     "fix-path": "^3.0.0",
     "js-yaml": "^4.1.0",
@@ -140,7 +146,6 @@
     "markdown-it-texmath": "^0.8.0",
     "pagedjs": "0.1.43",
     "react": "^18.2.0",
-    "react-codemirror2": "^7.2.1",
     "react-color": "^2.19.3",
     "react-dom": "^18.2.0",
     "react-scripts": "^5.0.1"
