@@ -114,7 +114,10 @@
       "target": [
         {
           "target": "AppImage",
-          "arch": ["x64", "arm64"]
+          "arch": [
+            "x64",
+            "arm64"
+          ]
         }
       ]
     }
@@ -153,7 +156,7 @@
     "@types/react-color": "^3.0.4",
     "@types/react-dom": "^16.9.8",
     "concurrently": "^8.2.1",
-    "electron": "^31.2.0",
+    "electron": "^34.1.1",
     "electron-builder": "^24.13.3",
     "raw-loader": "^4.0.2",
     "typescript": "^5.5.3",
