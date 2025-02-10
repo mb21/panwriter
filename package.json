@@ -98,7 +98,16 @@
       ]
     },
     "win": {
-      "icon": "icons/icon.ico"
+      "icon": "icons/icon.ico",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ]
     },
     "nsis": {
       "allowToChangeInstallationDirectory": true,
