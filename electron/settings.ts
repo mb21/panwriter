@@ -7,8 +7,9 @@ export const loadSettings = async (): Promise<Settings> => {
 }
 
 const parseSettings = (data: Record<string, unknown> = {}): Settings => {
-  const { autoUpdateApp } = data
+  const { autoUpdateApp, latexDelimiters } = data
   return {
-    autoUpdateApp: autoUpdateApp === undefined ? defaultSettings.autoUpdateApp : !!autoUpdateApp
+    autoUpdateApp: autoUpdateApp === undefined ? defaultSettings.autoUpdateApp : !!autoUpdateApp,
+    latexDelimiters: latexDelimiters === undefined ? defaultSettings.latexDelimiters : latexDelimiters as Settings['latexDelimiters']
   }
 }

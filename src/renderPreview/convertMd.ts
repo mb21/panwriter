@@ -3,17 +3,24 @@ import Renderer from 'markdown-it/lib/renderer'
 import markdownItPandoc from 'markdown-it-pandoc'
 import texmath from 'markdown-it-texmath'
 import katex from 'katex'
-import { Doc } from '../appState/AppState'
+import { Doc, Settings } from '../appState/AppState'
 
-// Configure markdown-it-texmath delimiters to support both dollars and brackets
+// Initialize markdown-it instance
 const md = markdownIt()
-md.use(texmath, { 
-  engine: katex,
-  // Use brackets mode for \( \) and \[ \] support and dollars for $...$ and $$...$$ support
-  delimiters: ['brackets', 'dollars']
-})
-const mdItPandoc = markdownItPandoc(md)
-const defaultImageRender = mdItPandoc.renderer.rules.image
+let mdItPandoc = markdownItPandoc(md)
+let defaultImageRender = mdItPandoc.renderer.rules.image as Renderer.RenderRule
+
+/**
+ * Configure markdown-it with the provided settings
+ */
+export const configureMarkdownIt = (settings: Settings) => {
+  md.use(texmath, { 
+    engine: katex,
+    delimiters: settings.latexDelimiters
+  })
+  mdItPandoc = markdownItPandoc(md)
+  defaultImageRender = mdItPandoc.renderer.rules.image as Renderer.RenderRule
+}
 
 /**
  * converts the markdown in `doc` to HTML

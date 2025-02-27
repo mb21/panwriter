@@ -70,9 +70,17 @@ If the directory does not exist, you can create it.
 
 ## Settings
 
-If you put a `settings.yaml` file in the data directory, PanWriter will read it on startup. Possible fields are currently only:
+If you put a `settings.yaml` file in the data directory, PanWriter will read it on startup. Available settings are:
 
+    # Whether to automatically check for and install app updates
     autoUpdateApp: true
+
+    # Configure which LaTeX math delimiters to use
+    # Can be a single value or an array of values
+    # See https://github.com/goessner/markdown-it-texmath/blob/master/readme.md for all options
+    latexDelimiters: 
+      - dollars   # Use $...$ for inline and $$...$$ for block math
+      - brackets  # Use \(...\) for inline and \[...\] for block math
 
 ## Default CSS and YAML
 

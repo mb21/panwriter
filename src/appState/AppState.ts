@@ -38,8 +38,11 @@ export type ViewSplit = typeof viewSplits[number]
 
 export interface Settings {
   autoUpdateApp: boolean;
+  latexDelimiters?: 'dollars' | 'brackets' | 'doxygen' | 'gitlab' | 'julia' | 'kramdown' | 'beg_end' | 
+    ('dollars' | 'brackets' | 'doxygen' | 'gitlab' | 'julia' | 'kramdown' | 'beg_end')[];
 }
 
 export const defaultSettings: Settings = {
-  autoUpdateApp: true
+  autoUpdateApp: true,
+  latexDelimiters: 'dollars'
 }
