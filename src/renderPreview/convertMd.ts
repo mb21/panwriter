@@ -1,9 +1,18 @@
 import markdownIt, { Options } from 'markdown-it'
 import Renderer from 'markdown-it/lib/renderer'
 import markdownItPandoc from 'markdown-it-pandoc'
+import texmath from 'markdown-it-texmath'
+import katex from 'katex'
 import { Doc } from '../appState/AppState'
 
-const mdItPandoc = markdownItPandoc(markdownIt())
+// Configure markdown-it-texmath delimiters to support both dollars and brackets
+const md = markdownIt()
+md.use(texmath, { 
+  engine: katex,
+  // Use brackets mode for \( \) and \[ \] support and dollars for $...$ and $$...$$ support
+  delimiters: ['brackets', 'dollars']
+})
+const mdItPandoc = markdownItPandoc(md)
 const defaultImageRender = mdItPandoc.renderer.rules.image
 
 /**
