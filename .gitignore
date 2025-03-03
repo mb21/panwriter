@@ -4,5 +4,6 @@ try
 .DS_Store
 .eslintcache
 build
+public/highlight.js/
 public/katex/
 public/paged.polyfill.js

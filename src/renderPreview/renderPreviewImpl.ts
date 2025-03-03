@@ -11,6 +11,18 @@ const injectMathCss = (contentWindow: Window) =>
     contentWindow.document.head.appendChild( createLinkEl(href) )
   )
 
+const injectHighlightCss = (contentWindow: Window) => {
+  const themes = [
+    { href: './highlight.js/default-light.min.css', media: '(prefers-color-scheme: light)' },
+    { href: './highlight.js/default-dark.min.css', media: '(prefers-color-scheme: dark)' }
+  ]
+  themes.forEach(({ href, media }) => {
+    const link = createLinkEl(href)
+    link.setAttribute('media', media)
+    contentWindow.document.head.appendChild(link)
+  })
+}
+
 const interceptClicks = (contentWindow: Window, e: MouseEvent) => {
   e.preventDefault()
   e.returnValue = false
@@ -57,6 +69,7 @@ async function insertFrame(
     const contentWindow = frame.contentWindow
     contentWindow?.addEventListener('DOMContentLoaded', () => {
       injectMathCss(contentWindow)
+      injectHighlightCss(contentWindow)
       contentWindow.addEventListener('click', e => interceptClicks(contentWindow, e))
       return resolve(frame);
     })
@@ -171,6 +184,7 @@ export const renderPaged = async (doc: Doc, previewDiv: HTMLDivElement): Promise
 
     // repopulate styles
     injectMathCss(frameWindow)
+    injectHighlightCss(frameWindow)
     frameHead.appendChild( createStyleEl(cssStr) )
     if (typeof metaHtml === 'string') {
       frameHead.insertAdjacentHTML('beforeend', metaHtml)
