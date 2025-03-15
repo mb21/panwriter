@@ -6,3 +6,4 @@ try
 build
 public/katex/
 public/paged.polyfill.js
+public/highlight.js
