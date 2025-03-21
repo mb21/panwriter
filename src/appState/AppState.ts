@@ -38,8 +38,10 @@ export type ViewSplit = typeof viewSplits[number]
 
 export interface Settings {
   autoUpdateApp: boolean;
+  extensions?: Record<string, boolean>;
 }
 
 export const defaultSettings: Settings = {
-  autoUpdateApp: true
+  autoUpdateApp: true,
+  extensions: {}
 }

@@ -9,6 +9,29 @@ let editor: Editor
   , frameWindow: Window | undefined
   , scrollSyncTimeout: NodeJS.Timeout | undefined // shared between scrollPreview and scrollEditorFn
   , paginated = false
+  , isEditingContent = false
+  , lastEditTime = 0
+  , editorScrollLock = false
+  , EDIT_COOLDOWN_MS = 1000  // Don't rebuild maps for 1 second after editing
+
+// Function to signal that editing is happening
+export const setEditingContentFlag = () => {
+  isEditingContent = true;
+  lastEditTime = Date.now();
+  
+  // Enable editor scroll lock to prevent jumps
+  editorScrollLock = true;
+  
+  // Reset after cooldown period
+  setTimeout(() => {
+    editorScrollLock = false;
+    
+    // Only reset editing flag if no more edits have happened
+    if (Date.now() - lastEditTime >= EDIT_COOLDOWN_MS) {
+      isEditingContent = false;
+    }
+  }, EDIT_COOLDOWN_MS);
+}
 
 export const printPreview = () => {
   if (frameWindow) {
@@ -28,6 +51,11 @@ export const initScroll = (contentWindow: Window, isPaginated: boolean) => {
   if (scrollEditorFn) {
     frameWindow.addEventListener('scroll', scrollEditorFn);
   }
+  
+  // Build scroll maps immediately if in debug mode or editor exists
+  if (editor) {
+    buildScrollMap(editor, editorOffset);
+  }
 }
 
 export const clearPreview = () => {
@@ -41,16 +69,18 @@ export const refreshEditor = () => {
 }
 
 export const scrollPreview = throttle(() => {
-  if (frameWindow) {
-    if (!scrollMap) {
-      buildScrollMap(editor, editorOffset);
-    }
-    var scrollTop = Math.round(editor.getScrollInfo().top)
-      , scrollTo = scrollMap![scrollTop]
-      ;
-    if (scrollTo !== undefined && frameWindow) {
-      frameWindow.scrollTo(0, scrollTo);
-    }
+  if (!frameWindow || editorScrollLock) {
+    return;
+  }
+  
+  if (!scrollMap) {
+    buildScrollMap(editor, editorOffset);
+  }
+  var scrollTop = Math.round(editor.getScrollInfo().top)
+    , scrollTo = scrollMap![scrollTop]
+    ;
+  if (scrollTo !== undefined && frameWindow) {
+    frameWindow.scrollTo(0, scrollTo);
   }
 }, 30, scrollSyncTimeout);
 
@@ -64,7 +94,7 @@ export const registerScrollEditor = (ed: Editor) => {
 
   scrollEditorFn = throttle( (e: Event) => {
     e.preventDefault();
-    if (frameWindow !== undefined) {
+    if (frameWindow !== undefined && !editorScrollLock) {
       if (!reverseScrollMap) {
         buildScrollMap(editor, editorOffset);
       }

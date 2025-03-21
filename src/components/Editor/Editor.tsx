@@ -12,7 +12,7 @@ import { Controlled as CodeMirror } from 'react-codemirror2'
 
 import { AppState } from '../../appState/AppState'
 import { Action }   from '../../appState/Action'
-import { registerScrollEditor, scrollPreview } from '../../renderPreview/scrolling'
+import { registerScrollEditor, scrollPreview, setEditingContentFlag } from '../../renderPreview/scrolling'
 
 import './Editor.css'
 
@@ -23,11 +23,17 @@ interface Props {
 
 export const Editor = (props: Props) => {
   const { state, dispatch } = props
+  
+  // Handler for content changes that detects LaTeX blocks
+  const handleBeforeChange = (_ed: any, _diff: any, md: string) => {
+    setEditingContentFlag();
+    
+    dispatch({ type: 'setMdAndRender', md });
+  };
+
   return (
     <CodeMirror
-      onBeforeChange={ (_ed, _diff, md) =>
-        dispatch({ type: 'setMdAndRender', md })
-      }
+      onBeforeChange={handleBeforeChange}
       onScroll={scrollPreview}
       editorDidMount={onEditorDidMount}
       value={state.doc.md}

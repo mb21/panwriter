@@ -1,10 +1,22 @@
 import markdownIt, { Options } from 'markdown-it'
 import Renderer from 'markdown-it/lib/renderer'
 import markdownItPandoc from 'markdown-it-pandoc'
-import { Doc } from '../appState/AppState'
+import { Doc, Settings } from '../appState/AppState'
 
-const mdItPandoc = markdownItPandoc(markdownIt())
-const defaultImageRender = mdItPandoc.renderer.rules.image
+// Initialize markdown-it instance
+const md = markdownIt()
+let mdItPandoc: any
+let defaultImageRender: any
+// let mdItPandoc = markdownItPandoc(md)
+// let defaultImageRender = mdItPandoc.renderer.rules.image as Renderer.RenderRule
+
+/**
+ * Configure markdown-it with the provided settings
+ */
+export const configureMarkdownIt = (settings: Settings) => {
+  mdItPandoc = markdownItPandoc(md as any, settings.extensions)
+  defaultImageRender = mdItPandoc.renderer.rules.image as Renderer.RenderRule
+}
 
 /**
  * converts the markdown in `doc` to HTML
