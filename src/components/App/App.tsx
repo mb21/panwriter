@@ -69,7 +69,7 @@ const initialState: AppState = {
   }
 , metaEditorOpen: false
 , settings: defaultSettings
-, split: 'onlyEditor'
+, split: defaultSettings.viewSplitState || 'onlyEditor'
 , paginated: false
 , previewDivRef: createRef()
 }

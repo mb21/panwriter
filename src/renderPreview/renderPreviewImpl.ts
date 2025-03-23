@@ -11,6 +11,18 @@ const injectMathCss = (contentWindow: Window) =>
     contentWindow.document.head.appendChild( createLinkEl(href) )
   )
 
+// add link elements for default-light.min.css and default-dark.min.css
+// and add appropriate attributes to select the correct one 
+// based on the system's color scheme
+const injectHighlightCss = (contentWindow: Window) => {
+  const lightLink = createLinkEl('./highlight.js/default-light.min.css')
+  lightLink.setAttribute('media', '(prefers-color-scheme: light)')
+  contentWindow.document.head.appendChild(lightLink)
+  const darkLink = createLinkEl('./highlight.js/default-dark.min.css')
+  darkLink.setAttribute('media', '(prefers-color-scheme: dark)')
+  contentWindow.document.head.appendChild(darkLink)
+}
+
 const interceptClicks = (contentWindow: Window, e: MouseEvent) => {
   e.preventDefault()
   e.returnValue = false
@@ -57,6 +69,7 @@ async function insertFrame(
     const contentWindow = frame.contentWindow
     contentWindow?.addEventListener('DOMContentLoaded', () => {
       injectMathCss(contentWindow)
+      injectHighlightCss(contentWindow)
       contentWindow.addEventListener('click', e => interceptClicks(contentWindow, e))
       return resolve(frame);
     })
@@ -171,6 +184,7 @@ export const renderPaged = async (doc: Doc, previewDiv: HTMLDivElement): Promise
 
     // repopulate styles
     injectMathCss(frameWindow)
+    injectHighlightCss(frameWindow)
     frameHead.appendChild( createStyleEl(cssStr) )
     if (typeof metaHtml === 'string') {
       frameHead.insertAdjacentHTML('beforeend', metaHtml)

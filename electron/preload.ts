@@ -70,6 +70,7 @@ const ipcApi = {
   }
 , chooseFormat
 , readDataDirFile
+, saveViewSplitState: (split: ViewSplit) => ipcRenderer.invoke('saveViewSplitState', split)
 }
 
 contextBridge.exposeInMainWorld('ipcApi', ipcApi)

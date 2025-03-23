@@ -1,7 +1,8 @@
 import { BrowserWindow, ipcMain, shell } from 'electron'
-import { Doc } from '../src/appState/AppState'
+import { Doc, ViewSplit } from '../src/appState/AppState'
 import { readDataDirFile } from './dataDir'
 import { Message } from './preload'
+import { updateSettings } from './settings'
 
 // this file contains the IPC functionality of the main process.
 // for the renderer process's part see electron/preload.ts
@@ -30,6 +31,14 @@ export const init = () => {
   ipcMain.handle('readDataDirFile', async (_event, fileName: string) => {
     const [ meta ] = await readDataDirFile(fileName)
     return meta
+  })
+  
+  ipcMain.handle('saveViewSplitState', async (_event, split: ViewSplit) => {
+    try {
+      await updateSettings({ viewSplitState: split })
+    } catch (err) {
+      console.error('Failed to save view split state:', err)
+    }
   })
 }
 

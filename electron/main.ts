@@ -9,7 +9,7 @@ import { importFile } from './pandoc/import'
 import { saveFile, openFile } from './file'
 import { Message } from './preload'
 import { clearRecentFiles, getRecentFiles } from './recentFiles'
-import { loadSettings } from './settings'
+import { loadSettings, updateSettings } from './settings'
 
 const { autoUpdater } = require('electron-updater')
 require('fix-path')() // needed to execute pandoc on macOS prod build
@@ -17,6 +17,23 @@ require('fix-path')() // needed to execute pandoc on macOS prod build
 let appWillQuit = false
 const settingsPromise = loadSettings()
 
+/**
+ * Simple debounce function to limit the rate at which a function can fire
+ * @param func The function to debounce
+ * @param wait The time to wait in milliseconds
+ * @returns A debounced function
+ */
+function debounce<T extends (...args: any[]) => any>(func: T, wait: number): (...args: Parameters<T>) => void {
+  let timeout: NodeJS.Timeout | null = null;
+  return function(this: any, ...args: Parameters<T>) {
+    const context = this;
+    if (timeout) clearTimeout(timeout);
+    timeout = setTimeout(() => {
+      timeout = null;
+      func.apply(context, args);
+    }, wait);
+  };
+}
 
 declare class CustomBrowserWindow extends Electron.BrowserWindow {
   wasCreatedOnStartup?: boolean;
@@ -31,109 +48,183 @@ const mdExtensions = ['md', 'txt', 'markdown']
 ipc.init()
 
 const createWindow = async (filePath?: string, toImport=false, wasCreatedOnStartup=false) => {
-  const win: CustomBrowserWindow = new BrowserWindow({
-      width: 1000
-    , height: 800
-    , frame: process.platform !== 'darwin'
-    , show: false
-    , webPreferences: {
-        nodeIntegration: false
-      , contextIsolation: true
-      , preload: __dirname + '/preload.js'
-      , sandbox: true
-      }
-    })
+  // Define default window options
+  const windowOptions: Electron.BrowserWindowConstructorOptions = {
+    width: 1000,
+    height: 800,
+    frame: process.platform !== 'darwin',
+    show: false,
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true,
+      preload: __dirname + '/preload.js',
+      sandbox: true
+    }
+  };
 
-  win.wasCreatedOnStartup = wasCreatedOnStartup
-  win.setTitle('Untitled')
+  // Apply saved window bounds if available
+  const settings = await settingsPromise;
+  if (settings.windowBounds) {
+    const { width, height, x, y } = settings.windowBounds;
+    
+    // Validate dimensions and position to prevent window from being off-screen
+    const displays = require('electron').screen.getAllDisplays();
+    let isValid = false;
+    
+    for (const display of displays) {
+      const { workArea } = display;
+      
+      // Check if window would be visible in this display
+      if (
+        x >= workArea.x && y >= workArea.y &&
+        x + width <= workArea.x + workArea.width &&
+        y + height <= workArea.y + workArea.height
+      ) {
+        isValid = true;
+        break;
+      }
+    }
+    
+    // Only apply saved bounds if they are valid
+    if (isValid) {
+      windowOptions.width = width;
+      windowOptions.height = height;
+      windowOptions.x = x;
+      windowOptions.y = y;
+    }
+  }
+
+  const win: CustomBrowserWindow = new BrowserWindow(windowOptions);
+
+  win.wasCreatedOnStartup = wasCreatedOnStartup;
+  win.setTitle('Untitled');
+
+  // Add event listeners to save window bounds
+  const saveBoundsDebounced = debounce(() => {
+    saveWindowBounds(win);
+  }, 500);
+
+  win.on('resize', saveBoundsDebounced);
+  win.on('move', saveBoundsDebounced);
 
   // close auto-created window when first user action is to open/import another file 
   windows.filter(w => w.wasCreatedOnStartup).forEach(async w => {
-    const { fileDirty } = await ipc.getDoc(w)
+    const { fileDirty } = await ipc.getDoc(w);
     if (!fileDirty) {
-      w.close()
+      w.close();
     }
-  })
+  });
 
-  windows.push(win)
+  windows.push(win);
 
   const windowReady = new Promise<void>(resolve =>
     win.once('ready-to-show', resolve)
-  )
+  );
 
-  const isDev = !!process.env.ELECTRON_IS_DEV
+  const isDev = !!process.env.ELECTRON_IS_DEV;
   if (isDev) {
-    win.loadURL('http://localhost:3000/index.html')
+    win.loadURL('http://localhost:3000/index.html');
   } else {
     // win.loadFile('build/index.html')
-    win.loadURL(`file://${__dirname}/../index.html`)
+    win.loadURL(`file://${__dirname}/../index.html`);
   }
 
   if (isDev) {
-    win.webContents.openDevTools()
+    win.webContents.openDevTools();
   }
 
   if (filePath) {
     const doc = toImport
       ? await importFile(win, filePath)
-      : await openFile(win, filePath)
-    const settings = await settingsPromise
+      : await openFile(win, filePath);
     if (doc) {
-      await windowReady
-      ipc.sendMessage(win, { type: 'initDoc', doc, settings })
+      await windowReady;
+      ipc.sendMessage(win, { type: 'initDoc', doc, settings });
+      
+      // If there's a saved split state, set it after a small delay to ensure it's applied
+      if (settings.viewSplitState && 
+          (settings.viewSplitState === 'onlyEditor' || 
+           settings.viewSplitState === 'split' || 
+           settings.viewSplitState === 'onlyPreview')) {
+        setTimeout(() => {
+          ipc.sendMessage(win, { type: 'split', split: settings.viewSplitState as 'onlyEditor' | 'split' | 'onlyPreview' });
+        }, 100);
+      }
     } else {
-      ipc.sendMessage(win, { type: 'loadSettings', settings })
+      ipc.sendMessage(win, { type: 'loadSettings', settings });
+    }
+  } else {
+    await windowReady;
+    ipc.sendMessage(win, { type: 'loadSettings', settings });
+    
+    // If there's a saved split state, set it after a small delay to ensure it's applied
+    if (settings.viewSplitState && 
+        (settings.viewSplitState === 'onlyEditor' || 
+         settings.viewSplitState === 'split' || 
+         settings.viewSplitState === 'onlyPreview')) {
+      setTimeout(() => {
+        ipc.sendMessage(win, { type: 'split', split: settings.viewSplitState as 'onlyEditor' | 'split' | 'onlyPreview' });
+      }, 100);
     }
   }
-  await windowReady
-  ipc.sendPlatform(win)
-  win.show()
-  setMenu()
+
+  // Apply maximized state if needed
+  if (settings.windowBounds?.isMaximized) {
+    win.maximize();
+  }
+
+  await windowReady;
+  ipc.sendPlatform(win);
+  win.show();
+  setMenu();
 
   win.on('close', async e => {
+    // Save window bounds when closing
+    saveWindowBounds(win);
+
     // this does not intercept a reload
     // see https://github.com/electron/electron/blob/master/docs/api/browser-window.md#event-close
     // and https://github.com/electron/electron/issues/9966
     if (!win.dontPreventClose) {
-      e.preventDefault()
+      e.preventDefault();
       const close = () => {
-        win.dontPreventClose = true
-        win.close()
+        win.dontPreventClose = true;
+        win.close();
         if (appWillQuit) {
-          app.quit()
+          app.quit();
         }
-      }
-      const doc = await ipc.getDoc(win)
+      };
+      const doc = await ipc.getDoc(win);
       if (doc.fileDirty) {
         const selected = await dialog.showMessageBox(win, {
             type: "question"
           , message: "This document has unsaved changes."
           , buttons: ["Save", "Cancel", "Don't Save"]
-          })
+          });
         switch (selected.response) {
           case 0: {
             // Save
-            win.dontPreventClose = true
-            await saveFile(win, doc)
-            close()
-            break
+            win.dontPreventClose = true;
+            await saveFile(win, doc);
+            close();
+            break;
           }
           case 1: {
             // Cancel
-            appWillQuit = false
-            break
+            appWillQuit = false;
+            break;
           }
           case 2: {
             // Don't Save
-            close()
-            break
+            close();
+            break;
           }
         }
       } else {
-        close()
+        close();
       }
     }
-  })
+  });
 
   win.on('closed', () => {
     // Dereference the window so it can be garbage collected
@@ -143,7 +234,7 @@ const createWindow = async (filePath?: string, toImport=false, wasCreatedOnStart
     }
 
     setMenu(windows.length > 0, true);
-  })
+  });
 
   win.on('minimize', () => {
     if (windows.filter(w => !w.isMinimized()).length === 0) {
@@ -264,6 +355,39 @@ const windowSendMessage = async (msg: Message) => {
   const win = BrowserWindow.getFocusedWindow()
   if (win) {
     ipc.sendMessage(win, msg)
+  }
+}
+
+const saveSplitSetting = (split: string) => {
+  // Only save valid split settings
+  if (split === 'onlyEditor' || split === 'split' || split === 'onlyPreview') {
+    updateSettings({ viewSplitState: split })
+      .catch(err => console.error('Failed to save split setting:', err))
+  }
+}
+
+/**
+ * Saves the current window's bounds (position, size, and maximized state) to settings
+ * @param win The BrowserWindow instance to save bounds for
+ */
+async function saveWindowBounds(win: BrowserWindow) {
+  try {
+    // Get the current window bounds
+    const bounds = win.getNormalBounds();
+    const isMaximized = win.isMaximized();
+    
+    // Update the settings with the new bounds
+    await updateSettings({
+      windowBounds: {
+        width: bounds.width,
+        height: bounds.height,
+        x: bounds.x,
+        y: bounds.y,
+        isMaximized
+      }
+    });
+  } catch (error) {
+    console.error('Failed to save window bounds:', error);
   }
 }
 
@@ -389,17 +513,26 @@ const setMenu = async (aWindowIsOpen=true, useRecentFilesCache=false) => {
     , submenu: [
         { label: 'Show Only Editor'
         , accelerator: 'CmdOrCtrl+1'
-        , click: () => windowSendMessage({ type: 'split', split: 'onlyEditor' })
+        , click: () => {
+            windowSendMessage({ type: 'split', split: 'onlyEditor' })
+            saveSplitSetting('onlyEditor')
+          }
         , enabled: aWindowIsOpen
         }
       , { label: 'Show Split View'
         , accelerator: 'CmdOrCtrl+2'
-        , click: () => windowSendMessage({ type: 'split', split: 'split' })
+        , click: () => {
+            windowSendMessage({ type: 'split', split: 'split' })
+            saveSplitSetting('split')
+          }
         , enabled: aWindowIsOpen
         }
       , { label: 'Show Only Preview'
         , accelerator: 'CmdOrCtrl+3'
-        , click: () => windowSendMessage({ type: 'split', split: 'onlyPreview' })
+        , click: () => {
+            windowSendMessage({ type: 'split', split: 'onlyPreview' })
+            saveSplitSetting('onlyPreview')
+          }
         , enabled: aWindowIsOpen
         }
       , {type: 'separator'}
@@ -456,3 +589,5 @@ const setMenu = async (aWindowIsOpen=true, useRecentFilesCache=false) => {
   var menu = Menu.buildFromTemplate(template);
   Menu.setApplicationMenu(menu);
 }
+
+

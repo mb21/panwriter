@@ -2,6 +2,7 @@ import { AppState } from './AppState'
 import { clearPreview, refreshEditor } from '../renderPreview/scrolling'
 import { parseYaml, serializeMetaToMd } from '../renderPreview/convertYaml'
 import { Action } from './Action'
+import { configureMarkdownIt } from '../renderPreview/convertMd'
 
 
 export const appStateReducer = (state: AppState, action: Action): AppState => {
@@ -16,13 +17,19 @@ export const appStateReducer = (state: AppState, action: Action): AppState => {
     }
     case 'initDoc': {
       const { settings } = action
+      configureMarkdownIt(settings)
       const { md } = action.doc
       const doc = { ...state.doc, ...action.doc, ...parseYaml(md) }
-      return { ...state, doc, settings }
+      // Use the saved split setting if available
+      const split = settings.viewSplitState || state.split
+      return { ...state, doc, settings, split }
     }
     case 'loadSettings': {
       const { settings } = action
-      return { ...state, settings }
+      configureMarkdownIt(settings)
+      // Use the saved split setting if available
+      const split = settings.viewSplitState || state.split
+      return { ...state, settings, split }
     }
     case 'setMdAndRender': {
       const { md } = action
