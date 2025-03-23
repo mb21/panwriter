@@ -20,12 +20,16 @@ export const appStateReducer = (state: AppState, action: Action): AppState => {
       configureMarkdownIt(settings)
       const { md } = action.doc
       const doc = { ...state.doc, ...action.doc, ...parseYaml(md) }
-      return { ...state, doc, settings }
+      // Use the saved split setting if available
+      const split = settings.viewSplitState || state.split
+      return { ...state, doc, settings, split }
     }
     case 'loadSettings': {
       const { settings } = action
       configureMarkdownIt(settings)
-      return { ...state, settings }
+      // Use the saved split setting if available
+      const split = settings.viewSplitState || state.split
+      return { ...state, settings, split }
     }
     case 'setMdAndRender': {
       const { md } = action

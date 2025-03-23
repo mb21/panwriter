@@ -39,9 +39,25 @@ export type ViewSplit = typeof viewSplits[number]
 export interface Settings {
   autoUpdateApp: boolean;
   extensions?: Record<string, boolean>;
+  viewSplitState?: ViewSplit;
+  windowBounds?: {
+    width: number;
+    height: number;
+    x: number;
+    y: number;
+    isMaximized: boolean;
+  };
 }
 
 export const defaultSettings: Settings = {
   autoUpdateApp: true,
-  extensions: {}
+  extensions: {},
+  viewSplitState: 'onlyEditor',
+  windowBounds: {
+    width: 1000,
+    height: 800,
+    x: 0,
+    y: 0,
+    isMaximized: false
+  }
 }

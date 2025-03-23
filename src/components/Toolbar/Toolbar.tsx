@@ -63,7 +63,11 @@ export const Toolbar = (props: Props) => {
                 <Button
                   key={s}
                   active={s === split}
-                  onClick={() => dispatch({ type: 'setSplitAndRender', split: s })}
+                  onClick={() => {
+                    dispatch({ type: 'setSplitAndRender', split: s });
+                    // Save the split state if we're running in Electron
+                    window.ipcApi?.saveViewSplitState(s);
+                  }}
                   >
                   <img alt={s} src={splitIcons[s]} />
                 </Button> )}
