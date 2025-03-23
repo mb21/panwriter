@@ -70,9 +70,14 @@ If the directory does not exist, you can create it.
 
 ## Settings
 
-If you put a `settings.yaml` file in the data directory, PanWriter will read it on startup. Possible fields are currently only:
+If you put a `settings.yaml` file in the data directory, PanWriter will read it on startup. Available settings are:
 
-    autoUpdateApp: true
+    autoUpdateApp: true  # whether to automatically check for and install updates
+    extensions:          # optional: configure markdown-it extensions
+      some-extension: true
+      other-extension: false
+
+For available extension options and their effects, please refer to the [markdown-it-pandoc documentation](https://github.com/mb21/markdown-it-pandoc#readme).
 
 ## Default CSS and YAML
 

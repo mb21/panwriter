@@ -84,6 +84,10 @@ const createWindow = async (filePath?: string, toImport=false, wasCreatedOnStart
     } else {
       ipc.sendMessage(win, { type: 'loadSettings', settings })
     }
+  } else {
+    const settings = await settingsPromise
+    await windowReady
+    ipc.sendMessage(win, { type: 'loadSettings', settings })
   }
   await windowReady
   ipc.sendPlatform(win)

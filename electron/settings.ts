@@ -7,8 +7,11 @@ export const loadSettings = async (): Promise<Settings> => {
 }
 
 const parseSettings = (data: Record<string, unknown> = {}): Settings => {
-  const { autoUpdateApp } = data
+  const { autoUpdateApp, extensions } = data
   return {
-    autoUpdateApp: autoUpdateApp === undefined ? defaultSettings.autoUpdateApp : !!autoUpdateApp
+    autoUpdateApp: autoUpdateApp === undefined ? defaultSettings.autoUpdateApp : !!autoUpdateApp,
+    extensions: typeof extensions === 'object' && extensions !== null 
+      ? extensions as Record<string, boolean>
+      : defaultSettings.extensions
   }
 }
