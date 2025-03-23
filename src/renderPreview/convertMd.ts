@@ -7,8 +7,6 @@ import { Doc, Settings } from '../appState/AppState'
 const md = markdownIt()
 let mdItPandoc: any
 let defaultImageRender: any
-// let mdItPandoc = markdownItPandoc(md)
-// let defaultImageRender = mdItPandoc.renderer.rules.image as Renderer.RenderRule
 
 /**
  * Configure markdown-it with the provided settings

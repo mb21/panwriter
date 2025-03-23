@@ -147,7 +147,7 @@
     "markdown-it-highlightjs": "^4.2.0",
     "markdown-it-implicit-figures": "^0.9.0",
     "markdown-it-mathjax3": "^4.3.2",
-    "markdown-it-pandoc": "file:../markdown-it-pandoc",
+    "markdown-it-pandoc": "^2.3.0",
     "markdown-it-sub": "^1.0.0",
     "markdown-it-sup": "^1.0.0",
     "markdown-it-task-lists": "^2.1.1",
