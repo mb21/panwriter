@@ -106,28 +106,35 @@ export const scrollPreview = () => {
     scrollPreviewPending = true;
     requestAnimationFrame(() => {
       if (frameWindow) {
-        if (!scrollMap) {
-          buildScrollMap(editor, editorOffset);
-        }
-        const scrollTop = Math.round(editor.getScrollInfo().top);
-        // Clamp to valid range
-        const clampedScrollTop = Math.min(scrollTop, (scrollMap?.length || 1) - 1);
-        const scrollTo = scrollMap![clampedScrollTop];
-        console.log('Editor→Preview:', {
-          editorScrollTop: scrollTop,
-          clampedScrollTop,
-          previewScrollTo: scrollTo,
-          scrollMapSize: scrollMap?.length,
-          defined: scrollTo !== undefined
-        });
-        if (scrollTo !== undefined) {
-          // Set scroll lock to prevent feedback
-          scrollSource = 'editor';
-          if (scrollLockTimeout) clearTimeout(scrollLockTimeout);
-          scrollLockTimeout = setTimeout(() => { scrollSource = null; }, 50);
+        // Get actual scrollable ranges for both panes
+        const editorScrollInfo = editor.getScrollInfo();
+        const editorScrollableRange = editorScrollInfo.height - editorScrollInfo.clientHeight;
+        const previewScrollableRange = frameWindow.document.documentElement.scrollHeight - frameWindow.innerHeight;
 
-          frameWindow.scrollTo(0, scrollTo);
+        if (editorScrollableRange <= 0 || previewScrollableRange <= 0) {
+          scrollPreviewPending = false;
+          return;
         }
+
+        // Calculate scroll percentage and apply to preview
+        const editorScrollTop = editorScrollInfo.top;
+        const scrollPercent = editorScrollTop / editorScrollableRange;
+        const previewScrollTo = Math.round(scrollPercent * previewScrollableRange);
+
+        console.log('Editor→Preview:', {
+          editorScrollTop: Math.round(editorScrollTop),
+          editorScrollableRange: Math.round(editorScrollableRange),
+          previewScrollableRange: Math.round(previewScrollableRange),
+          scrollPercent: (scrollPercent * 100).toFixed(1) + '%',
+          previewScrollTo
+        });
+
+        // Set scroll lock to prevent feedback
+        scrollSource = 'editor';
+        if (scrollLockTimeout) clearTimeout(scrollLockTimeout);
+        scrollLockTimeout = setTimeout(() => { scrollSource = null; }, 50);
+
+        frameWindow.scrollTo(0, previewScrollTo);
       }
       scrollPreviewPending = false;
     });
@@ -154,25 +161,35 @@ export const registerScrollEditor = (ed: Editor) => {
       scrollEditorPending = true;
       requestAnimationFrame(() => {
         if (frameWindow !== undefined) {
-          if (!reverseScrollMapEntries) {
-            buildScrollMap(editor, editorOffset);
-          }
-          const previewScrollY = frameWindow.scrollY;
-          const editorPos = findEditorPosition(previewScrollY);
-          console.log('Preview→Editor:', {
-            previewScrollY,
-            editorScrollTo: editorPos,
-            entriesCount: reverseScrollMapEntries?.length,
-            scrollSource
-          });
-          if (editorPos !== undefined) {
-            // Set scroll lock to prevent feedback
-            scrollSource = 'preview';
-            if (scrollLockTimeout) clearTimeout(scrollLockTimeout);
-            scrollLockTimeout = setTimeout(() => { scrollSource = null; }, 50);
+          // Get actual scrollable ranges for both panes
+          const editorScrollInfo = editor.getScrollInfo();
+          const editorScrollableRange = editorScrollInfo.height - editorScrollInfo.clientHeight;
+          const previewScrollableRange = frameWindow.document.documentElement.scrollHeight - frameWindow.innerHeight;
 
-            editorScrollFrame?.scrollTo(0, editorPos);
+          if (editorScrollableRange <= 0 || previewScrollableRange <= 0) {
+            scrollEditorPending = false;
+            return;
           }
+
+          // Calculate scroll percentage and apply to editor
+          const previewScrollY = frameWindow.scrollY;
+          const scrollPercent = previewScrollY / previewScrollableRange;
+          const editorScrollTo = Math.round(scrollPercent * editorScrollableRange);
+
+          console.log('Preview→Editor:', {
+            previewScrollY: Math.round(previewScrollY),
+            previewScrollableRange: Math.round(previewScrollableRange),
+            editorScrollableRange: Math.round(editorScrollableRange),
+            scrollPercent: (scrollPercent * 100).toFixed(1) + '%',
+            editorScrollTo
+          });
+
+          // Set scroll lock to prevent feedback
+          scrollSource = 'preview';
+          if (scrollLockTimeout) clearTimeout(scrollLockTimeout);
+          scrollLockTimeout = setTimeout(() => { scrollSource = null; }, 50);
+
+          editorScrollFrame?.scrollTo(0, editorScrollTo);
         }
         scrollEditorPending = false;
       });
