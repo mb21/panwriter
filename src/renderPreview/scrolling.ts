@@ -54,16 +54,7 @@ const findEditorPosition = (previewScrollY: number): number | undefined => {
   const factor = (previewScrollY - leftEntry.previewPos) / previewRange;
   const editorRange = rightEntry.editorPos - leftEntry.editorPos;
 
-  const result = Math.round(leftEntry.editorPos + factor * editorRange);
-  console.log('Interpolation:', {
-    previewScrollY,
-    leftEntry,
-    rightEntry,
-    factor: factor.toFixed(3),
-    result
-  });
-
-  return result;
+  return Math.round(leftEntry.editorPos + factor * editorRange);
 }
 
 export const printPreview = () => {
@@ -138,15 +129,6 @@ export const scrollPreview = () => {
         // This preserves line correlation while ensuring both reach bottom together
         const previewScrollTo = Math.round((scrollMapValue / maxScrollMapValue) * previewScrollableRange);
 
-        console.log('Editor→Preview:', {
-          editorScrollTop,
-          scrollMapValue,
-          maxScrollMapValue,
-          previewScrollableRange,
-          previewScrollTo,
-          ratio: (scrollMapValue / maxScrollMapValue * 100).toFixed(1) + '%'
-        });
-
         // Set scroll lock to prevent feedback
         scrollSource = 'editor';
         if (scrollLockTimeout) clearTimeout(scrollLockTimeout);
@@ -212,14 +194,6 @@ export const registerScrollEditor = (ed: Editor) => {
 
           // Scale the result to fit actual scrollable range
           const editorScrollTo = Math.round((editorPosInMap / maxEditorInMap) * editorScrollableRange);
-
-          console.log('Preview→Editor:', {
-            previewScrollY: Math.round(previewScrollY),
-            scaledPreviewY: Math.round(scaledPreviewY),
-            editorPosInMap,
-            editorScrollTo,
-            ratio: (editorPosInMap / maxEditorInMap * 100).toFixed(1) + '%'
-          });
 
           // Set scroll lock to prevent feedback
           scrollSource = 'preview';
@@ -330,16 +304,6 @@ const buildScrollMap = (editor: Editor, editorOffset: number) => {
   }
 
   reverseScrollMapEntries = deduped;
-
-  console.log('Scroll map built:', {
-    scrollMapSize: scrollMap.length,
-    reverseEntriesCount: reverseScrollMapEntries.length,
-    firstEntries: reverseScrollMapEntries.slice(0, 5),
-    lastEntries: reverseScrollMapEntries.slice(-5),
-    offsetSum,
-    editorOffset,
-    knownLineOffsetsCount: knownLineOffsets.length
-  });
 }
 
 const resetScrollMaps = () => {
