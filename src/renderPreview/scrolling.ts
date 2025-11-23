@@ -131,21 +131,20 @@ export const scrollPreview = () => {
           return;
         }
 
-        // Get the preview content height for scaling
-        const previewContentHeight = frameWindow.document.documentElement.scrollHeight;
+        // Get the maximum value in the scroll map for consistent scaling
+        const maxScrollMapValue = scrollMap[scrollMap.length - 1] || 1;
 
         // Scale the scroll map value to fit actual scrollable range
-        // scrollMapValue is absolute position in preview (0 to contentHeight)
-        // Convert to scroll position (0 to scrollableRange)
-        const previewScrollTo = Math.round((scrollMapValue / previewContentHeight) * previewScrollableRange);
+        // This preserves line correlation while ensuring both reach bottom together
+        const previewScrollTo = Math.round((scrollMapValue / maxScrollMapValue) * previewScrollableRange);
 
         console.log('Editor→Preview:', {
           editorScrollTop,
           scrollMapValue,
-          previewContentHeight,
+          maxScrollMapValue,
           previewScrollableRange,
           previewScrollTo,
-          ratio: (scrollMapValue / previewContentHeight * 100).toFixed(1) + '%'
+          ratio: (scrollMapValue / maxScrollMapValue * 100).toFixed(1) + '%'
         });
 
         // Set scroll lock to prevent feedback
@@ -195,17 +194,16 @@ export const registerScrollEditor = (ed: Editor) => {
             return;
           }
 
-          // Get content heights for scaling
-          const editorContentHeight = editorScrollInfo.height;
-          const previewContentHeight = frameWindow.document.documentElement.scrollHeight;
+          // Get max values from scroll map for consistent scaling
+          const maxEditorInMap = scrollMap.length - 1;
+          const maxPreviewInMap = scrollMap[maxEditorInMap] || 1;
 
-          // Convert actual preview scroll position to absolute position in document
+          // Convert actual preview scroll position to scroll map coordinates
           const previewScrollY = frameWindow.scrollY;
-          // The scroll position maps to this absolute position in the preview document
-          const previewAbsoluteY = (previewScrollY / previewScrollableRange) * previewContentHeight;
+          const scaledPreviewY = (previewScrollY / previewScrollableRange) * maxPreviewInMap;
 
           // Use binary search with interpolation to find editor position
-          const editorPosInMap = findEditorPosition(previewAbsoluteY);
+          const editorPosInMap = findEditorPosition(scaledPreviewY);
 
           if (editorPosInMap === undefined) {
             scrollEditorPending = false;
@@ -213,14 +211,14 @@ export const registerScrollEditor = (ed: Editor) => {
           }
 
           // Scale the result to fit actual scrollable range
-          const editorScrollTo = Math.round((editorPosInMap / editorContentHeight) * editorScrollableRange);
+          const editorScrollTo = Math.round((editorPosInMap / maxEditorInMap) * editorScrollableRange);
 
           console.log('Preview→Editor:', {
             previewScrollY: Math.round(previewScrollY),
-            previewAbsoluteY: Math.round(previewAbsoluteY),
+            scaledPreviewY: Math.round(scaledPreviewY),
             editorPosInMap,
             editorScrollTo,
-            ratio: (editorPosInMap / editorContentHeight * 100).toFixed(1) + '%'
+            ratio: (editorPosInMap / maxEditorInMap * 100).toFixed(1) + '%'
           });
 
           // Set scroll lock to prevent feedback
