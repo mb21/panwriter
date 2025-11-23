@@ -11,34 +11,48 @@ let editor: Editor
   , paginated = false
 
 // Binary search to find the closest entry for a given preview scroll position
+// Interpolates between entries for more accurate positioning
 const findEditorPosition = (previewScrollY: number): number | undefined => {
   if (!reverseScrollMapEntries || reverseScrollMapEntries.length === 0) {
     return undefined;
   }
 
+  const entries = reverseScrollMapEntries;
   let left = 0;
-  let right = reverseScrollMapEntries.length - 1;
+  let right = entries.length - 1;
 
   // Handle edge cases
-  if (previewScrollY <= reverseScrollMapEntries[0].previewPos) {
-    return reverseScrollMapEntries[0].editorPos;
+  if (previewScrollY <= entries[0].previewPos) {
+    return entries[0].editorPos;
   }
-  if (previewScrollY >= reverseScrollMapEntries[right].previewPos) {
-    return reverseScrollMapEntries[right].editorPos;
+  if (previewScrollY >= entries[right].previewPos) {
+    return entries[right].editorPos;
   }
 
-  // Binary search for closest position
+  // Binary search for the interval containing previewScrollY
   while (left < right - 1) {
     const mid = Math.floor((left + right) / 2);
-    if (reverseScrollMapEntries[mid].previewPos <= previewScrollY) {
+    if (entries[mid].previewPos <= previewScrollY) {
       left = mid;
     } else {
       right = mid;
     }
   }
 
-  // Return the closest match (prefer the one before current position)
-  return reverseScrollMapEntries[left].editorPos;
+  // Interpolate between entries[left] and entries[right]
+  const leftEntry = entries[left];
+  const rightEntry = entries[right];
+
+  // Calculate the interpolation factor
+  const previewRange = rightEntry.previewPos - leftEntry.previewPos;
+  if (previewRange === 0) {
+    return leftEntry.editorPos;
+  }
+
+  const factor = (previewScrollY - leftEntry.previewPos) / previewRange;
+  const editorRange = rightEntry.editorPos - leftEntry.editorPos;
+
+  return Math.round(leftEntry.editorPos + factor * editorRange);
 }
 
 export const printPreview = () => {
