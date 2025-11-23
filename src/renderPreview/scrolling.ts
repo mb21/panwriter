@@ -106,27 +106,46 @@ export const scrollPreview = () => {
     scrollPreviewPending = true;
     requestAnimationFrame(() => {
       if (frameWindow) {
+        // Build scroll map if needed
+        if (!scrollMap) {
+          buildScrollMap(editor, editorOffset);
+        }
+
         // Get actual scrollable ranges for both panes
         const editorScrollInfo = editor.getScrollInfo();
         const editorScrollableRange = editorScrollInfo.height - editorScrollInfo.clientHeight;
         const previewScrollableRange = frameWindow.document.documentElement.scrollHeight - frameWindow.innerHeight;
 
-        if (editorScrollableRange <= 0 || previewScrollableRange <= 0) {
+        if (editorScrollableRange <= 0 || previewScrollableRange <= 0 || !scrollMap) {
           scrollPreviewPending = false;
           return;
         }
 
-        // Calculate scroll percentage and apply to preview
-        const editorScrollTop = editorScrollInfo.top;
-        const scrollPercent = editorScrollTop / editorScrollableRange;
-        const previewScrollTo = Math.round(scrollPercent * previewScrollableRange);
+        // Get the scroll map value for line-based correlation
+        const editorScrollTop = Math.round(editorScrollInfo.top);
+        const clampedScrollTop = Math.min(editorScrollTop, scrollMap.length - 1);
+        const scrollMapValue = scrollMap[clampedScrollTop];
+
+        if (scrollMapValue === undefined) {
+          scrollPreviewPending = false;
+          return;
+        }
+
+        // Get max values from scroll map for scaling
+        const maxEditorInMap = scrollMap.length - 1;
+        const maxPreviewInMap = scrollMap[maxEditorInMap] || 1;
+
+        // Scale the scroll map value to fit actual scrollable range
+        // This preserves line correlation while ensuring both reach bottom together
+        const previewScrollTo = Math.round((scrollMapValue / maxPreviewInMap) * previewScrollableRange);
 
         console.log('Editor→Preview:', {
-          editorScrollTop: Math.round(editorScrollTop),
-          editorScrollableRange: Math.round(editorScrollableRange),
-          previewScrollableRange: Math.round(previewScrollableRange),
-          scrollPercent: (scrollPercent * 100).toFixed(1) + '%',
-          previewScrollTo
+          editorScrollTop,
+          scrollMapValue,
+          maxPreviewInMap,
+          previewScrollableRange,
+          previewScrollTo,
+          ratio: (scrollMapValue / maxPreviewInMap * 100).toFixed(1) + '%'
         });
 
         // Set scroll lock to prevent feedback
@@ -161,27 +180,46 @@ export const registerScrollEditor = (ed: Editor) => {
       scrollEditorPending = true;
       requestAnimationFrame(() => {
         if (frameWindow !== undefined) {
+          // Build scroll map if needed
+          if (!reverseScrollMapEntries || !scrollMap) {
+            buildScrollMap(editor, editorOffset);
+          }
+
           // Get actual scrollable ranges for both panes
           const editorScrollInfo = editor.getScrollInfo();
           const editorScrollableRange = editorScrollInfo.height - editorScrollInfo.clientHeight;
           const previewScrollableRange = frameWindow.document.documentElement.scrollHeight - frameWindow.innerHeight;
 
-          if (editorScrollableRange <= 0 || previewScrollableRange <= 0) {
+          if (editorScrollableRange <= 0 || previewScrollableRange <= 0 || !scrollMap || !reverseScrollMapEntries) {
             scrollEditorPending = false;
             return;
           }
 
-          // Calculate scroll percentage and apply to editor
+          // Get max values from scroll map for scaling
+          const maxEditorInMap = scrollMap.length - 1;
+          const maxPreviewInMap = scrollMap[maxEditorInMap] || 1;
+
+          // Convert actual preview scroll to scroll map coordinates
           const previewScrollY = frameWindow.scrollY;
-          const scrollPercent = previewScrollY / previewScrollableRange;
-          const editorScrollTo = Math.round(scrollPercent * editorScrollableRange);
+          const scaledPreviewY = (previewScrollY / previewScrollableRange) * maxPreviewInMap;
+
+          // Use binary search with interpolation to find editor position
+          const editorPosInMap = findEditorPosition(scaledPreviewY);
+
+          if (editorPosInMap === undefined) {
+            scrollEditorPending = false;
+            return;
+          }
+
+          // Scale the result to fit actual scrollable range
+          const editorScrollTo = Math.round((editorPosInMap / maxEditorInMap) * editorScrollableRange);
 
           console.log('Preview→Editor:', {
             previewScrollY: Math.round(previewScrollY),
-            previewScrollableRange: Math.round(previewScrollableRange),
-            editorScrollableRange: Math.round(editorScrollableRange),
-            scrollPercent: (scrollPercent * 100).toFixed(1) + '%',
-            editorScrollTo
+            scaledPreviewY: Math.round(scaledPreviewY),
+            editorPosInMap,
+            editorScrollTo,
+            ratio: (editorPosInMap / maxEditorInMap * 100).toFixed(1) + '%'
           });
 
           // Set scroll lock to prevent feedback
