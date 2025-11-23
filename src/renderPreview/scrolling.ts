@@ -1,14 +1,45 @@
 import { Editor } from 'codemirror'
-import { throttle } from './throttle'
 
 let editor: Editor
   , editorOffset = 0
   , scrollEditorFn: ((e: Event) => void) | undefined
   , scrollMap: number[] | undefined
-  , reverseScrollMap: number[] | undefined
+  , reverseScrollMapEntries: Array<{previewPos: number, editorPos: number}> | undefined
   , frameWindow: Window | undefined
-  , scrollSyncTimeout: NodeJS.Timeout | undefined // shared between scrollPreview and scrollEditorFn
+  , scrollPreviewPending = false
+  , scrollEditorPending = false
   , paginated = false
+
+// Binary search to find the closest entry for a given preview scroll position
+const findEditorPosition = (previewScrollY: number): number | undefined => {
+  if (!reverseScrollMapEntries || reverseScrollMapEntries.length === 0) {
+    return undefined;
+  }
+
+  let left = 0;
+  let right = reverseScrollMapEntries.length - 1;
+
+  // Handle edge cases
+  if (previewScrollY <= reverseScrollMapEntries[0].previewPos) {
+    return reverseScrollMapEntries[0].editorPos;
+  }
+  if (previewScrollY >= reverseScrollMapEntries[right].previewPos) {
+    return reverseScrollMapEntries[right].editorPos;
+  }
+
+  // Binary search for closest position
+  while (left < right - 1) {
+    const mid = Math.floor((left + right) / 2);
+    if (reverseScrollMapEntries[mid].previewPos <= previewScrollY) {
+      left = mid;
+    } else {
+      right = mid;
+    }
+  }
+
+  // Return the closest match (prefer the one before current position)
+  return reverseScrollMapEntries[left].editorPos;
+}
 
 export const printPreview = () => {
   if (frameWindow) {
@@ -40,19 +71,24 @@ export const refreshEditor = () => {
   }
 }
 
-export const scrollPreview = throttle(() => {
-  if (frameWindow) {
-    if (!scrollMap) {
-      buildScrollMap(editor, editorOffset);
-    }
-    var scrollTop = Math.round(editor.getScrollInfo().top)
-      , scrollTo = scrollMap![scrollTop]
-      ;
-    if (scrollTo !== undefined && frameWindow) {
-      frameWindow.scrollTo(0, scrollTo);
-    }
+export const scrollPreview = () => {
+  if (!scrollPreviewPending && frameWindow) {
+    scrollPreviewPending = true;
+    requestAnimationFrame(() => {
+      if (frameWindow) {
+        if (!scrollMap) {
+          buildScrollMap(editor, editorOffset);
+        }
+        const scrollTop = Math.round(editor.getScrollInfo().top);
+        const scrollTo = scrollMap![scrollTop];
+        if (scrollTo !== undefined) {
+          frameWindow.scrollTo(0, scrollTo);
+        }
+      }
+      scrollPreviewPending = false;
+    });
   }
-}, 30, scrollSyncTimeout);
+};
 
 export const registerScrollEditor = (ed: Editor) => {
   editor = ed;
@@ -60,22 +96,26 @@ export const registerScrollEditor = (ed: Editor) => {
   editorOffset = codeMirrorLines
     ? parseInt(window.getComputedStyle(codeMirrorLines).getPropertyValue('padding-top'), 10)
     : 0
-  var editorScrollFrame = document.querySelector('.CodeMirror-scroll')
+  const editorScrollFrame = document.querySelector('.CodeMirror-scroll')
 
-  scrollEditorFn = throttle( (e: Event) => {
+  scrollEditorFn = (e: Event) => {
     e.preventDefault();
-    if (frameWindow !== undefined) {
-      if (!reverseScrollMap) {
-        buildScrollMap(editor, editorOffset);
-      }
-      for (var i=frameWindow.scrollY; i>=0; i--) {
-        if (reverseScrollMap![i] !== undefined) {
-          editorScrollFrame?.scrollTo(0, reverseScrollMap![i])
-          break;
+    if (!scrollEditorPending && frameWindow !== undefined) {
+      scrollEditorPending = true;
+      requestAnimationFrame(() => {
+        if (frameWindow !== undefined) {
+          if (!reverseScrollMapEntries) {
+            buildScrollMap(editor, editorOffset);
+          }
+          const editorPos = findEditorPosition(frameWindow.scrollY);
+          if (editorPos !== undefined) {
+            editorScrollFrame?.scrollTo(0, editorPos);
+          }
         }
-      }
+        scrollEditorPending = false;
+      });
     }
-  }, 30, scrollSyncTimeout);
+  };
 }
 
 /*
@@ -92,7 +132,9 @@ const buildScrollMap = (editor: Editor, editorOffset: number) => {
   // (offset is the number of vertical pixels from the top)
   scrollMap = [];
   scrollMap[0] = 0;
-  reverseScrollMap = [];
+
+  // We'll build reverseScrollMapEntries as a sorted array for O(log n) binary search
+  const reverseEntries: Array<{previewPos: number, editorPos: number}> = [];
 
   // lineOffsets[i] holds top-offset of line i in the source editor
   var lineOffsets = [undefined as any as number, 0]
@@ -125,7 +167,8 @@ const buildScrollMap = (editor: Editor, editorOffset: number) => {
     lastEl = el;
   }
   if (lastEl) {
-    scrollMap[offsetSum] = Math.ceil(lastEl.getBoundingClientRect().bottom + frameWindow.scrollY);
+    // Use Math.round for consistency with other rounding operations
+    scrollMap[offsetSum] = Math.round(lastEl.getBoundingClientRect().bottom + frameWindow.scrollY);
     knownLineOffsets.push(offsetSum);
   }
 
@@ -145,11 +188,29 @@ const buildScrollMap = (editor: Editor, editorOffset: number) => {
     } else {
       j++;
     }
-    reverseScrollMap[ scrollMap[i] ] = i;
+    // Build sorted array entries for binary search
+    reverseEntries.push({
+      previewPos: scrollMap[i],
+      editorPos: i
+    });
   }
+
+  // Sort by preview position for binary search and remove duplicates
+  reverseEntries.sort((a, b) => a.previewPos - b.previewPos);
+
+  // Deduplicate: keep last entry for each preview position (most accurate)
+  const deduped: Array<{previewPos: number, editorPos: number}> = [];
+  for (let i = 0; i < reverseEntries.length; i++) {
+    if (i === reverseEntries.length - 1 ||
+        reverseEntries[i].previewPos !== reverseEntries[i + 1].previewPos) {
+      deduped.push(reverseEntries[i]);
+    }
+  }
+
+  reverseScrollMapEntries = deduped;
 }
 
 const resetScrollMaps = () => {
   scrollMap = undefined;
-  reverseScrollMap = undefined;
+  reverseScrollMapEntries = undefined;
 }
