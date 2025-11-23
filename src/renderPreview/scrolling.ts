@@ -178,6 +178,12 @@ const buildScrollMap = (editor: Editor, editorOffset: number) => {
   }
 
   // fill in the blanks by interpolating between the two closest known line offsets
+  // First, add the initial entry for position 0
+  reverseEntries.push({
+    previewPos: 0,
+    editorPos: 0
+  });
+
   var j = 0;
   for (var i=1; i < offsetSum; i++) {
     if (scrollMap[i] === undefined) {
