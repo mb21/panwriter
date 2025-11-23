@@ -54,7 +54,16 @@ const findEditorPosition = (previewScrollY: number): number | undefined => {
   const factor = (previewScrollY - leftEntry.previewPos) / previewRange;
   const editorRange = rightEntry.editorPos - leftEntry.editorPos;
 
-  return Math.round(leftEntry.editorPos + factor * editorRange);
+  const result = Math.round(leftEntry.editorPos + factor * editorRange);
+  console.log('Interpolation:', {
+    previewScrollY,
+    leftEntry,
+    rightEntry,
+    factor: factor.toFixed(3),
+    result
+  });
+
+  return result;
 }
 
 export const printPreview = () => {
@@ -129,6 +138,15 @@ export const scrollPreview = () => {
         // This preserves line correlation while ensuring both reach bottom together
         const previewScrollTo = Math.round((scrollMapValue / maxScrollMapValue) * previewScrollableRange);
 
+        console.log('Editor→Preview:', {
+          editorScrollTop,
+          scrollMapValue,
+          maxScrollMapValue,
+          previewScrollableRange,
+          previewScrollTo,
+          ratio: (scrollMapValue / maxScrollMapValue * 100).toFixed(1) + '%'
+        });
+
         // Set scroll lock to prevent feedback
         scrollSource = 'editor';
         if (scrollLockTimeout) clearTimeout(scrollLockTimeout);
@@ -192,8 +210,17 @@ export const registerScrollEditor = (ed: Editor) => {
             return;
           }
 
-          // Scale the result to fit actual scrollable range
-          const editorScrollTo = Math.round((editorPosInMap / maxEditorInMap) * editorScrollableRange);
+          // editorPosInMap is already in pixel coordinates (same as editorScrollTop)
+          // Don't scale it - use directly to maintain symmetry with Editor→Preview
+          const editorScrollTo = editorPosInMap;
+
+          console.log('Preview→Editor:', {
+            previewScrollY: Math.round(previewScrollY),
+            scaledPreviewY: Math.round(scaledPreviewY),
+            editorPosInMap,
+            editorScrollTo,
+            ratio: (editorPosInMap / maxEditorInMap * 100).toFixed(1) + '%'
+          });
 
           // Set scroll lock to prevent feedback
           scrollSource = 'preview';
@@ -304,6 +331,16 @@ const buildScrollMap = (editor: Editor, editorOffset: number) => {
   }
 
   reverseScrollMapEntries = deduped;
+
+  console.log('Scroll map built:', {
+    scrollMapSize: scrollMap.length,
+    reverseEntriesCount: reverseScrollMapEntries.length,
+    firstEntries: reverseScrollMapEntries.slice(0, 5),
+    lastEntries: reverseScrollMapEntries.slice(-5),
+    offsetSum,
+    editorOffset,
+    knownLineOffsetsCount: knownLineOffsets.length
+  });
 }
 
 const resetScrollMaps = () => {
