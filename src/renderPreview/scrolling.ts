@@ -52,7 +52,16 @@ const findEditorPosition = (previewScrollY: number): number | undefined => {
   const factor = (previewScrollY - leftEntry.previewPos) / previewRange;
   const editorRange = rightEntry.editorPos - leftEntry.editorPos;
 
-  return Math.round(leftEntry.editorPos + factor * editorRange);
+  const result = Math.round(leftEntry.editorPos + factor * editorRange);
+  console.log('Interpolation:', {
+    previewScrollY,
+    leftEntry,
+    rightEntry,
+    factor: factor.toFixed(3),
+    result
+  });
+
+  return result;
 }
 
 export const printPreview = () => {
@@ -95,6 +104,12 @@ export const scrollPreview = () => {
         }
         const scrollTop = Math.round(editor.getScrollInfo().top);
         const scrollTo = scrollMap![scrollTop];
+        console.log('Editor→Preview:', {
+          editorScrollTop: scrollTop,
+          previewScrollTo: scrollTo,
+          scrollMapSize: scrollMap?.length,
+          defined: scrollTo !== undefined
+        });
         if (scrollTo !== undefined) {
           frameWindow.scrollTo(0, scrollTo);
         }
@@ -121,7 +136,13 @@ export const registerScrollEditor = (ed: Editor) => {
           if (!reverseScrollMapEntries) {
             buildScrollMap(editor, editorOffset);
           }
-          const editorPos = findEditorPosition(frameWindow.scrollY);
+          const previewScrollY = frameWindow.scrollY;
+          const editorPos = findEditorPosition(previewScrollY);
+          console.log('Preview→Editor:', {
+            previewScrollY,
+            editorScrollTo: editorPos,
+            entriesCount: reverseScrollMapEntries?.length
+          });
           if (editorPos !== undefined) {
             editorScrollFrame?.scrollTo(0, editorPos);
           }
@@ -228,6 +249,16 @@ const buildScrollMap = (editor: Editor, editorOffset: number) => {
   }
 
   reverseScrollMapEntries = deduped;
+
+  console.log('Scroll map built:', {
+    scrollMapSize: scrollMap.length,
+    reverseEntriesCount: reverseScrollMapEntries.length,
+    firstEntries: reverseScrollMapEntries.slice(0, 5),
+    lastEntries: reverseScrollMapEntries.slice(-5),
+    offsetSum,
+    editorOffset,
+    knownLineOffsetsCount: knownLineOffsets.length
+  });
 }
 
 const resetScrollMaps = () => {
