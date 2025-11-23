@@ -9,6 +9,8 @@ let editor: Editor
   , scrollPreviewPending = false
   , scrollEditorPending = false
   , paginated = false
+  , scrollSource: 'editor' | 'preview' | null = null  // Track which pane initiated scroll
+  , scrollLockTimeout: NodeJS.Timeout | undefined
 
 // Binary search to find the closest entry for a given preview scroll position
 // Interpolates between entries for more accurate positioning
@@ -95,6 +97,11 @@ export const refreshEditor = () => {
 }
 
 export const scrollPreview = () => {
+  // Ignore if preview initiated the scroll (prevent feedback loop)
+  if (scrollSource === 'preview') {
+    return;
+  }
+
   if (!scrollPreviewPending && frameWindow) {
     scrollPreviewPending = true;
     requestAnimationFrame(() => {
@@ -103,14 +110,22 @@ export const scrollPreview = () => {
           buildScrollMap(editor, editorOffset);
         }
         const scrollTop = Math.round(editor.getScrollInfo().top);
-        const scrollTo = scrollMap![scrollTop];
+        // Clamp to valid range
+        const clampedScrollTop = Math.min(scrollTop, (scrollMap?.length || 1) - 1);
+        const scrollTo = scrollMap![clampedScrollTop];
         console.log('Editor→Preview:', {
           editorScrollTop: scrollTop,
+          clampedScrollTop,
           previewScrollTo: scrollTo,
           scrollMapSize: scrollMap?.length,
           defined: scrollTo !== undefined
         });
         if (scrollTo !== undefined) {
+          // Set scroll lock to prevent feedback
+          scrollSource = 'editor';
+          if (scrollLockTimeout) clearTimeout(scrollLockTimeout);
+          scrollLockTimeout = setTimeout(() => { scrollSource = null; }, 50);
+
           frameWindow.scrollTo(0, scrollTo);
         }
       }
@@ -129,6 +144,12 @@ export const registerScrollEditor = (ed: Editor) => {
 
   scrollEditorFn = (e: Event) => {
     e.preventDefault();
+
+    // Ignore if editor initiated the scroll (prevent feedback loop)
+    if (scrollSource === 'editor') {
+      return;
+    }
+
     if (!scrollEditorPending && frameWindow !== undefined) {
       scrollEditorPending = true;
       requestAnimationFrame(() => {
@@ -141,9 +162,15 @@ export const registerScrollEditor = (ed: Editor) => {
           console.log('Preview→Editor:', {
             previewScrollY,
             editorScrollTo: editorPos,
-            entriesCount: reverseScrollMapEntries?.length
+            entriesCount: reverseScrollMapEntries?.length,
+            scrollSource
           });
           if (editorPos !== undefined) {
+            // Set scroll lock to prevent feedback
+            scrollSource = 'preview';
+            if (scrollLockTimeout) clearTimeout(scrollLockTimeout);
+            scrollLockTimeout = setTimeout(() => { scrollSource = null; }, 50);
+
             editorScrollFrame?.scrollTo(0, editorPos);
           }
         }
