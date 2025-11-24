@@ -122,9 +122,12 @@ export const scrollPreview = () => {
         }
 
         // Get the scroll map value for line-based correlation
+        // Scale editor position to scroll map coordinates to handle full scroll range
         const editorScrollTop = Math.round(editorScrollInfo.top);
-        const clampedScrollTop = Math.min(editorScrollTop, scrollMap.length - 1);
-        const scrollMapValue = scrollMap[clampedScrollTop];
+        const maxEditorInMap = scrollMap.length - 1;
+        const scaledEditorPos = Math.round((editorScrollTop / editorScrollableRange) * maxEditorInMap);
+        const clampedEditorPos = Math.min(Math.max(scaledEditorPos, 0), maxEditorInMap);
+        const scrollMapValue = scrollMap[clampedEditorPos];
 
         if (scrollMapValue === undefined) {
           scrollPreviewPending = false;
@@ -140,11 +143,12 @@ export const scrollPreview = () => {
 
         console.log('Editor→Preview:', {
           editorScrollTop,
+          scaledEditorPos,
           scrollMapValue,
           maxScrollMapValue,
           previewScrollableRange,
           previewScrollTo,
-          ratio: (scrollMapValue / maxScrollMapValue * 100).toFixed(1) + '%'
+          ratio: (editorScrollTop / editorScrollableRange * 100).toFixed(1) + '%'
         });
 
         // Set scroll lock to prevent feedback
@@ -210,16 +214,16 @@ export const registerScrollEditor = (ed: Editor) => {
             return;
           }
 
-          // editorPosInMap is already in pixel coordinates (same as editorScrollTop)
-          // Don't scale it - use directly to maintain symmetry with Editor→Preview
-          const editorScrollTo = editorPosInMap;
+          // Scale editorPosInMap back to actual editor scroll coordinates
+          // This is symmetric with Editor→Preview which scales editor pos to map coordinates
+          const editorScrollTo = Math.round((editorPosInMap / maxEditorInMap) * editorScrollableRange);
 
           console.log('Preview→Editor:', {
             previewScrollY: Math.round(previewScrollY),
             scaledPreviewY: Math.round(scaledPreviewY),
             editorPosInMap,
             editorScrollTo,
-            ratio: (editorPosInMap / maxEditorInMap * 100).toFixed(1) + '%'
+            ratio: (previewScrollY / previewScrollableRange * 100).toFixed(1) + '%'
           });
 
           // Set scroll lock to prevent feedback
