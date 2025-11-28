@@ -137,7 +137,10 @@ const runFileExport = async (
   const out = mergeAndValidate(docMeta, extMeta || {}, exp.outputPath, exp.toClipboardFormat)
 
   const cmd  = 'pandoc'
-  const args = (extMeta ? ['--metadata-file', fileName] : []).concat( toArgs(out) )
+  // Specify input format to match what's shown in preview and used in import
+  // This ensures bullet lists and other markdown elements are interpreted consistently
+  const fromFormat = 'markdown-raw_html-raw_tex-header_attributes-fancy_lists-simple_tables-multiline_tables'
+  const args = ['-f', fromFormat].concat(extMeta ? ['--metadata-file', fileName] : []).concat( toArgs(out) )
   const cmdDebug = cmd + ' ' + args.map(a => a.includes(' ') ? `'${a}'` : a).join(' ')
   let receivedError = false
 
