@@ -137,7 +137,11 @@ const runFileExport = async (
   const out = mergeAndValidate(docMeta, extMeta || {}, exp.outputPath, exp.toClipboardFormat)
 
   const cmd  = 'pandoc'
-  const args = (extMeta ? ['--metadata-file', fileName] : []).concat( toArgs(out) )
+  // Use GFM (GitHub Flavored Markdown) as input format
+  // GFM allows bullet lists without blank lines before them, matching how markdown-it renders in preview
+  // This fixes the issue where lists weren't being recognized in exported documents
+  const fromFormat = 'gfm'
+  const args = ['-f', fromFormat].concat(extMeta ? ['--metadata-file', fileName] : []).concat( toArgs(out) )
   const cmdDebug = cmd + ' ' + args.map(a => a.includes(' ') ? `'${a}'` : a).join(' ')
   let receivedError = false
 
