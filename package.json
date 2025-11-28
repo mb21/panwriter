@@ -7,20 +7,20 @@
   "main": "build/electron/main.js",
   "scripts": {
     "start": "react-scripts --openssl-legacy-provider start",
-    "build": "INLINE_RUNTIME_CHUNK=false react-scripts --openssl-legacy-provider build",
-    "postinstall": "cp node_modules/pagedjs/dist/paged.polyfill.js public && cp -r node_modules/katex/dist/ public/katex && cp node_modules/markdown-it-texmath/css/texmath.css public/katex",
+    "build": "cross-env INLINE_RUNTIME_CHUNK=false react-scripts --openssl-legacy-provider build",
+    "postinstall": "shx cp node_modules/pagedjs/dist/paged.polyfill.js public && shx cp -r node_modules/katex/dist/ public/katex && shx cp node_modules/markdown-it-texmath/css/texmath.css public/katex",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "eslint src",
     "tsc": "tsc",
     "electron": "electron .",
     "electron:tsc": "tsc -p electron",
-    "electron:dev": "concurrently \"BROWSER=none npm start\" \"wait-on http://127.0.0.1:3000 && npm run electron:tsc && ELECTRON_IS_DEV=1 electron .\"",
+    "electron:dev": "concurrently \"cross-env BROWSER=none npm start\" \"wait-on http://127.0.0.1:3000 && npm run electron:tsc && cross-env ELECTRON_IS_DEV=1 electron .\"",
     "electron:build": "npm run build && npm run electron:tsc",
     "dist": "npm run electron:build && electron-builder",
     "dist-all": "npm run electron:build && electron-builder -mlw",
     "release": "npm run electron:build && electron-builder -mlw --publish always",
-    "website:build": "BUILD_PATH=try PUBLIC_URL='/try' INLINE_RUNTIME_CHUNK=false react-scripts build"
+    "website:build": "cross-env BUILD_PATH=try PUBLIC_URL='/try' INLINE_RUNTIME_CHUNK=false react-scripts build"
   },
   "repository": "https://github.com/mb21/panwriter",
   "keywords": [
@@ -165,9 +165,11 @@
     "@types/react-color": "^3.0.4",
     "@types/react-dom": "^16.9.8",
     "concurrently": "^8.2.1",
+    "cross-env": "^7.0.3",
     "electron": "^34.1.1",
     "electron-builder": "^25.1.8",
     "raw-loader": "^4.0.2",
+    "shx": "^0.3.4",
     "typescript": "^5.5.3",
     "wait-on": "^7.2.0"
   },
