@@ -256,7 +256,7 @@ const mergeAndValidate = (docMeta: Meta, extMeta: Meta, outputPath?: string, toC
   }
 
   // allow user to set `to: epub2`, `to: gfm`, `to: revealjs` etc.
-  if (out.to === undefined) {
+  if (toClipboardFormat && out.to === undefined) {
     out.to = toFormat;
   }
 
