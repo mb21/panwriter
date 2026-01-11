@@ -115,10 +115,6 @@
     },
     "linux": {
       "icon": "icons/icon.png",
-      "desktop": {
-        "Name": "PanWriter",
-        "Comment": "Markdown editor with pandoc integration and paginated preview"
-      },
       "category": "Utility",
       "target": [
         {
@@ -167,7 +163,7 @@
     "@types/react-dom": "^16.9.8",
     "concurrently": "^8.2.1",
     "electron": "^39.2.7",
-    "electron-builder": "^25.1.8",
+    "electron-builder": "^26.4.0",
     "raw-loader": "^4.0.2",
     "typescript": "^5.9.3",
     "wait-on": "^7.2.0"
