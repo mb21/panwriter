@@ -47,7 +47,7 @@ const createWindow = async (filePath?: string, toImport=false, wasCreatedOnStart
   win.wasCreatedOnStartup = wasCreatedOnStartup
   win.setTitle('Untitled')
 
-  // close auto-created window when first user action is to open/import another file 
+  // close auto-created window when first user action is to open/import another file
   windows.filter(w => w.wasCreatedOnStartup).forEach(async w => {
     const { fileDirty } = await ipc.getDoc(w)
     if (!fileDirty) {
@@ -196,7 +196,7 @@ const createWindow = async (filePath?: string, toImport=false, wasCreatedOnStart
     }
     try {
       const settings = await settingsPromise
-      if (settings.autoUpdateApp) {
+      if (settings.autoUpdateApp && process.platform !== 'darwin') {
         autoUpdater.allowPrerelease = false
         autoUpdater.checkForUpdatesAndNotify()
       }
