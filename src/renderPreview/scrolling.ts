@@ -1,14 +1,61 @@
 import { Editor } from 'codemirror'
-import { throttle } from './throttle'
 
 let editor: Editor
   , editorOffset = 0
   , scrollEditorFn: ((e: Event) => void) | undefined
   , scrollMap: number[] | undefined
-  , reverseScrollMap: number[] | undefined
+  , reverseScrollMapEntries: Array<{previewPos: number, editorPos: number}> | undefined
   , frameWindow: Window | undefined
-  , scrollSyncTimeout: NodeJS.Timeout | undefined // shared between scrollPreview and scrollEditorFn
+  , scrollPreviewPending = false
+  , scrollEditorPending = false
   , paginated = false
+  , scrollSource: 'editor' | 'preview' | null = null  // Track which pane initiated scroll
+  , scrollLockTimeout: NodeJS.Timeout | undefined
+
+// Binary search to find the closest entry for a given preview scroll position
+// Interpolates between entries for more accurate positioning
+const findEditorPosition = (previewScrollY: number): number | undefined => {
+  if (!reverseScrollMapEntries || reverseScrollMapEntries.length === 0) {
+    return undefined;
+  }
+
+  const entries = reverseScrollMapEntries;
+  let left = 0;
+  let right = entries.length - 1;
+
+  // Handle edge cases
+  if (previewScrollY <= entries[0].previewPos) {
+    return entries[0].editorPos;
+  }
+  if (previewScrollY >= entries[right].previewPos) {
+    return entries[right].editorPos;
+  }
+
+  // Binary search for the interval containing previewScrollY
+  while (left < right - 1) {
+    const mid = Math.floor((left + right) / 2);
+    if (entries[mid].previewPos <= previewScrollY) {
+      left = mid;
+    } else {
+      right = mid;
+    }
+  }
+
+  // Interpolate between entries[left] and entries[right]
+  const leftEntry = entries[left];
+  const rightEntry = entries[right];
+
+  // Calculate the interpolation factor
+  const previewRange = rightEntry.previewPos - leftEntry.previewPos;
+  if (previewRange === 0) {
+    return leftEntry.editorPos;
+  }
+
+  const factor = (previewScrollY - leftEntry.previewPos) / previewRange;
+  const editorRange = rightEntry.editorPos - leftEntry.editorPos;
+
+  return Math.round(leftEntry.editorPos + factor * editorRange);
+}
 
 export const printPreview = () => {
   if (frameWindow) {
@@ -40,19 +87,62 @@ export const refreshEditor = () => {
   }
 }
 
-export const scrollPreview = throttle(() => {
-  if (frameWindow) {
-    if (!scrollMap) {
-      buildScrollMap(editor, editorOffset);
-    }
-    var scrollTop = Math.round(editor.getScrollInfo().top)
-      , scrollTo = scrollMap![scrollTop]
-      ;
-    if (scrollTo !== undefined && frameWindow) {
-      frameWindow.scrollTo(0, scrollTo);
-    }
+export const scrollPreview = () => {
+  // Ignore if preview initiated the scroll (prevent feedback loop)
+  if (scrollSource === 'preview') {
+    return;
   }
-}, 30, scrollSyncTimeout);
+
+  if (!scrollPreviewPending && frameWindow) {
+    scrollPreviewPending = true;
+    requestAnimationFrame(() => {
+      if (frameWindow) {
+        // Build scroll map if needed
+        if (!scrollMap) {
+          buildScrollMap(editor, editorOffset);
+        }
+
+        // Get actual scrollable ranges for both panes
+        const editorScrollInfo = editor.getScrollInfo();
+        const editorScrollableRange = editorScrollInfo.height - editorScrollInfo.clientHeight;
+        const previewScrollableRange = frameWindow.document.documentElement.scrollHeight - frameWindow.innerHeight;
+
+        if (editorScrollableRange <= 0 || previewScrollableRange <= 0 || !scrollMap) {
+          scrollPreviewPending = false;
+          return;
+        }
+
+        // Get the scroll map value for line-based correlation
+        // Scale editor position to scroll map coordinates to handle full scroll range
+        const editorScrollTop = Math.round(editorScrollInfo.top);
+        const maxEditorInMap = scrollMap.length - 1;
+        const scaledEditorPos = Math.round((editorScrollTop / editorScrollableRange) * maxEditorInMap);
+        const clampedEditorPos = Math.min(Math.max(scaledEditorPos, 0), maxEditorInMap);
+        const scrollMapValue = scrollMap[clampedEditorPos];
+
+        if (scrollMapValue === undefined) {
+          scrollPreviewPending = false;
+          return;
+        }
+
+        // Get the maximum value in the scroll map for consistent scaling
+        const maxScrollMapValue = scrollMap[scrollMap.length - 1] || 1;
+
+        // Scale the scroll map value to fit actual scrollable range
+        // This preserves line correlation while ensuring both reach bottom together
+        const previewScrollTo = Math.round((scrollMapValue / maxScrollMapValue) * previewScrollableRange);
+
+        // Set scroll lock to prevent feedback
+        scrollSource = 'editor';
+        if (scrollLockTimeout) clearTimeout(scrollLockTimeout);
+        scrollLockTimeout = setTimeout(() => { scrollSource = null; }, 50);
+
+        frameWindow.scrollTo(0, previewScrollTo);
+      }
+      scrollPreviewPending = false;
+    });
+  }
+};
 
 export const registerScrollEditor = (ed: Editor) => {
   editor = ed;
@@ -60,22 +150,66 @@ export const registerScrollEditor = (ed: Editor) => {
   editorOffset = codeMirrorLines
     ? parseInt(window.getComputedStyle(codeMirrorLines).getPropertyValue('padding-top'), 10)
     : 0
-  var editorScrollFrame = document.querySelector('.CodeMirror-scroll')
+  const editorScrollFrame = document.querySelector('.CodeMirror-scroll')
 
-  scrollEditorFn = throttle( (e: Event) => {
+  scrollEditorFn = (e: Event) => {
     e.preventDefault();
-    if (frameWindow !== undefined) {
-      if (!reverseScrollMap) {
-        buildScrollMap(editor, editorOffset);
-      }
-      for (var i=frameWindow.scrollY; i>=0; i--) {
-        if (reverseScrollMap![i] !== undefined) {
-          editorScrollFrame?.scrollTo(0, reverseScrollMap![i])
-          break;
-        }
-      }
+
+    // Ignore if editor initiated the scroll (prevent feedback loop)
+    if (scrollSource === 'editor') {
+      return;
     }
-  }, 30, scrollSyncTimeout);
+
+    if (!scrollEditorPending && frameWindow !== undefined) {
+      scrollEditorPending = true;
+      requestAnimationFrame(() => {
+        if (frameWindow !== undefined) {
+          // Build scroll map if needed
+          if (!reverseScrollMapEntries || !scrollMap) {
+            buildScrollMap(editor, editorOffset);
+          }
+
+          // Get actual scrollable ranges for both panes
+          const editorScrollInfo = editor.getScrollInfo();
+          const editorScrollableRange = editorScrollInfo.height - editorScrollInfo.clientHeight;
+          const previewScrollableRange = frameWindow.document.documentElement.scrollHeight - frameWindow.innerHeight;
+
+          if (editorScrollableRange <= 0 || previewScrollableRange <= 0 || !scrollMap || !reverseScrollMapEntries) {
+            scrollEditorPending = false;
+            return;
+          }
+
+          // Get max values from scroll map for consistent scaling
+          const maxEditorInMap = scrollMap.length - 1;
+          const maxPreviewInMap = scrollMap[maxEditorInMap] || 1;
+
+          // Convert actual preview scroll position to scroll map coordinates
+          const previewScrollY = frameWindow.scrollY;
+          const scaledPreviewY = (previewScrollY / previewScrollableRange) * maxPreviewInMap;
+
+          // Use binary search with interpolation to find editor position
+          const editorPosInMap = findEditorPosition(scaledPreviewY);
+
+          if (editorPosInMap === undefined) {
+            scrollEditorPending = false;
+            return;
+          }
+
+          // Scale editorPosInMap back to actual editor scroll coordinates
+          // This is symmetric with Editor→Preview which scales editor pos to map coordinates
+          const editorScrollTo = Math.round((editorPosInMap / maxEditorInMap) * editorScrollableRange);
+
+          // Set scroll lock to prevent feedback
+          scrollSource = 'preview';
+          if (scrollLockTimeout) clearTimeout(scrollLockTimeout);
+          scrollLockTimeout = setTimeout(() => { scrollSource = null; }, 50);
+
+          editorScrollFrame?.scrollTo(0, editorScrollTo);
+        }
+        scrollEditorPending = false;
+      });
+    }
+  };
 }
 
 /*
@@ -92,7 +226,9 @@ const buildScrollMap = (editor: Editor, editorOffset: number) => {
   // (offset is the number of vertical pixels from the top)
   scrollMap = [];
   scrollMap[0] = 0;
-  reverseScrollMap = [];
+
+  // We'll build reverseScrollMapEntries as a sorted array for O(log n) binary search
+  const reverseEntries: Array<{previewPos: number, editorPos: number}> = [];
 
   // lineOffsets[i] holds top-offset of line i in the source editor
   var lineOffsets = [undefined as any as number, 0]
@@ -125,7 +261,8 @@ const buildScrollMap = (editor: Editor, editorOffset: number) => {
     lastEl = el;
   }
   if (lastEl) {
-    scrollMap[offsetSum] = Math.ceil(lastEl.getBoundingClientRect().bottom + frameWindow.scrollY);
+    // Use Math.round for consistency with other rounding operations
+    scrollMap[offsetSum] = Math.round(lastEl.getBoundingClientRect().bottom + frameWindow.scrollY);
     knownLineOffsets.push(offsetSum);
   }
 
@@ -135,6 +272,12 @@ const buildScrollMap = (editor: Editor, editorOffset: number) => {
   }
 
   // fill in the blanks by interpolating between the two closest known line offsets
+  // First, add the initial entry for position 0
+  reverseEntries.push({
+    previewPos: 0,
+    editorPos: 0
+  });
+
   var j = 0;
   for (var i=1; i < offsetSum; i++) {
     if (scrollMap[i] === undefined) {
@@ -145,11 +288,29 @@ const buildScrollMap = (editor: Editor, editorOffset: number) => {
     } else {
       j++;
     }
-    reverseScrollMap[ scrollMap[i] ] = i;
+    // Build sorted array entries for binary search
+    reverseEntries.push({
+      previewPos: scrollMap[i],
+      editorPos: i
+    });
   }
+
+  // Sort by preview position for binary search and remove duplicates
+  reverseEntries.sort((a, b) => a.previewPos - b.previewPos);
+
+  // Deduplicate: keep last entry for each preview position (most accurate)
+  const deduped: Array<{previewPos: number, editorPos: number}> = [];
+  for (let i = 0; i < reverseEntries.length; i++) {
+    if (i === reverseEntries.length - 1 ||
+        reverseEntries[i].previewPos !== reverseEntries[i + 1].previewPos) {
+      deduped.push(reverseEntries[i]);
+    }
+  }
+
+  reverseScrollMapEntries = deduped;
 }
 
 const resetScrollMaps = () => {
   scrollMap = undefined;
-  reverseScrollMap = undefined;
+  reverseScrollMapEntries = undefined;
 }
