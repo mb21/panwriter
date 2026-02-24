@@ -1,5 +1,6 @@
-import { Editor } from 'codemirror'
 import { throttle } from './throttle'
+
+type Editor = any
 
 let editor: Editor
   , editorOffset = 0
