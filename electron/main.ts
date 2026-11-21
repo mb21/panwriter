@@ -4,18 +4,22 @@ import * as fs from 'fs'
 
 import * as ipc from './ipc'
 import { fileExportDialog, fileExportHTMLToClipboard, fileExportLikePrevious, fileExportToClipboard } from './pandoc/export'
-import { Doc } from '../src/appState/AppState'
+import { defaultSettings, Doc, Settings } from '../src/appState/AppState'
 import { importFile } from './pandoc/import'
 import { saveFile, openFile } from './file'
 import { Message } from './preload'
 import { clearRecentFiles, getRecentFiles } from './recentFiles'
-import { loadSettings } from './settings'
+import { loadSettings, saveSettings } from './settings'
 
 const { autoUpdater } = require('electron-updater')
 require('fix-path')() // needed to execute pandoc on macOS prod build
 
 let appWillQuit = false
-const settingsPromise = loadSettings()
+let loadedSettings: Settings = defaultSettings
+const settingsPromise = loadSettings().then(settings => {
+  loadedSettings = settings
+  return settings
+})
 
 
 declare class CustomBrowserWindow extends Electron.BrowserWindow {
@@ -267,7 +271,18 @@ const windowSendMessage = async (msg: Message) => {
   }
 }
 
+const setAlwaysShowToolbar = async (alwaysShowToolbar: boolean) => {
+  await settingsPromise
+  loadedSettings = { ...loadedSettings, alwaysShowToolbar }
+  await saveSettings(loadedSettings)
+  windows.forEach(win => {
+    ipc.sendMessage(win, { type: 'loadSettings', settings: loadedSettings })
+  })
+  setMenu(windows.length > 0, true)
+}
+
 const setMenu = async (aWindowIsOpen=true, useRecentFilesCache=false) => {
+  await settingsPromise
   const recentFiles = await getRecentFiles(useRecentFilesCache)
   const template: Electron.MenuItemConstructorOptions[] = [
     { label: 'File'
@@ -412,6 +427,15 @@ const setMenu = async (aWindowIsOpen=true, useRecentFilesCache=false) => {
       , {role: 'togglefullscreen'}
       ]
     }
+  , { label: 'Settings'
+    , submenu: [
+        { label: 'Always Show Toolbar'
+        , type: 'checkbox'
+        , checked: loadedSettings.alwaysShowToolbar
+        , click: menuItem => { void setAlwaysShowToolbar(!!menuItem.checked) }
+        }
+      ]
+    }
   , { role: 'window'
     , submenu: [
         {role: 'minimize'}
@@ -444,14 +468,16 @@ const setMenu = async (aWindowIsOpen=true, useRecentFilesCache=false) => {
       ]
     })
 
-    // Window menu
-    template[5].submenu = [
-      {role: 'close'}
-    , {role: 'minimize'}
-    , {role: 'zoom'}
-    , {type: 'separator'}
-    , {role: 'front'}
-    ]
+    const windowMenu = template.find(item => item.role === 'window')
+    if (windowMenu) {
+      windowMenu.submenu = [
+        {role: 'close'}
+      , {role: 'minimize'}
+      , {role: 'zoom'}
+      , {type: 'separator'}
+      , {role: 'front'}
+      ]
+    }
   }
   var menu = Menu.buildFromTemplate(template);
   Menu.setApplicationMenu(menu);
