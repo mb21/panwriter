@@ -1,18 +1,22 @@
 .toolbar {
   position: fixed;
   z-index: 99999;
-  height: 40px;
+  /* Invisible hover target is taller than the painted bar so the mouse
+   * still counts as hovering a little below the chrome. */
+  height: 64px;
   width: 100vw;
 }
 
 .toolbar > .toolbararea {
   font-family: var(--system-font);
   font-size: 13px;
+  height: 38px;
   grid-template-rows: 38px;
   overflow: hidden;
   background: var(--overlay-background-color);
   border-bottom: 1px solid var(--separator-color);
-  transition: opacity 0.2s ease-out;
+  /* Delay the fade-out so moving toward a button does not hide the bar. */
+  transition: opacity 0.2s ease-out 0.35s;
   opacity: 0;
   display: grid;
   grid-template-columns: max-content minmax(max-content, 1fr) auto minmax(max-content, 1fr);
@@ -21,7 +25,16 @@
 }
 .toolbar:hover > .toolbararea {
   -webkit-app-region: drag;
-  transition: opacity 0.12s ease-in;
+  transition: opacity 0.12s ease-in 0s;
+  opacity: 1;
+}
+
+.toolbar.alwaysOn {
+  height: 40px;
+}
+.toolbar.alwaysOn > .toolbararea {
+  -webkit-app-region: drag;
+  transition: none;
   opacity: 1;
 }
 

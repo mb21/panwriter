@@ -20,10 +20,10 @@ interface Props {
 
 export const Toolbar = (props: Props) => {
   const { state, dispatch } = props
-  const { doc, metaEditorOpen, split, paginated } = state
+  const { doc, metaEditorOpen, split, paginated, settings } = state
   const { fileName, fileDirty } = doc
   return (
-    <div className='toolbar'>
+    <div className={`toolbar${settings.alwaysShowToolbar ? ' alwaysOn' : ''}`}>
       <div className='toolbararea'>
         <div className='windowbuttons'>
           { (['close', 'minimize', 'maximize'] as const).map(action =>
